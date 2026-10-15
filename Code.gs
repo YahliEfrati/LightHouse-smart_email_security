@@ -32,13 +32,12 @@ const APP_NAME = 'Lighthouse - Smart Email Security';
 const APP_SHORT_NAME = '🗼 Lighthouse';
 
 /**
- * Small, square lighthouse icon shown in the card header via
- * CardHeader.setImageUrl(), establishing the lighthouse motif immediately.
- * Square and compact on purpose - Gmail renders header images in a small
- * fixed avatar slot, so a wide banner gets cropped and bloats card height.
- * Replace with real branded artwork when available.
+ * Public base URL of the static image assets (icons, banners, risk gauges).
+ * Gmail card images must be loaded from a public HTTPS URL, so the PNGs generated
+ * by tools/generate_assets.py are committed to the repo's /assets folder and served
+ * from raw.githubusercontent.com (the repository must be public).
  */
-const HEADER_BANNER_URL = 'https://img.icons8.com/ios-filled/100/FDB813/lighthouse.png';
+const ASSET_BASE_URL = 'https://raw.githubusercontent.com/YahliEfrati/LightHouse-smart_email_security/main/assets/';
 
 /**
  * Base URL of the local FastAPI backend (see /backend).
@@ -62,73 +61,13 @@ const BACKEND_URL = 'https://macaroni-hardwired-uneasily.ngrok-free.dev/api/v1/a
  * backends rather than a custom timeout value.
  */
 
-/**
- * Verdict -> visual style mapping used across cards.
- *
- * Safe and Suspicious keep the calm, Ghibli-esque "safe harbor" aesthetic:
- * soft emoji, gentle Material Icons (verified / explore), muted colors.
- * Malicious deliberately abandons that calm — bold red, uppercase heading,
- * a hard-to-miss report/error icon — because a genuinely dangerous email
- * deserves to interrupt, not soothe.
- */
-const VERDICT_STYLE = {
-  Safe: {
-    color: '#2E7D6B',
-    emoji: '🌊',
-    materialIcon: 'verified',
-    heading: 'Calm waters ahead',
-    label: 'No known threats detected. This email looks safe to read.',
-  },
-  Suspicious: {
-    color: '#C98A2C',
-    emoji: '💡',
-    materialIcon: 'explore',
-    heading: 'Worth a closer look',
-    label: "Proceed with caution — a few things here are worth a second glance.",
-  },
-  Malicious: {
-    color: '#D32F2F',
-    emoji: '⚠️',
-    materialIcon: 'report',
-    heading: 'DANGER — LIKELY PHISHING',
-    label: 'HIGH RISK OF PHISHING. Do not click links or open attachments in this email.',
-  },
+/** Per-state accent colors, shared with the generated assets (tools/generate_assets.py). */
+const STATE_COLORS = {
+  safe: '#2E7D6B',
+  suspicious: '#C98A2C',
+  malicious: '#D32F2F',
+  unscanned: '#8A949B',
 };
-
-/**
- * Color stops used to build a continuous green -> amber -> red gradient for
- * the risk gauge, keyed by score (0-100). Interpolated at render time so the
- * gauge color slides smoothly with the score instead of jumping between only
- * three fixed verdict colors.
- */
-const SCORE_GRADIENT_STOPS = [
-  { score: 0, rgb: [46, 125, 107] },   // calm teal-green (matches VERDICT_STYLE.Safe)
-  { score: 50, rgb: [201, 138, 44] },  // amber (matches VERDICT_STYLE.Suspicious)
-  { score: 100, rgb: [211, 47, 47] },  // red (matches VERDICT_STYLE.Malicious)
-];
-
-/**
- * Returns a '#RRGGBB' hex color that linearly interpolates along
- * SCORE_GRADIENT_STOPS for the given 0-100 score, so the gauge color eases
- * gradually from green to red as the score climbs, rather than snapping
- * abruptly at the Safe/Suspicious/Malicious thresholds.
- */
-function scoreToColor(score) {
-  const clamped = Math.max(0, Math.min(100, score));
-  let lower = SCORE_GRADIENT_STOPS[0];
-  let upper = SCORE_GRADIENT_STOPS[SCORE_GRADIENT_STOPS.length - 1];
-  for (let i = 0; i < SCORE_GRADIENT_STOPS.length - 1; i++) {
-    if (clamped >= SCORE_GRADIENT_STOPS[i].score && clamped <= SCORE_GRADIENT_STOPS[i + 1].score) {
-      lower = SCORE_GRADIENT_STOPS[i];
-      upper = SCORE_GRADIENT_STOPS[i + 1];
-      break;
-    }
-  }
-  const span = upper.score - lower.score || 1;
-  const t = (clamped - lower.score) / span;
-  const rgb = lower.rgb.map((channel, i) => Math.round(channel + (upper.rgb[i] - channel) * t));
-  return '#' + rgb.map((c) => c.toString(16).padStart(2, '0')).join('');
-}
 
 /** Key used in CacheService to stash the last analysis for the details card. */
 const CACHE_KEY_PREFIX = 'last_analysis_';
@@ -155,7 +94,7 @@ function buildHomepageCard() {
       CardService.newCardHeader()
         .setTitle(APP_SHORT_NAME)
         .setSubtitle('A steady light in a sea of suspicious email')
-        .setImageUrl(HEADER_BANNER_URL)
+        .setImageUrl(assetUrl('icon_safe.png'))
         .setImageStyle(CardService.ImageStyle.SQUARE)
     )
     .addSection(
@@ -171,11 +110,6 @@ function buildHomepageCard() {
     .build();
 }
 
-/**
- * Gmail contextual trigger — fired whenever the user opens an email.
- * This is the main entry point that extracts the message, checks the
- * trusted-sender whitelist, calls the backend, and renders the result.
- */
 function buildAddOn(e) {
   try {
     const accessToken = e.gmail.accessToken;
@@ -184,16 +118,12 @@ function buildAddOn(e) {
     const message = GmailApp.getMessageById(messageId);
 
     const email = extractEmailData(message);
+    const trusted = isTrustedSender(email.senderEmail);
 
-    // 1. Trusted-sender whitelist short-circuit — never calls the backend.
-    if (isTrustedSender(email.senderEmail)) {
-      return [buildTrustedSenderCard(email)];
-    }
-
-    // 2. Call the local backend (with graceful degradation on failure).
+    // Trusted senders are still scanned: a spoofed "trusted" address must not bypass the checks.
     const result = callBackend(email);
     if (result.error) {
-      return [buildBackendDownCard()];
+      return [buildNotScannedCard()];
     }
 
     // Cache the full result (including reasoning) so the "details" card can
@@ -204,9 +134,12 @@ function buildAddOn(e) {
       1800 // 30 minutes
     );
 
-    return [buildResultCard(email, result, messageId)];
+    if (trusted && stateForResult(result) === 'safe') {
+      return [buildTrustedSenderCard(email)];
+    }
+    return [buildResultCard(email, result, messageId, trusted)];
   } catch (err) {
-    return [buildBackendDownCard()];
+    return [buildNotScannedCard()];
   }
 }
 
@@ -446,28 +379,6 @@ function onTrustThisSender(e) {
 // UI: risk gauge helper
 // --------------------------------------------------------------------------
 
-/**
- * Renders a 10-segment Unicode progress bar for the given 0-100 score, e.g.
- * "[██████░░░░] 65/100", colored with a continuous green -> amber -> red
- * gradient (via scoreToColor) so the gauge itself visibly eases from calm
- * to alarming as the score climbs, rather than only the verdict label
- * changing color in three abrupt steps. CardService has no native
- * gauge/progress widget or custom CSS, so this is the most visually
- * informative option available within DecoratedText's basic HTML support.
- */
-function renderRiskGauge(score) {
-  const totalSegments = 10;
-  const filled = Math.round((Math.max(0, Math.min(100, score)) / 100) * totalSegments);
-  const bar = '█'.repeat(filled) + '░'.repeat(totalSegments - filled);
-  const color = scoreToColor(score);
-  return '<font color="' + color + '">[' + bar + ']</font>  ' + score + ' / 100';
-}
-
-/** Looks up the visual style (color/icon/copy) for a verdict string. */
-function styleForVerdict(verdict) {
-  return VERDICT_STYLE[verdict] || VERDICT_STYLE.Suspicious;
-}
-
 /** Builds an IconImage from a Material Icon name, used next to verdict text. */
 function materialIconImage(iconName) {
   return CardService.newIconImage().setMaterialIcon(CardService.newMaterialIcon().setName(iconName));
@@ -518,56 +429,81 @@ function wisdomForRule(rule) {
 // UI: main scan result card
 // --------------------------------------------------------------------------
 
-function buildResultCard(email, result, messageId) {
-  const style = styleForVerdict(result.verdict);
-  const isDanger = result.verdict === 'Malicious';
+function buildResultCard(email, result, messageId, isTrusted) {
+  const state = stateForResult(result);
+  const view = presentationFor(state);
+  const isDanger = state === 'malicious';
+  const score = normalizeScore(result.score);
+  const color = STATE_COLORS[state];
 
-  // The header always carries the lighthouse banner — the beacon never
-  // disappears, even when the news it delivers is urgent.
   const header = CardService.newCardHeader()
-    .setTitle(isDanger ? '🚨 ' + style.heading : style.emoji + '  ' + style.heading)
-    .setSubtitle(APP_NAME)
-    .setImageUrl(HEADER_BANNER_URL)
+    .setTitle(view.headline)
+    .setSubtitle(view.subtitle)
+    .setImageUrl(assetUrl(view.icon))
     .setImageStyle(CardService.ImageStyle.SQUARE);
 
-  // Verdict text is always colored along the same green->amber->red gradient
-  // as the risk gauge, so the two reinforce the same continuous signal.
-  const verdictColor = scoreToColor(result.score);
-  const verdictText = isDanger
-    ? '<font color="' + verdictColor + '"><b>' + result.verdict.toUpperCase() + '</b></font>'
-    : '<font color="' + verdictColor + '"><b>' + result.verdict + '</b></font>';
+  // The banner is the loudest element: a full-width block of the state color.
+  const verdictSection = CardService.newCardSection().addWidget(
+    CardService.newImage().setImageUrl(assetUrl(view.banner)).setAltText(view.headline)
+  );
 
-  const gaugeSection = CardService.newCardSection()
-    .addWidget(
+  if (isTrusted && state !== 'safe') {
+    verdictSection.addWidget(
+      CardService.newTextParagraph().setText('<i>This sender is on your trusted list, but something looks off.</i>')
+    );
+  }
+
+  const finding = state === 'safe' ? null : topFinding(result.reasoning);
+  if (finding) {
+    verdictSection.addWidget(
       CardService.newDecoratedText()
-        .setStartIcon(materialIconImage(style.materialIcon))
-        .setText(verdictText + ' &nbsp;·&nbsp; ' + renderRiskGauge(result.score))
-        .setBottomLabel(isDanger ? style.label.toUpperCase() : style.label)
+        .setStartIcon(materialIconImage('flag'))
+        .setText('<b>' + safeText(finding.description, 160) + '</b>')
+        .setBottomLabel(safeText(wisdomForRule(finding.rule), 200))
         .setWrapText(true)
+    );
+  }
+
+  verdictSection
+    .addWidget(CardService.newImage().setImageUrl(assetUrl(gaugeFile(score))).setAltText('Risk ' + score + ' out of 100'))
+    .addWidget(
+      CardService.newTextParagraph().setText(
+        '<font color="' + color + '"><b>' + score + ' / 100</b></font> <i>risk estimate</i> &nbsp;·&nbsp; ' +
+          safeText(email.senderDisplayName || email.senderEmail, 80)
+      )
     )
     .addWidget(
       CardService.newTextParagraph().setText(
-        '<b>From:</b> ' + escapeHtml(email.senderDisplayName || email.senderEmail) +
-          ' &lt;' + escapeHtml(email.senderEmail) + '&gt;'
+        '<b>What to do:</b> ' + (isDanger ? '<font color="' + color + '"><b>' + view.todo + '</b></font>' : view.todo)
       )
     );
 
   const detailsButton = CardService.newTextButton()
-    .setText(isDanger ? '⚠ VIEW WHY THIS IS DANGEROUS' : 'View Analysis Details')
+    .setText(isDanger ? '\u26A0 VIEW WHY THIS IS DANGEROUS' : 'View details')
     .setOnClickAction(
       CardService.newAction().setFunctionName('onViewDetails').setParameters({ messageId: messageId })
     );
   if (isDanger) {
-    detailsButton.setTextButtonStyle(CardService.TextButtonStyle.FILLED).setBackgroundColor('#D32F2F');
+    detailsButton.setTextButtonStyle(CardService.TextButtonStyle.FILLED).setBackgroundColor(STATE_COLORS.malicious);
   } else {
     detailsButton.setTextButtonStyle(CardService.TextButtonStyle.OUTLINED);
   }
 
-  const actionsSection = CardService.newCardSection()
+  const actionsSection = CardService.newCardSection();
+  if (isDanger) {
+    actionsSection.addWidget(
+      CardService.newTextButton()
+        .setText('Report as phishing')
+        .setTextButtonStyle(CardService.TextButtonStyle.FILLED)
+        .setBackgroundColor(STATE_COLORS.malicious)
+        .setOnClickAction(CardService.newAction().setFunctionName('onReportPhishing'))
+    );
+  }
+  actionsSection
     .addWidget(detailsButton)
     .addWidget(
       CardService.newTextButton()
-        .setText('✓ Trust This Sender')
+        .setText('\u2713 Trust this sender')
         .setOnClickAction(
           CardService.newAction().setFunctionName('onTrustThisSender').setParameters({
             senderEmail: email.senderEmail,
@@ -577,14 +513,21 @@ function buildResultCard(email, result, messageId) {
     )
     .addWidget(
       CardService.newTextButton()
-        .setText('⚑ I think this is a mistake')
+        .setText('\u2691 I think this is a mistake')
         .setOnClickAction(CardService.newAction().setFunctionName('onSubmitFeedback'))
     );
 
-  return CardService.newCardBuilder()
-    .setHeader(header)
-    .addSection(gaugeSection)
-    .addSection(actionsSection)
+  return CardService.newCardBuilder().setHeader(header).addSection(verdictSection).addSection(actionsSection).build();
+}
+
+/**
+ * Action handler for "Report as phishing". Reporting from inside the add-on would need
+ * the gmail.modify scope, which we deliberately do not request (least privilege), so we
+ * open Google's own instructions instead.
+ */
+function onReportPhishing(e) {
+  return CardService.newActionResponseBuilder()
+    .setOpenLink(CardService.newOpenLink().setUrl('https://support.google.com/mail/answer/8253'))
     .build();
 }
 
@@ -618,15 +561,15 @@ function onViewDetails(e) {
     .build();
 }
 
-/** Builds the pushed "Analysis Details" card, grouped by category. */
 function buildDetailsCard(result) {
-  const style = styleForVerdict(result.verdict);
-  const isDanger = result.verdict === 'Malicious';
+  const state = stateForResult(result);
+  const view = presentationFor(state);
+  const isDanger = state === 'malicious';
 
   const header = CardService.newCardHeader()
     .setTitle(isDanger ? "The Lighthouse's Warning" : "The Lighthouse's Notes")
-    .setSubtitle(style.emoji + ' ' + result.verdict + '  ·  score ' + result.score + '/100')
-    .setImageUrl(HEADER_BANNER_URL)
+    .setSubtitle(safeText(result.verdict, 30) + '  \u00B7  score ' + normalizeScore(result.score) + '/100')
+    .setImageUrl(assetUrl(view.icon))
     .setImageStyle(CardService.ImageStyle.SQUARE);
 
   const card = CardService.newCardBuilder().setHeader(header);
@@ -635,28 +578,37 @@ function buildDetailsCard(result) {
     card.addSection(
       CardService.newCardSection().addWidget(
         CardService.newTextParagraph().setText(
-          'The waters look calm — Lighthouse did not notice anything worth flagging in this email.'
+          'The waters look calm \u2014 Lighthouse did not notice anything worth flagging in this email.'
         )
       )
     );
-    return card.build();
+  } else {
+    const byCategory = groupByCategory(result.reasoning);
+    Object.keys(byCategory).forEach((category) => {
+      const meta = CATEGORY_LABELS[category] || { title: capitalize(category), icon: 'info' };
+      const section = CardService.newCardSection().setHeader(safeText(meta.title, 60));
+      byCategory[category].forEach((item) => {
+        section.addWidget(
+          CardService.newDecoratedText()
+            .setStartIcon(materialIconImage(meta.icon))
+            .setText(safeText(wisdomForRule(item.rule), 200))
+            .setBottomLabel(safeText(item.description, 300))
+            .setWrapText(true)
+        );
+      });
+      card.addSection(section);
+    });
   }
 
-  const byCategory = groupByCategory(result.reasoning);
-  Object.keys(byCategory).forEach((category) => {
-    const meta = CATEGORY_LABELS[category] || { title: capitalize(category), icon: 'info' };
-    const section = CardService.newCardSection().setHeader(meta.title);
-    byCategory[category].forEach((item) => {
-      section.addWidget(
-        CardService.newDecoratedText()
-          .setStartIcon(materialIconImage(meta.icon))
-          .setText(escapeHtml(wisdomForRule(item.rule)))
-          .setBottomLabel(escapeHtml(item.description))
-          .setWrapText(true)
-      );
+  // "What we checked": makes a clean result feel earned rather than empty.
+  const passed = checksPassed(result.reasoning);
+  if (passed.length > 0) {
+    const checked = CardService.newCardSection().setHeader('What we checked');
+    passed.forEach((label) => {
+      checked.addWidget(CardService.newTextParagraph().setText('\u2713 ' + label + ' \u2014 nothing unusual'));
     });
-    card.addSection(section);
-  });
+    card.addSection(checked);
+  }
 
   return card.build();
 }
@@ -679,21 +631,21 @@ function capitalize(str) {
 // UI: trusted sender / backend-down fallback cards
 // --------------------------------------------------------------------------
 
-/** Friendly, calm card shown when the sender is on the user's whitelist. */
 function buildTrustedSenderCard(email) {
+  const view = presentationFor('safe');
   const header = CardService.newCardHeader()
-    .setTitle('🌊  A Familiar Face')
+    .setTitle('A familiar face')
     .setSubtitle(APP_NAME)
-    .setImageUrl(HEADER_BANNER_URL)
+    .setImageUrl(assetUrl(view.icon))
     .setImageStyle(CardService.ImageStyle.SQUARE);
 
   const section = CardService.newCardSection().addWidget(
     CardService.newDecoratedText()
       .setStartIcon(materialIconImage('verified'))
       .setText(
-        '<b>' + escapeHtml(email.senderDisplayName || email.senderEmail) + '</b> (' +
-          escapeHtml(email.senderEmail) +
-          ') is on your trusted list, so Lighthouse let this one pass by without a scan.'
+        '<b>' + safeText(email.senderDisplayName || email.senderEmail, 80) + '</b> (' +
+          safeText(email.senderEmail, 120) +
+          ') is on your trusted list, and Lighthouse found nothing unusual in this message.'
       )
       .setWrapText(true)
   );
@@ -701,22 +653,16 @@ function buildTrustedSenderCard(email) {
   return CardService.newCardBuilder().setHeader(header).addSection(section).build();
 }
 
-/**
- * Friendly fallback card shown whenever the backend is unreachable, slow,
- * or returns an unexpected response — the user never sees a raw exception.
- */
-function buildBackendDownCard() {
+function buildNotScannedCard() {
+  const view = presentationFor('unscanned');
   const header = CardService.newCardHeader()
-    .setTitle('🕯️  The Beacon Rests')
-    .setSubtitle(APP_NAME)
-    .setImageUrl(HEADER_BANNER_URL)
+    .setTitle(view.headline)
+    .setSubtitle(view.subtitle)
+    .setImageUrl(assetUrl(view.icon))
     .setImageStyle(CardService.ImageStyle.SQUARE);
   const section = CardService.newCardSection()
-    .addWidget(
-      CardService.newTextParagraph().setText(
-        'The Lighthouse beacon is currently resting. Please try again later.'
-      )
-    )
+    .addWidget(CardService.newImage().setImageUrl(assetUrl(view.banner)).setAltText(view.headline))
+    .addWidget(CardService.newTextParagraph().setText('<b>' + view.todo + '</b>'))
     .addWidget(
       CardService.newTextParagraph().setText(
         '<i>Tip: closing and re-opening this email will relight the beacon for a fresh scan.</i>'
@@ -744,7 +690,7 @@ function buildManageTrustedSendersCard() {
       CardService.newCardHeader()
         .setTitle('Familiar Faces')
         .setSubtitle(APP_NAME)
-        .setImageUrl(HEADER_BANNER_URL)
+        .setImageUrl(assetUrl('icon_safe.png'))
         .setImageStyle(CardService.ImageStyle.SQUARE)
     )
     .addSection(buildManageTrustedSendersSection())
@@ -753,7 +699,7 @@ function buildManageTrustedSendersCard() {
 
 /** The reusable section (input + list) embedded in both the homepage and the standalone card. */
 function buildManageTrustedSendersSection() {
-  const section = CardService.newCardSection().setHeader('Trusted Senders — Familiar Faces Lighthouse Won\'t Scan');
+  const section = CardService.newCardSection().setHeader('Trusted Senders — Familiar Faces');
 
   section.addWidget(
     CardService.newTextInput()
@@ -817,11 +763,6 @@ function onSubmitFeedback(e) {
 // Small utilities
 // --------------------------------------------------------------------------
 
-/** Minimal HTML-escaping for values interpolated into CardService text widgets. */
 function escapeHtml(str) {
-  return String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return safeText(str, 2000);
 }

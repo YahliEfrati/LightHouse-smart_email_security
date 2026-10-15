@@ -11,7 +11,7 @@
   ],
   "gmail": {
     "name": "Lighthouse - Smart Email Security",
-    "logoUrl": "https://placehold.co/128x128/0B3D59/FDB813/png?text=LH",
+    "logoUrl": "https://raw.githubusercontent.com/YahliEfrati/LightHouse-smart_email_security/main/assets/icon_safe.png",
     "primaryColor": "#0B3D59",
     "secondaryColor": "#FDB813",
     "contextualTriggers": [

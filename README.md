@@ -4,18 +4,26 @@ A Google Workspace Gmail Add-on (built with `CardService`) that scans the
 currently open email against the local FastAPI backend (see `/backend`)
 and shows the user a maliciousness score, verdict, and reasoning.
 
-## Brand & tone
+## Design principles
 
-Lighthouse is designed to feel like a calm, protective guide — a warm
-beacon cutting through fog — rather than an aggressive cyber-alarm. Safe
-and Suspicious verdicts use soft colors, gentle Material Icons
-(`verified`, `explore`), and reassuring, non-alarmist language written in
-a "wise guide" voice (e.g. *"The sender's address looks very similar to a
-known brand. Let's be careful here."* instead of raw jargon like
-"TYPOSQUATTING DETECTED"). For a genuinely dangerous **Malicious** verdict,
-the add-on deliberately drops that calm: a bold red `report` icon,
-uppercase warning text, and a filled red "VIEW WHY THIS IS DANGEROUS"
-button make the danger impossible to miss.
+1. **Explainable** — every verdict comes with the evidence behind it, not just a number.
+2. **Loudness is calibrated** — safe email stays quiet so a dangerous one can shout. The card
+   escalates through an intensity ladder:
+
+   | State | What the user sees |
+   |---|---|
+   | Safe | Short, quiet card, green banner |
+   | Suspicious | Amber banner, the single most important finding, "verify before you act" |
+   | Malicious | Full-width red banner first, bold red "What to do", filled red buttons, solid-red gauge above 90 |
+   | Not scanned | Grey card — "This email wasn't scanned, use your usual caution" (never implies safety) |
+
+3. **Privacy first** — all analysis is local heuristics; no email content goes to third-party services.
+4. **Least privilege** — see the scopes below.
+5. **Plain headlines, warm voice** — headlines and findings are direct; the Lighthouse personality
+   lives in subtitles and explanatory copy.
+
+The lighthouse icon changes beam color with the verdict, and the risk gauge fades green → amber →
+red along the backend's thresholds (35 suspicious, 70 malicious).
 
 ## Security posture: principle of least privilege
 
@@ -34,10 +42,20 @@ blast radius is a single opened email, not the user's whole mailbox.
 ## Files
 
 ```
-addon/
-├── appsscript.json   Manifest: oauth scopes, contextual trigger, homepage trigger
-└── Code.gs           All add-on logic (CardService UI + backend client)
+.
+├── appsscript.json         Manifest: oauth scopes, contextual trigger, homepage trigger
+├── Code.gs                 Add-on logic (CardService UI + backend client)
+├── Presentation.gs         Pure helpers: state -> banner/gauge/copy, top finding, escaping (unit-tested in Node)
+├── assets/                 Generated PNGs: icons, state banners, risk gauges (served via GitHub raw)
+├── tools/generate_assets.py  Regenerates /assets  (python tools/generate_assets.py)
+├── tests/                  Node tests for Presentation.gs and a CardService smoke test
+└── docs/                   Design spec, implementation plan, demo script
 ```
+
+Images in Gmail cards must come from a public HTTPS URL, so the PNGs are committed and loaded from
+`raw.githubusercontent.com` (`ASSET_BASE_URL` in `Code.gs`; the repository must be public).
+Run the tests with `node --test tests/presentation.test.js tests/code_smoke.test.js` and
+`python -m unittest discover -s tools/tests`.
 
 ## How it works
 
@@ -45,29 +63,26 @@ addon/
    unconditional trigger). It reads the access token/message id Gmail hands
    it, and uses `GmailApp.getMessageById` to read sender, subject, body, and
    links from the **currently open message only**.
-2. **Trusted-sender short-circuit** — if the sender's address or domain is
-   on the user's whitelist (`PropertiesService.getUserProperties()`), the
-   backend is **never called** and a calm "A Familiar Face" card renders
-   immediately.
-3. **Backend call** — otherwise, `callBackend()` POSTs the parsed fields to
-   `BACKEND_URL` (`/api/v1/analyze`) wrapped in try/catch. Any network
-   error, timeout, or malformed/non-2xx response is treated as "down" and
-   renders a friendly "The Beacon Rests" card instead of a stack trace,
-   with the exact copy: *"The Lighthouse beacon is currently resting.
-   Please try again later."*
-4. **Result card** — carries the lighthouse banner image in its header
-   (`CardHeader.setImageUrl`) and shows a Unicode risk gauge
-   (`[██████░░░░] 65/100`) next to a Material Icon that matches the
-   verdict (`verified` for Safe, `explore` for Suspicious, a bold red
-   `report` for Malicious), plus three actions: **View Analysis
-   Details**, **Trust This Sender**, and **I think this is a mistake**.
-5. **Details card** — "View Analysis Details" uses
+2. **Backend call** — `callBackend()` POSTs the parsed fields to `BACKEND_URL`
+   (`/api/v1/analyze`) wrapped in try/catch. Any network error, timeout, or
+   malformed/non-2xx response renders the grey **Not scanned** card instead of a
+   stack trace. Trusted senders (user whitelist in `PropertiesService`) are
+   **still scanned**: a spoofed "trusted" address must not bypass the checks. They
+   get the calm "A familiar face" card only when the verdict is Safe.
+3. **Result card** — header icon and a full-width banner in the state color, the
+   top finding with its evidence, a gradient risk-gauge image plus the exact score
+   (labelled an estimate), a "What to do" line, and actions: **View details**,
+   **Trust this sender**, **I think this is a mistake**, and for malicious email a
+   red **Report as phishing** (opens Google's reporting instructions — reporting
+   in place would need `gmail.modify`, which we deliberately do not request).
+4. **Details card** — "View details" uses
    `CardService.newNavigation().pushCard()`, which triggers Gmail's native
    slide-in card animation, to reveal the full per-rule reasoning (grouped
    by category, each rephrased into a warm "wise guide" sentence via
    `RULE_WISDOM`) that was deliberately hidden from the main card to avoid
-   overwhelming the user.
-6. **Feedback** — "I think this is a mistake" returns an
+   overwhelming the user, followed by a "What we checked" list so a clean
+   result is not an empty screen.
+5. **Feedback** — "I think this is a mistake" returns an
    `ActionResponseBuilder` with `setNotification(...)`, showing a toast
    ("Thank you! Your feedback helps calibrate the Lighthouse.") without
    navigating away.
@@ -92,7 +107,7 @@ Then:
 1. Open [script.google.com](https://script.google.com), create/open the
    Apps Script project (or use `clasp push` with the existing
    `.clasp.json` in this folder).
-2. Paste `Code.gs` and `appsscript.json` into the project (or `clasp push`).
+2. Paste `Code.gs`, `Presentation.gs` and `appsscript.json` into the project (or `clasp push`).
 3. In `Code.gs`, set `BACKEND_URL` to
    `https://xxxx.ngrok-free.app/api/v1/analyze`.
 4. **Deploy → Test deployments → Install add-on** (or use "Run" from the
@@ -115,6 +130,11 @@ individually from the "Manage Trusted Senders" section.
 
 ## Known limitations
 
+- `headers` are sent empty, so the SPF/DKIM/DMARC rules in the backend never fire; reading
+  authentication headers needs access the add-on does not request today.
+- No URL-reputation lookups — a deliberate privacy choice (nothing leaves the backend).
+- No mailbox-level actions (label, move to spam): they require `gmail.modify`.
+- The gauge image uses the score rounded to the nearest 5; the exact score is shown as text.
 - `BACKEND_URL` must be manually updated whenever the ngrok tunnel
   restarts — there's no service discovery for a purely local demo setup.
 - The trusted-sender list is stored per Google account via
