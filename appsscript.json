@@ -1,0 +1,28 @@
+{
+  "timeZone": "America/New_York",
+  "dependencies": {
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
+    "https://www.googleapis.com/auth/script.external_request"
+  ],
+  "gmail": {
+    "name": "Lighthouse - Smart Email Security",
+    "logoUrl": "https://placehold.co/128x128/0B3D59/FDB813/png?text=LH",
+    "primaryColor": "#0B3D59",
+    "secondaryColor": "#FDB813",
+    "contextualTriggers": [
+      {
+        "unconditional": {},
+        "onTriggerFunction": "buildAddOn"
+      }
+    ],
+    "homepageTrigger": {
+      "enabled": true,
+      "runFunction": "onHomepage"
+    }
+  }
+}
