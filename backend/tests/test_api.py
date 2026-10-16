@@ -4,11 +4,19 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from main import app  # noqa: E402
 
-client = TestClient(app)
+TEST_KEY = "test-key-123"
+client = TestClient(app, headers={"X-Lighthouse-Key": TEST_KEY})
+anonymous_client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def _api_key(monkeypatch):
+    monkeypatch.setenv("LIGHTHOUSE_API_KEY", TEST_KEY)
 
 
 def test_health_endpoint():
@@ -65,3 +73,43 @@ def test_analyze_endpoint_rejects_oversized_body():
     }
     resp = client.post("/api/v1/analyze", json=payload)
     assert resp.status_code == 422
+
+
+# ---- authentication (shared secret) ----
+_BENIGN = {"sender": {"email": "friend@example.com"}, "subject": "Hello", "body_text": "Hi"}
+
+
+def test_analyze_rejects_missing_key():
+    assert anonymous_client.post("/api/v1/analyze", json=_BENIGN).status_code == 401
+
+
+def test_analyze_rejects_wrong_key():
+    resp = anonymous_client.post("/api/v1/analyze", json=_BENIGN, headers={"X-Lighthouse-Key": "nope"})
+    assert resp.status_code == 401
+
+
+def test_analyze_rejects_key_of_different_length():
+    resp = anonymous_client.post("/api/v1/analyze", json=_BENIGN, headers={"X-Lighthouse-Key": TEST_KEY + "x"})
+    assert resp.status_code == 401
+
+
+def test_analyze_accepts_correct_key():
+    resp = anonymous_client.post("/api/v1/analyze", json=_BENIGN, headers={"X-Lighthouse-Key": TEST_KEY})
+    assert resp.status_code == 200
+
+
+def test_analyze_fails_closed_when_server_key_not_configured(monkeypatch):
+    monkeypatch.delenv("LIGHTHOUSE_API_KEY", raising=False)
+    resp = anonymous_client.post("/api/v1/analyze", json=_BENIGN, headers={"X-Lighthouse-Key": TEST_KEY})
+    assert resp.status_code == 503
+
+
+def test_unauthorized_response_leaks_nothing():
+    resp = anonymous_client.post("/api/v1/analyze", json=_BENIGN)
+    assert resp.json() == {"detail": "Unauthorized"}
+
+
+def test_health_stays_open_and_minimal():
+    resp = anonymous_client.get("/health")
+    assert resp.status_code == 200
+    assert resp.json() == {"status": "ok"}

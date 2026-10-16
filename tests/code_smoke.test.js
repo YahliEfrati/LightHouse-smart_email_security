@@ -72,7 +72,7 @@ test('safe first screen has the strip and no findings', () => {
 });
 
 // ---- flow tests with fake Apps Script services ----
-function services({ trusted = [], backend }) {
+function services({ trusted = [], backend, scriptProps = {}, onFetch }) {
   const store = { trustedSenders: JSON.stringify(trusted) };
   const message = {
     getFrom: () => 'Ann <ann@corp.example>', getReplyTo: () => null, getSubject: () => 's',
@@ -81,10 +81,10 @@ function services({ trusted = [], backend }) {
   return {
     store,
     globals: {
-      PropertiesService: { getUserProperties: () => ({ getProperty: (k) => store[k] || null, setProperty: (k, v) => { store[k] = v; } }) },
+      PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => scriptProps[k] || null }), getUserProperties: () => ({ getProperty: (k) => store[k] || null, setProperty: (k, v) => { store[k] = v; } }) },
       CacheService: { getUserCache: () => ({ put: () => {}, get: () => null }) },
       GmailApp: { setCurrentMessageAccessToken: () => {}, getMessageById: () => message },
-      UrlFetchApp: { fetch: () => ({ getResponseCode: () => backend.status || 200, getContentText: () => JSON.stringify(backend.body) }) },
+      UrlFetchApp: { fetch: (url, options) => { if (onFetch) onFetch(url, options); return { getResponseCode: () => backend.status || 200, getContentText: () => JSON.stringify(backend.body) }; } },
     },
   };
 }
@@ -128,4 +128,23 @@ test('adding a whole free-mail provider as trusted is refused; a full address is
   assert.deepStrictEqual(JSON.parse(s.store.trustedSenders), ['friend@gmail.com']);
   ctx.onUntrustThisSender({ parameters: { senderEmail: 'friend@gmail.com' } });
   assert.deepStrictEqual(JSON.parse(s.store.trustedSenders), []);
+});
+
+test('backend call sends the shared secret from Script Properties', () => {
+  let seen;
+  const s = services({
+    scriptProps: { BACKEND_API_KEY: 'k-123' },
+    onFetch: (url, options) => { seen = options; },
+    backend: { body: { score: 5, verdict: 'Safe', reasoning: [] } },
+  });
+  const { ctx } = load(s.globals);
+  open(ctx);
+  assert.strictEqual(seen.headers['X-Lighthouse-Key'], 'k-123');
+});
+
+test('backend 401 (missing/wrong key) -> grey Not scanned card, never a safe look', () => {
+  const s = services({ backend: { status: 401, body: { detail: 'Unauthorized' } } });
+  const { ctx, calls } = load(s.globals);
+  open(ctx);
+  assert.ok(urlsOf(calls).some((u) => u.endsWith('hero_unscanned.png')));
 });

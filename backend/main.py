@@ -44,13 +44,17 @@ Run instructions
          "attachments": [{"filename": "invoice.pdf.exe"}]
        }
 
+Authentication: set LIGHTHOUSE_API_KEY (see README) and send it as the X-Lighthouse-Key header.
+
 Run tests with:  pytest
 """
 from __future__ import annotations
 
 import logging
+import os
+import secrets
 
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
@@ -66,6 +70,28 @@ app = FastAPI(
     version="1.0.0",
 )
 
+API_KEY_ENV = "LIGHTHOUSE_API_KEY"
+
+
+def require_api_key(x_lighthouse_key: str = Header(default="")) -> None:
+    """Shared-secret authentication between the Gmail Add-on and this API.
+
+    The expected key comes from the ``LIGHTHOUSE_API_KEY`` environment variable and is
+    read per request. If it is not configured the endpoint **fails closed** (503) rather
+    than silently running open. The comparison is constant-time to avoid timing leaks, and
+    rejections never say *why* a key was wrong.
+    """
+    expected = os.environ.get(API_KEY_ENV, "")
+    if not expected:
+        logger.error("%s is not set; refusing all analysis requests.", API_KEY_ENV)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Service is not configured.",
+        )
+    if not secrets.compare_digest(x_lighthouse_key.encode("utf-8"), expected.encode("utf-8")):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+
 # A single, stateless, reusable instance of the analysis pipeline.
 _risk_analyzer = EmailRiskAnalyzer()
 
@@ -80,6 +106,7 @@ def health() -> dict:
     "/api/v1/analyze",
     response_model=AnalysisResponse,
     tags=["analysis"],
+    dependencies=[Depends(require_api_key)],
     summary="Analyze an email and return a maliciousness score, verdict, and reasoning.",
 )
 def analyze_email(payload: EmailAnalysisRequest) -> AnalysisResponse:
