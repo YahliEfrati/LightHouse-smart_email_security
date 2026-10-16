@@ -118,6 +118,7 @@ The band at the top is an animated lighthouse beam that sweeps twice and stops. 
 <p align="center">
   <img src="docs/screenshots/details.png" width="32%" alt="View details: each finding in plain language with the evidence quoted from the email">
   <img src="docs/screenshots/links.png" width="32%" alt="Check the links: one link's text names a different site than it opens; five go where they say">
+  <img src="docs/screenshots/home.png" width="32%" alt="Home card: the Lighthouse logo, what the add-on does, and Manage trusted senders">
 </p>
 
 There is deliberately no "this is a mistake" button: an earlier version had one that showed "thanks,
