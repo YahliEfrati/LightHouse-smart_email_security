@@ -184,7 +184,9 @@ function extractEmailData(message) {
   return {
     senderEmail: parsedSender.email,
     senderDisplayName: parsedSender.displayName,
-    replyTo: message.getReplyTo() || null,
+    // Address only: getReplyTo() can return 'Name <x@y.com>', which once made the backend read the
+    // domain as 'y.com>' and report a Reply-To mismatch on ordinary newsletters.
+    replyTo: parseSender(String(message.getReplyTo() || '').split(',')[0]).email || null,
     subject: message.getSubject() || '',
     bodyText: bodyText.substring(0, 200000),
     bodyHtml: bodyHtml.substring(0, 400000),
@@ -696,14 +698,21 @@ function buildDetailsCard(result) {
     Object.keys(byCategory).forEach((category) => {
       const meta = CATEGORY_LABELS[category] || { title: capitalize(category), icon: 'info' };
       const section = CardService.newCardSection().setHeader(safeText(meta.title, 60));
-      byCategory[category].forEach((item) => {
-        section.addWidget(
-          CardService.newDecoratedText()
-            .setStartIcon(materialIconImage(meta.icon))
-            .setText(safeText(wisdomForRule(item.rule), 200))
-            .setBottomLabel(safeText(item.description, 300))
-            .setWrapText(true)
-        );
+      // Same rule fired several times (e.g. two mismatched links): one headline, then each specific detail.
+      findingsByRule(byCategory[category]).forEach((item) => {
+        const n = item.descriptions.length;
+        const line = CardService.newDecoratedText()
+          .setStartIcon(materialIconImage(meta.icon))
+          .setText(safeText(wisdomForRule(item.rule), 200) + (n > 1 ? ' (×' + n + ')' : ''))
+          .setWrapText(true);
+        if (n === 1) {
+          section.addWidget(line.setBottomLabel(safeText(item.descriptions[0], 300)));
+          return;
+        }
+        section.addWidget(line);
+        const shown = item.descriptions.slice(0, 5).map((d) => '• ' + safeText(d, 300));
+        if (n > 5) shown.push('+' + (n - 5) + ' more');
+        section.addWidget(CardService.newTextParagraph().setText('<font color="#6B6B6B">' + shown.join('<br>') + '</font>'));
       });
       card.addSection(section);
     });

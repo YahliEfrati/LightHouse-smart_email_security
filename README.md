@@ -87,7 +87,8 @@ Run the tests with `node --test tests/presentation.test.js tests/code_smoke.test
 5. **Check the links** — a button that opens a card listing every web link in the email: the real
    host in bold, and what the link text claimed. It flags text that names a different site
    (including the `paypal.com.evil.example` subdomain trick), numeric hosts, look-alike (punycode)
-   hosts and link shorteners. It runs entirely from the links already in the open message: **the
+   hosts and link shorteners. Links routed through a newsletter service's click tracker (Mailchimp,
+   SendGrid, …) get a neutral ℹ row instead of a red one, and are not counted as suspicious. It runs entirely from the links already in the open message: **the
    Lighthouse never visits them** (no privacy leak, no tracking pixels fired), and the card says so.
    It shows where a link points, never "this link is safe".
 6. **Feedback** — "I think this is a mistake" returns an
@@ -115,7 +116,7 @@ Category caps: `header` 50 · `content` 35 · `link` 40 · `attachment` 50.
 | `base64_obfuscation` | content | 25 | Long base64 blob in the body |
 | `excessive_url_encoding` | content | 15 | 10+ `%XX` sequences |
 | `html_entity_obfuscation` | content | 20 | 6+ `&#x..;` entities in the HTML body |
-| `link_text_href_mismatch` | link | 25 (max 2) | Link text shows one domain, the link goes to another |
+| `link_text_href_mismatch` | link | 25 (max 2) | Link text shows one domain, the link goes to another. Links through mainstream newsletter click trackers (`LinkAnalyzer.ESP_CLICK_TRACKERS`: Mailchimp, SendGrid, …) are exempt, since legit newsletters wrap every link that way |
 | `ip_literal_host` | link | 20 | Link to a bare IP address |
 | `url_shortener` | link | 10 | Known shortener hides the destination |
 | `high_entropy_domain` | link | 15 | Random-looking (DGA-style) domain label |

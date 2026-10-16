@@ -239,6 +239,23 @@ function groupedFindings(reasoning) {
   return groups;
 }
 
+/**
+ * Details card: findings of the same rule merged into one entry (first-seen order, so pass them sorted),
+ * keeping every specific description. Returns [{rule, category, descriptions: [...]}].
+ */
+function findingsByRule(items) {
+  const merged = [];
+  const byRule = {};
+  (Array.isArray(items) ? items : []).forEach((item) => {
+    if (!byRule[item.rule]) {
+      byRule[item.rule] = { rule: item.rule, category: item.category, descriptions: [] };
+      merged.push(byRule[item.rule]);
+    }
+    byRule[item.rule].descriptions.push(item.description);
+  });
+  return merged;
+}
+
 // --------------------------------------------------------------------------
 // Link inspector: where does each link REALLY go? (pure, never fetches anything)
 // --------------------------------------------------------------------------
@@ -247,7 +264,17 @@ const TWO_PART_SUFFIXES = ['co.uk', 'org.uk', 'ac.uk', 'gov.uk', 'com.au', 'net.
   'ac.il', 'co.jp', 'co.in', 'com.br', 'com.mx', 'com.tr', 'com.cn', 'co.za'];
 const SHORTENER_DOMAINS = ['bit.ly', 'tinyurl.com', 't.co', 'goo.gl', 'ow.ly', 'is.gd', 'buff.ly', 'cutt.ly', 'rebrand.ly',
   'shorturl.at', 'tiny.cc', 'rb.gy'];
-const LINK_STATUS_ORDER = { mismatch: 0, ip: 1, lookalike: 2, shortener: 3, ok: 4 };
+/**
+ * Click-tracking domains of mainstream newsletter services: legit newsletters wrap every link in these.
+ * Keep in sync with LinkAnalyzer.ESP_CLICK_TRACKERS in backend/analyzer.py.
+ */
+const EMAIL_TRACKER_DOMAINS = ['list-manage.com', 'mailchi.mp', 'mandrillapp.com', 'sendgrid.net', 'rs6.net', 'createsend1.com',
+  'cmail19.com', 'cmail20.com', 'hubspotlinks.com', 'exacttarget.com', 'sparkpostmail.com', 'mlsend.com', 'klclick.com'];
+const LINK_STATUS_ORDER = { mismatch: 0, ip: 1, lookalike: 2, shortener: 3, tracker: 4, ok: 5 };
+
+function isEmailTrackerHost(host) {
+  return EMAIL_TRACKER_DOMAINS.some((d) => host === d || host.slice(-(d.length + 1)) === '.' + d);
+}
 
 /** Host of an http(s) URL, lower-cased; '' for anything else (mailto:, javascript:, junk). */
 function hostOf(url) {
@@ -274,7 +301,7 @@ function domainInText(text) {
   return match ? match[1].toLowerCase() : '';
 }
 
-/** Verdict on a single {text, href} link. status: mismatch | ip | lookalike | shortener | ok. */
+/** Verdict on a single {text, href} link. status: mismatch | ip | lookalike | shortener | tracker | ok. */
 function inspectLink(link) {
   const href = link && link.href;
   const text = link && link.text;
@@ -282,7 +309,9 @@ function inspectLink(link) {
   const shownDomain = domainInText(text);
   const real = registrableDomain(host);
   let status = 'ok';
-  if (shownDomain && registrableDomain(shownDomain) !== real) status = 'mismatch';
+  // A newsletter service's click tracker hides the destination by design; it is not a mismatch.
+  if (isEmailTrackerHost(host)) status = 'tracker';
+  else if (shownDomain && registrableDomain(shownDomain) !== real) status = 'mismatch';
   else if (isIpHost(host)) status = 'ip';
   else if (host.split('.').some((label) => label.indexOf('xn--') === 0)) status = 'lookalike';
   else if (SHORTENER_DOMAINS.indexOf(real) !== -1) status = 'shortener';
@@ -291,7 +320,7 @@ function inspectLink(link) {
 
 /**
  * Report for the "Check the links" card: unique web links, worst first, capped at maxRows.
- * { total, suspicious, more, rows: [{status, host, shownDomain, shown}] }
+ * { total, suspicious, tracked, more, rows: [{status, host, shownDomain, shown}] }
  */
 function inspectLinks(links, maxRows) {
   const seen = {};
@@ -304,17 +333,18 @@ function inspectLinks(links, maxRows) {
     seen[key] = true;
     rows.push(row);
   });
-  // Fine links to the same host collapse into one row ("5 links go where they say").
+  // Fine (or newsletter-tracked) links to the same host collapse into one row ("5 links go where they say").
   const grouped = [];
   const okByHost = {};
   rows.forEach((row) => {
-    if (row.status !== 'ok') {
+    const key = row.status + '|' + row.host;
+    if (row.status !== 'ok' && row.status !== 'tracker') {
       grouped.push(row);
-    } else if (okByHost[row.host]) {
-      okByHost[row.host].count += 1;
+    } else if (okByHost[key]) {
+      okByHost[key].count += 1;
     } else {
       row.count = 1;
-      okByHost[row.host] = row;
+      okByHost[key] = row;
       grouped.push(row);
     }
   });
@@ -322,7 +352,8 @@ function inspectLinks(links, maxRows) {
   const cap = maxRows > 0 ? maxRows : 8;
   return {
     total: rows.length,
-    suspicious: rows.filter((r) => r.status !== 'ok').length,
+    suspicious: rows.filter((r) => r.status !== 'ok' && r.status !== 'tracker').length,
+    tracked: rows.filter((r) => r.status === 'tracker').length,
     more: Math.max(0, grouped.length - cap),
     rows: grouped.slice(0, cap),
   };
@@ -334,12 +365,14 @@ function linkSummaryText(report) {
   const bad = report && report.suspicious ? report.suspicious : 0;
   if (total === 0) return 'No web links in this email.';
   const noun = total === 1 ? 'link' : 'links';
+  const tracked = report && report.tracked ? report.tracked : 0;
+  if (bad === 0 && tracked > 0) return total + ' ' + noun + ' · ' + tracked + ' routed through a mailing service.';
   if (bad === 0) return total + ' ' + noun + ' · none hides where it goes.';
   return total + ' ' + noun + ' · <font color="#D32F2F"><b>' + bad + ' worth a closer look</b></font>';
 }
 
-const LINK_STATUS_SYMBOL = { mismatch: '✕', ip: '✕', lookalike: '✕', shortener: '⚠', ok: '✓' };
-const LINK_STATUS_COLOR = { mismatch: '#D32F2F', ip: '#D32F2F', lookalike: '#D32F2F', shortener: '#C98A2C', ok: '#2E7D6B' };
+const LINK_STATUS_SYMBOL = { mismatch: '✕', ip: '✕', lookalike: '✕', shortener: '⚠', tracker: 'ℹ', ok: '✓' };
+const LINK_STATUS_COLOR = { mismatch: '#D32F2F', ip: '#D32F2F', lookalike: '#D32F2F', shortener: '#C98A2C', tracker: '#6B6B6B', ok: '#2E7D6B' };
 
 /** Headline (line 1) of a links-card row, without the symbol. */
 function linkHeadline(row) {
@@ -347,6 +380,7 @@ function linkHeadline(row) {
   if (row.status === 'ip') return 'Numeric address, not a website name';
   if (row.status === 'lookalike') return 'Look-alike characters in the name';
   if (row.status === 'shortener') return 'Shortened link';
+  if (row.status === 'tracker') return row.count > 1 ? row.count + ' newsletter tracking links' : 'Newsletter tracking link';
   return row.count > 1 ? row.count + ' links go where they say' : 'Goes where it says';
 }
 
@@ -357,6 +391,7 @@ function linkRowText(row) {
   const host = '<b>' + safeText(row.host, 60) + '</b>';
   if (row.status === 'ok') return head + host;
   if (row.status === 'shortener') return head + 'Real destination hidden — starts at ' + host;
+  if (row.status === 'tracker') return head + 'Routed through the mailing service at ' + host;
   return head + 'Goes to ' + host;
 }
 
@@ -365,6 +400,6 @@ if (typeof module !== 'undefined') {
     normalizeScore, heroFile, HERO_UNSCANNED_FILE, HERO_TRUSTED_FILE, isPublicMailDomain, isTrustedBy, assetUrl, stateForResult, presentationFor,
     topFinding, topFindings, sortFindings, checkStatuses, checkStripText, shortLabelForRule, RULE_SHORT_LABELS, safeText, checksPassed, CHECKS_PERFORMED, SCORE_LEGEND,
     hostOf, registrableDomain, domainInText, inspectLink, inspectLinks, linkSummaryText, linkRowText, linkHeadline, groupedFindings,
-    trustedListView, MAX_TRUSTED_SENDERS, TRUSTED_VISIBLE_ROWS,
+    trustedListView, MAX_TRUSTED_SENDERS, TRUSTED_VISIBLE_ROWS, findingsByRule, isEmailTrackerHost,
   };
 }

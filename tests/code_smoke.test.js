@@ -258,3 +258,30 @@ test('a full trusted list refuses new entries from both the card and the result-
   ctx.onAddTrustedSender({ formInput: { newTrustedEntry: '5@x.example' } }); // already there: not "full"
   assert.ok(strings(calls).includes('"5@x.example" is already trusted.'));
 });
+
+test('details card merges repeated findings of one rule under a single headline', () => {
+  const { ctx, calls } = load();
+  const reasoning = [
+    { category: 'link', rule: 'link_text_href_mismatch', weight: 25, description: "shows 'a.example'" },
+    { category: 'link', rule: 'link_text_href_mismatch', weight: 25, description: "shows 'b.example'" },
+    { category: 'header', rule: 'reply_to_mismatch', weight: 15, description: 'one <b>' },
+  ];
+  ctx.buildDetailsCard({ verdict: 'Suspicious', score: 55, reasoning });
+  const texts = strings(calls);
+  const wisdom = vm.runInContext('RULE_WISDOM', ctx);
+  assert.strictEqual(texts.filter((t) => t.startsWith(wisdom.link_text_href_mismatch)).length, 1, 'one headline');
+  assert.ok(texts.includes(wisdom.link_text_href_mismatch + ' (×2)'));
+  assert.ok(texts.some((t) => t.includes("• shows &#39;a.example&#39;") || t.includes("• shows 'a.example'")));
+  assert.ok(texts.some((t) => t.includes("b.example")));
+  assert.ok(texts.includes('one &lt;b&gt;'), 'single finding keeps its bottom label, escaped');
+});
+
+test('Reply-To is sent to the backend as a bare address, without the display name', () => {
+  let sent = null;
+  const s = services({ backend: { body: { score: 0, verdict: 'Safe', reasoning: [] } }, onFetch: (u, o) => { sent = JSON.parse(o.payload); } });
+  const base = s.globals.GmailApp.getMessageById();
+  s.globals.GmailApp.getMessageById = () => ({ ...base, getReplyTo: () => 'Tel Aviv Salon <info@tlvsalon.com>' });
+  const { ctx } = load(s.globals);
+  open(ctx);
+  assert.strictEqual(sent.reply_to, 'info@tlvsalon.com');
+});

@@ -171,11 +171,15 @@ class HeaderAnalyzer(Analyzer):
         findings.extend(self._auth_results_findings(email.headers))
         return findings
 
-    @staticmethod
-    def _domain(address: str) -> str:
-        if not address or "@" not in address:
+    #: First bare address inside a header value such as 'Name <a@b.com>' or 'a@b.com, c@d.com'.
+    ADDRESS_RE = re.compile(r"[^\s<>\"',;:]+@[^\s<>\"',;:]+")
+
+    @classmethod
+    def _domain(cls, address: str) -> str:
+        match = cls.ADDRESS_RE.search(address or "")
+        if not match:
             return ""
-        return address.rsplit("@", 1)[-1].strip().lower().rstrip(".")
+        return match.group().rsplit("@", 1)[-1].strip().lower().rstrip(".")
 
     def _auth_results_findings(self, headers: Dict[str, str]) -> List[Finding]:
         findings: List[Finding] = []
@@ -374,6 +378,25 @@ class LinkAnalyzer(Analyzer):
         "bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly", "is.gd", "buff.ly",
         "rebrand.ly", "cutt.ly", "shorturl.at",
     }
+    #: Click-tracking domains of mainstream email/newsletter services. Legitimate newsletters wrap
+    #: *every* link in these, so "text says eventbrite.com, link goes to list-manage.com" is normal
+    #: and must not count as a text/href mismatch. Matched on the host or any of its subdomains.
+    #: Keep in sync with EMAIL_TRACKER_DOMAINS in Presentation.gs (the "Check the links" card).
+    ESP_CLICK_TRACKERS: Set[str] = {
+        "list-manage.com",  # Mailchimp
+        "mailchi.mp",  # Mailchimp
+        "mandrillapp.com",  # Mailchimp transactional
+        "sendgrid.net",  # Twilio SendGrid
+        "rs6.net",  # Constant Contact
+        "createsend1.com",  # Campaign Monitor
+        "cmail19.com",  # Campaign Monitor
+        "cmail20.com",  # Campaign Monitor
+        "hubspotlinks.com",  # HubSpot
+        "exacttarget.com",  # Salesforce Marketing Cloud
+        "sparkpostmail.com",  # SparkPost
+        "mlsend.com",  # MailerLite
+        "klclick.com",  # Klaviyo
+    }
     #: Small, conservative list of TLDs heavily abused for phishing (cheap or
     #: free registration, or confusable with file names like .zip/.mov).
     #: Matched against the last label of a link's host only.
@@ -400,7 +423,12 @@ class LinkAnalyzer(Analyzer):
                 continue
 
             text_domain = self._extract_domain_from_text(link.text)
-            if text_domain and text_domain != href_domain and mismatches_reported < 2:
+            if (
+                text_domain
+                and text_domain != href_domain
+                and not self._is_click_tracker(href_domain)
+                and mismatches_reported < 2
+            ):
                 findings.append(
                     self._finding(
                         rule="link_text_href_mismatch",
@@ -450,6 +478,9 @@ class LinkAnalyzer(Analyzer):
                 findings.append(entropy_finding)
 
         return findings
+
+    def _is_click_tracker(self, host: str) -> bool:
+        return any(host == d or host.endswith("." + d) for d in self.ESP_CLICK_TRACKERS)
 
     def _entropy_finding(self, domain: str) -> Optional[Finding]:
         labels = [lbl for lbl in domain.split(".")[:-1] if len(lbl) >= self.ENTROPY_MIN_LABEL_LENGTH]

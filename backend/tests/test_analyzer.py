@@ -396,3 +396,64 @@ def test_suspicious_tld_respects_link_cap():
     assert sum(f.weight for f in link) > EmailRiskAnalyzer.CATEGORY_CAPS["link"]
     assert {f.category for f in findings} == {"link"}
     assert score == EmailRiskAnalyzer.CATEGORY_CAPS["link"]
+
+
+# --------------------------------------------------------------------------- #
+# Regression: newsletter false positive (Mailchimp + display-name Reply-To)
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize(
+    "reply_to",
+    ["Tel Aviv Salon <info@tlvsalon.com>", '"Salon" <INFO@TLVSALON.COM>', "info@tlvsalon.com, other@tlvsalon.com"],
+)
+def test_reply_to_with_display_name_same_domain_not_flagged(reply_to):
+    email = make_email(sender=SenderInfo(email="news@tlvsalon.com", display_name="Salon"), reply_to=reply_to)
+    assert "reply_to_mismatch" not in {f.rule for f in HeaderAnalyzer().analyze(email)}
+
+
+def test_reply_to_with_display_name_other_domain_still_flagged():
+    email = make_email(sender=SenderInfo(email="ceo@example.com"), reply_to="CEO <ceo@evil-example.net>")
+    found = [f for f in HeaderAnalyzer().analyze(email) if f.rule == "reply_to_mismatch"]
+    assert len(found) == 1
+    assert "'evil-example.net'" in found[0].description
+
+
+@pytest.mark.parametrize(
+    "href",
+    [
+        "https://tlvsalon.us7.list-manage.com/track/click?u=abc&id=1",
+        "https://mailchi.mp/tlvsalon/invite",
+        "https://u123.ct.sendgrid.net/ls/click?upn=x",
+        "https://r20.rs6.net/tn.jsp?f=x",
+    ],
+)
+def test_newsletter_click_tracker_is_not_a_text_href_mismatch(href):
+    email = make_email(links=[LinkInfo(text="bibinetanyahu.eventbrite.com", href=href)])
+    assert "link_text_href_mismatch" not in {f.rule for f in LinkAnalyzer().analyze(email)}
+
+
+def test_lookalike_of_a_tracker_domain_still_counts_as_mismatch():
+    email = make_email(links=[LinkInfo(text="paypal.com", href="https://list-manage.com.evil.example/x")])
+    assert "link_text_href_mismatch" in {f.rule for f in LinkAnalyzer().analyze(email)}
+
+
+def test_tracked_link_still_gets_other_link_rules():
+    email = make_email(links=[LinkInfo(text="Click here", href="https://x.list-manage.top/a")])
+    rules = {f.rule for f in LinkAnalyzer().analyze(email)}
+    assert "suspicious_tld" in rules  # not a tracker (wrong TLD), and TLD rule unaffected
+
+
+def test_mailchimp_newsletter_from_screenshot_is_not_malicious():
+    email = make_email(
+        sender=SenderInfo(email="info@tlvsalon.com", display_name="Tel Aviv International Salon"),
+        reply_to="Tel Aviv International Salon <info@tlvsalon.com>",
+        subject="INVITATION: Prime Minister Benjamin Netanyahu, Oct 19th",
+        body_text="Leading Ideas, Leading Israel. View this email in your browser. FREE RSVP HERE.",
+        links=[
+            LinkInfo(text="bibinetanyahu.eventbrite.com", href="https://tlvsalon.us7.list-manage.com/track/click?u=1"),
+            LinkInfo(text="www.facebook.com", href="https://tlvsalon.us7.list-manage.com/track/click?u=2"),
+        ],
+    )
+    score, verdict, findings = EmailRiskAnalyzer().analyze(email)
+    assert verdict == "Safe", (score, [f.rule for f in findings])

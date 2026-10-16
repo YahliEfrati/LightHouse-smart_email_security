@@ -242,3 +242,34 @@ test('trustedListView: newest first, count heading, collapses past 5, full at th
   assert.strictEqual(p.trustedListView(full).full, true);
   assert.strictEqual(p.trustedListView(full.slice(1)).full, false);
 });
+
+test('newsletter click trackers are their own neutral status, grouped, and not counted as suspicious', () => {
+  assert.strictEqual(p.inspectLink(L('bibinetanyahu.eventbrite.com', 'https://tlvsalon.us7.list-manage.com/track/click?u=1')).status, 'tracker');
+  assert.strictEqual(p.inspectLink(L('Read more', 'https://u123.ct.sendgrid.net/ls/click?x')).status, 'tracker');
+  assert.strictEqual(p.inspectLink(L('paypal.com', 'https://list-manage.com.evil.example/x')).status, 'mismatch', 'look-alike is not a tracker');
+  const r = p.inspectLinks([
+    L('www.facebook.com', 'https://a.us7.list-manage.com/track/click?1'),
+    L('RSVP', 'https://a.us7.list-manage.com/track/click?2'),
+    L('https://paypal.com', 'https://evil.example/x'),
+  ], 8);
+  assert.strictEqual(r.suspicious, 1);
+  assert.strictEqual(r.tracked, 2);
+  assert.deepStrictEqual(r.rows.map((x) => [x.status, x.count || 0]), [['mismatch', 0], ['tracker', 2]]);
+  assert.ok(p.linkRowText(r.rows[1]).includes('2 newsletter tracking links'));
+});
+
+test('link summary never says nothing hides when links go through a tracker', () => {
+  const s = p.linkSummaryText({ total: 3, suspicious: 0, tracked: 3 });
+  assert.ok(!/none hides/.test(s));
+  assert.ok(s.includes('mailing service'));
+});
+
+test('findingsByRule merges one rule into one entry, keeps every description and first-seen order', () => {
+  const m = p.findingsByRule([
+    { category: 'link', rule: 'link_text_href_mismatch', description: 'a' },
+    { category: 'link', rule: 'url_shortener', description: 'b' },
+    { category: 'link', rule: 'link_text_href_mismatch', description: 'c' },
+  ]);
+  assert.deepStrictEqual(m.map((x) => [x.rule, x.descriptions]), [['link_text_href_mismatch', ['a', 'c']], ['url_shortener', ['b']]]);
+  assert.deepStrictEqual(p.findingsByRule(undefined), []);
+});
