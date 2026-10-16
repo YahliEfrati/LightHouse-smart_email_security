@@ -99,14 +99,17 @@ function buildHomepageCard() {
     .setHeader(
       CardService.newCardHeader()
         .setTitle(APP_SHORT_NAME)
-        .setSubtitle('A steady light in a sea of suspicious email')
+        // Gmail's top bar shows the manifest name on one line only (the full name was cut off there),
+        // so the full product name lives here, where the subtitle wraps.
+        .setSubtitle('Smart Email Security')
         .setImageUrl(assetUrl('icon_safe.png'))
         .setImageStyle(CardService.ImageStyle.SQUARE)
     )
     .addSection(
       CardService.newCardSection().addWidget(
         CardService.newTextParagraph().setText(
-          'Open any email and Lighthouse will quietly keep watch, scanning it for ' +
+          '<i>A steady light in a sea of suspicious email.</i><br><br>' +
+            'Open any email and Lighthouse will quietly keep watch, scanning it for ' +
             'phishing and other malicious-content indicators. Nothing is scanned until you ' +
             'open a message.'
         )

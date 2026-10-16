@@ -301,3 +301,11 @@ test('an untrusted sender posing as a trusted contact gets a raised score and a 
   assert.ok(texts.some((t) => /<b>50<\/b><\/font> \/ 100/.test(t)), 'score raised from 10 to 50');
   assert.ok(urlsOf(calls).some((u) => u.endsWith('hero_50.gif')));
 });
+
+test('homepage header carries the full product name; the tagline moves into the intro', () => {
+  const { ctx, calls } = load(services({ backend: { body: {} } }).globals);
+  ctx.onHomepage({});
+  const texts = strings(calls);
+  assert.ok(calls.some(([m, a]) => m === 'setSubtitle' && a[0] === 'Smart Email Security'));
+  assert.ok(texts.some((t) => t.startsWith('<i>A steady light in a sea of suspicious email.</i>')));
+});
