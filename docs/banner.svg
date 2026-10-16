@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Lighthouse — Smart Email Security</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#05192A"/>
+      <stop offset="0.65" stop-color="#0B3D59"/>
+      <stop offset="1" stop-color="#145A7A"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFF4C2" stop-opacity="0.85"/>
+      <stop offset="0.35" stop-color="#FFE9A0" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#FFE9A0" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFE38A" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#FFE38A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0E4A68"/>
+      <stop offset="1" stop-color="#062638"/>
+    </linearGradient>
+  </defs>
+
+  <!-- night sky -->
+  <rect width="1280" height="320" fill="url(#sky)"/>
+  <g fill="#FFFFFF">
+    <circle cx="420" cy="38" r="1.4" opacity="0.8"/><circle cx="520" cy="70" r="1" opacity="0.6"/>
+    <circle cx="610" cy="28" r="1.6" opacity="0.9"/><circle cx="700" cy="62" r="1" opacity="0.5"/>
+    <circle cx="820" cy="34" r="1.3" opacity="0.8"/><circle cx="905" cy="80" r="1" opacity="0.6"/>
+    <circle cx="990" cy="26" r="1.5" opacity="0.9"/><circle cx="1080" cy="58" r="1.1" opacity="0.6"/>
+    <circle cx="1170" cy="30" r="1.4" opacity="0.8"/><circle cx="1235" cy="74" r="1" opacity="0.5"/>
+    <circle cx="70" cy="40" r="1.2" opacity="0.7"/><circle cx="300" cy="24" r="1" opacity="0.6"/>
+    <circle cx="360" cy="86" r="1.2" opacity="0.5"/><circle cx="1120" cy="112" r="0.9" opacity="0.5"/>
+  </g>
+
+  <!-- the beam, sweeping across the banner -->
+  <polygon points="200,99 1280,-40 1280,52 200,111" fill="url(#beam)"/>
+  <circle cx="200" cy="105" r="46" fill="url(#glow)"/>
+
+  <!-- sea -->
+  <path d="M0,262 C80,252 160,272 240,262 S400,252 480,262 S640,272 720,262 S880,252 960,262 S1120,272 1200,262 L1280,260 L1280,320 L0,320 Z" fill="url(#sea)"/>
+  <path d="M0,280 C90,272 170,290 260,280 S440,270 530,280 S710,290 800,280 S980,270 1070,280 S1200,288 1280,280" fill="none" stroke="#2C7FA6" stroke-width="1.5" opacity="0.6"/>
+  <path d="M0,298 C110,292 190,306 300,298 S520,290 630,298 S850,306 960,298 S1170,292 1280,298" fill="none" stroke="#2C7FA6" stroke-width="1.2" opacity="0.45"/>
+
+  <!-- rocks -->
+  <path d="M120,266 L150,236 L185,240 L215,226 L255,238 L285,262 Z" fill="#0A2433"/>
+
+  <!-- lighthouse tower: tapered, white with red bands -->
+  <polygon points="178,236 222,236 214,128 186,128" fill="#FFFFFF"/>
+  <polygon points="183.4,176 216.6,176 215.1,158 184.9,158" fill="#D32F2F"/>
+  <polygon points="180.6,212 219.4,212 218.0,194 182.0,194" fill="#D32F2F"/>
+  <rect x="181" y="128" width="38" height="5" rx="1.5" fill="#37474F"/>
+  <!-- lamp room -->
+  <rect x="188" y="100" width="24" height="28" fill="#FDB813"/>
+  <rect x="188" y="100" width="24" height="28" fill="none" stroke="#37474F" stroke-width="2"/>
+  <line x1="200" y1="100" x2="200" y2="128" stroke="#37474F" stroke-width="1.5"/>
+  <polygon points="184,100 216,100 200,84" fill="#37474F"/>
+  <circle cx="200" cy="82" r="3" fill="#37474F"/>
+  <!-- door -->
+  <rect x="195" y="220" width="10" height="16" rx="5" fill="#37474F"/>
+
+  <!-- wordmark -->
+  <text x="330" y="168" font-size="76" font-weight="700" fill="#FFFFFF" letter-spacing="1">Lighthouse</text>
+  <text x="334" y="208" font-size="26" font-weight="600" fill="#FDB813" letter-spacing="3">SMART EMAIL SECURITY</text>
+  <text x="334" y="244" font-size="20" font-style="italic" fill="#CFE3EE">A steady light in a sea of suspicious email</text>
+</svg>

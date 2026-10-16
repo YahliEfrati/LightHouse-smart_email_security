@@ -102,7 +102,7 @@ function buildHomepageCard() {
         // Gmail's top bar shows the manifest name on one line only (the full name was cut off there),
         // so the full product name lives here, where the subtitle wraps.
         .setSubtitle('Smart Email Security')
-        .setImageUrl(assetUrl('icon_safe.png'))
+        .setImageUrl(assetUrl('logo.png'))
         .setImageStyle(CardService.ImageStyle.SQUARE)
     )
     .addSection(

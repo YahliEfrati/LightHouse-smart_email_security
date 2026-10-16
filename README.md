@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/banner.svg" alt="Lighthouse: Smart Email Security. A steady light in a sea of suspicious email." width="100%"></p>
+
 # Lighthouse — Smart Email Security (Gmail Add-on)
 
 Lighthouse is a Gmail add-on that scores the email you have open from 0 to 100, gives a clear verdict
@@ -5,7 +7,6 @@ Lighthouse is a Gmail add-on that scores the email you have open from 0 to 100, 
 does the analysis with explainable, local heuristics: no email content is sent to any analysis service,
 reputation lookup or LLM (the demo's tunnel is the one third party in the path; see [Security](#security)).
 
-<p align="center"><img src="assets/hero_85.gif" width="420" alt="Malicious result band: red, score gauge near the top"></p>
 
 **At a glance**
 
@@ -82,6 +83,8 @@ service. The contact list never leaves Google, so the check that needs it runs i
 ## What the user sees
 
 The card's loudness matches the risk: safe email stays quiet so a dangerous one can stand out.
+
+<p align="center"><img src="assets/hero_85.gif" width="420" alt="Malicious result band: red, the beam sweeps across, score gauge near the top"></p>
 
 | Verdict | Card |
 |---|---|
@@ -380,9 +383,9 @@ python -m unittest discover -s tools/tests
 │   ├── config.py          API key creation and loading (backend/.env)
 │   ├── tests/             Unit and API tests
 │   └── eval/              Independent 50-email test set, runner and results
-├── assets/                Generated card images (animated score GIFs, icons), served from GitHub
+├── assets/                Card images (animated score GIFs, icons) and the add-on logo, served from GitHub
 ├── tools/                 generate_assets.py (regenerates assets/) and its tests
-└── docs/                  System design diagram, evaluation report
+└── docs/                  System design diagram, evaluation report, banner and logo sources (SVG)
 ```
 
 ## Known limitations

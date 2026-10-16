@@ -11,7 +11,7 @@
   ],
   "gmail": {
     "name": "Lighthouse",
-    "logoUrl": "https://raw.githubusercontent.com/YahliEfrati/LightHouse-smart_email_security/main/assets/icon_safe.png",
+    "logoUrl": "https://raw.githubusercontent.com/YahliEfrati/LightHouse-smart_email_security/main/assets/logo.png",
     "primaryColor": "#0B3D59",
     "secondaryColor": "#0B3D59",
     "contextualTriggers": [
