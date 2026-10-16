@@ -84,7 +84,11 @@ service. The contact list never leaves Google, so the check that needs it runs i
 
 The card's loudness matches the risk: safe email stays quiet so a dangerous one can stand out.
 
-<p align="center"><img src="assets/hero_85.gif" width="420" alt="Malicious result band: red, the beam sweeps across, score gauge near the top"></p>
+<p align="center">
+  <img src="docs/screenshots/safe.png" width="32%" alt="Safe: green All clear band, score 0, every check passed, no findings listed">
+  <img src="docs/screenshots/suspicious.png" width="32%" alt="Suspicious: amber Check before you act band, score 65, three one-line findings">
+  <img src="docs/screenshots/malicious.png" width="32%" alt="Malicious: red Danger band, score 70 for a Hebrew money request from a trusted but personal address">
+</p>
 
 | Verdict | Card |
 |---|---|
@@ -110,6 +114,11 @@ The band at the top is an animated lighthouse beam that sweeps twice and stops. 
   the whole mailbox), which we deliberately do not request, and Gmail exposes no "report phishing" link or
   API. So the red card says exactly where Gmail's own button is (⋮ next to Reply → Report phishing), and
   **Learn about phishing** opens Google's guide.
+
+<p align="center">
+  <img src="docs/screenshots/details.png" width="32%" alt="View details: each finding in plain language with the evidence quoted from the email">
+  <img src="docs/screenshots/links.png" width="32%" alt="Check the links: one link's text names a different site than it opens; five go where they say">
+</p>
 
 There is deliberately no "this is a mistake" button: an earlier version had one that showed "thanks,
 this helps calibrate" and recorded nothing, which is an empty promise. A real feedback loop is in the
@@ -385,7 +394,7 @@ python -m unittest discover -s tools/tests
 │   └── eval/              Independent 50-email test set, runner and results
 ├── assets/                Card images (animated score GIFs, icons) and the add-on logo, served from GitHub
 ├── tools/                 generate_assets.py (regenerates assets/) and its tests
-└── docs/                  System design diagram, evaluation report, banner and logo sources (SVG)
+└── docs/                  System design diagram, evaluation report, card screenshots, banner and logo sources (SVG)
 ```
 
 ## Known limitations
