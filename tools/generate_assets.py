@@ -1,4 +1,4 @@
-"""Generates the Lighthouse add-on's static image assets (icons and one "hero" image per score).
+"""Generates the Lighthouse add-on's static image assets (icons and one color-band image per score).
 
 Run from the repo root:  python tools/generate_assets.py
 Output goes to ./assets/ and is committed, because Gmail card images must be loaded
@@ -26,6 +26,7 @@ HEADLINES = {
     "suspicious": "CHECK BEFORE YOU ACT",
     "malicious": "DANGER — LIKELY MALICIOUS",
     "unscanned": "NOT SCANNED",
+    "trusted": "TRUSTED SENDER",
 }
 NAVY, YELLOW, WHITE, TOWER_RED, STEEL = (11, 61, 89), (253, 184, 19), (255, 255, 255), (211, 47, 47), (55, 71, 79)
 GAUGE_STOPS = ((0, STATE_COLORS["safe"]), (35, STATE_COLORS["suspicious"]), (70, STATE_COLORS["malicious"]))
@@ -98,35 +99,30 @@ def _fit_font(draw: ImageDraw.ImageDraw, text: str, size: int, max_width: int) -
     return font
 
 
-def render_hero(score: Optional[int]) -> Image.Image:
-    """600x230 hero: state-colored block with the verdict, a big score and the gradient gauge.
+def render_hero(score: Optional[int], trusted: bool = False) -> Image.Image:
+    """600x146 band: state color, lighthouse, verdict headline and the gradient gauge.
 
-    score=None renders the grey "not scanned" variant (no score, no gauge).
+    The score itself is rendered as native text by the add-on (it feels part of the UI),
+    so the image only carries color + gauge. score=None renders the grey "not scanned" variant; trusted=True the green "trusted sender" variant (score 0).
     """
-    w, h = 600, 230
-    state = "unscanned" if score is None else state_for_score(score)
-    img = Image.new("RGB", (w * SS, h * SS), STATE_COLORS[state])
+    w, h = 600, 146
+    state = "trusted" if trusted else "unscanned" if score is None else state_for_score(score)
+    if trusted:
+        score = 0
+    img = Image.new("RGB", (w * SS, h * SS), STATE_COLORS["safe" if trusted else state])
     d = ImageDraw.Draw(img)
-    icon = render_icon(state).resize((60 * SS, 60 * SS), Image.LANCZOS)
+    icon = render_icon("safe" if trusted else state).resize((60 * SS, 60 * SS), Image.LANCZOS)
     img.paste(icon, (24 * SS, 16 * SS), icon)
     head = _fit_font(d, HEADLINES[state], 26 * SS, (w - 120) * SS)
     d.text((100 * SS, 46 * SS), HEADLINES[state], font=head, fill=WHITE, anchor="lm")
 
     if score is None:
-        sub = _font(22 * SS)
-        d.text((26 * SS, 140 * SS), "No score available.", font=sub, fill=WHITE, anchor="lm")
-        d.text((26 * SS, 182 * SS), "Use your usual caution.", font=sub, fill=WHITE, anchor="lm")
+        d.text((24 * SS, 108 * SS), "No score available — use your usual caution.", font=_fit_font(d, "No score available — use your usual caution.", 20 * SS, (w - 48) * SS), fill=WHITE, anchor="lm")
         return img.resize((w, h), Image.LANCZOS)
 
-    big = _font(92 * SS)
-    d.text((24 * SS, 148 * SS), str(score), font=big, fill=WHITE, anchor="ls")
-    num_w = d.textlength(str(score), font=big) / SS
-    d.text(((24 + num_w + 10) * SS, 122 * SS), "/ 100", font=_font(24 * SS), fill=WHITE, anchor="ls")
-    d.text(((24 + num_w + 10) * SS, 148 * SS), "RISK SCORE", font=_font(14 * SS), fill=WHITE, anchor="ls")
-
     # Gauge on a white pill so the gradient keeps its true colors on any state color.
-    d.rounded_rectangle((24 * SS, 164 * SS, 576 * SS, 208 * SS), radius=22 * SS, fill=WHITE)
-    x0, x1, y0, y1 = 38, 562, 176, 196
+    d.rounded_rectangle((24 * SS, 88 * SS, 576 * SS, 132 * SS), radius=22 * SS, fill=WHITE)
+    x0, x1, y0, y1 = 38, 562, 100, 120
     cols = x1 - x0
     alert = score > 90
     for i in range(cols * SS):
@@ -152,6 +148,7 @@ def main(out_dir: Path) -> None:
     for score in range(0, 101):
         render_hero(score).save(out_dir / f"hero_{score}.png")
     render_hero(None).save(out_dir / "hero_unscanned.png")
+    render_hero(0, trusted=True).save(out_dir / "hero_trusted.png")
 
 
 if __name__ == "__main__":

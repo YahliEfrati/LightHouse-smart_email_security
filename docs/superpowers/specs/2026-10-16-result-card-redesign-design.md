@@ -64,3 +64,16 @@ Findings from the live screenshots, and what changed:
 - The card was noisy. The first screen now holds only: **hero image**, one plain-language finding, a "What to do" line (malicious only) and one button. "Trust this sender" and "I think this is a mistake" moved to the card's overflow menu; the sender name and technical details were removed from the first screen (details stay in the details card).
 - **Hero image replaces banner + gauge images**: one pre-rendered 600x230 PNG per integer score 0-100 (`hero_<score>.png`) with the verdict color, big score and gradient gauge, plus `hero_unscanned.png`. Above 90 the gauge turns solid red. Colors follow the backend thresholds (35/70); the generator mirrors them in `state_for_score`.
 - Malicious copy changed from "LIKELY PHISHING" to **"LIKELY MALICIOUS"** (the checks cover attachments and obfuscation, not just phishing); the button is "Report this email".
+
+## Revision 3 (second live test)
+The all-in-one hero image felt frozen (the score looked pasted in) and the card felt empty. Changes:
+- The image is now a slim **color band** (lighthouse, headline, gradient gauge; 600x146, still one per score) **without the number**.
+- The score is **native text** ("RISK SCORE 35 / 100", colored by state) with a "Scanned just now" line.
+- A compact **check strip** shows per-category status: `✓ Sender · ⚠ Message · ✓ Links · ✓ Files` (alert when a category's summed weight >= 35).
+- Up to **3 findings** (plain-language, with category icons) and "+N more in the details".
+- Button color: `secondaryColor` set to the brand navy for contrast.
+
+## Revision 4 (trusted senders)
+- **Trust sender** and **This is a mistake** are back on the card as a quiet side-by-side button row; the ⋮ menu now holds **Trusted senders** (add/remove list).
+- A trusted sender shows a green "TRUSTED SENDER" card with risk 0 (`hero_trusted.png`), but is **still scanned silently**; a *Malicious* result overrides it with the red card and a warning (forged-sender protection). No trust button on a likely-malicious email.
+- "Trust sender" adds the full address only; free-mail provider domains are refused as whole-domain entries and ignored if stored (`PUBLIC_MAIL_DOMAINS`, `isTrustedBy`).

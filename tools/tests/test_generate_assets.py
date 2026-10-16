@@ -30,29 +30,34 @@ class GenerateAssetsTest(unittest.TestCase):
         for score, color in ((10, ga.STATE_COLORS["safe"]), (50, ga.STATE_COLORS["suspicious"]),
                              (80, ga.STATE_COLORS["malicious"])):
             img = ga.render_hero(score).convert("RGB")
-            self.assertEqual(img.size, (600, 230))
+            self.assertEqual(img.size, (600, 146))
             self.assertTrue(close(img.getpixel((580, 10)), color), score)
         self.assertTrue(close(ga.render_hero(None).convert("RGB").getpixel((580, 10)), ga.STATE_COLORS["unscanned"]))
 
+    def test_trusted_band_is_green_with_empty_gauge(self):
+        img = ga.render_hero(0, trusted=True).convert("RGB")
+        self.assertEqual(img.size, (600, 146))
+        self.assertTrue(close(img.getpixel((580, 10)), ga.STATE_COLORS["safe"]))
+
     def test_gauge_filled_then_faded(self):
         img = ga.render_hero(45).convert("RGB")
-        filled, faded = img.getpixel((100, 186)), img.getpixel((540, 186))
+        filled, faded = img.getpixel((100, 110)), img.getpixel((540, 110))
         self.assertLess(sum(filled), sum(faded))
 
     def test_above_90_gauge_is_solid_red(self):
         img = ga.render_hero(95).convert("RGB")
         for x in (60, 200, 340, 420):
-            self.assertTrue(close(img.getpixel((x, 186)), RED), x)
+            self.assertTrue(close(img.getpixel((x, 110)), RED), x)
         mid = ga.render_hero(90).convert("RGB")
-        self.assertFalse(close(mid.getpixel((200, 186)), RED))
+        self.assertFalse(close(mid.getpixel((200, 110)), RED))
 
     def test_main_writes_all_files(self):
         with tempfile.TemporaryDirectory() as d:
             out = Path(d)
             ga.main(out)
             files = {p.name for p in out.glob("*.png")}
-            self.assertEqual(len(files), 4 + 101 + 1)
-            for name in ("hero_0.png", "hero_100.png", "hero_unscanned.png", "icon_safe.png"):
+            self.assertEqual(len(files), 4 + 101 + 2)
+            for name in ("hero_0.png", "hero_100.png", "hero_unscanned.png", "hero_trusted.png", "icon_safe.png"):
                 self.assertIn(name, files)
             with Image.open(out / "icon_safe.png") as im:
                 self.assertEqual(im.size, (128, 128))

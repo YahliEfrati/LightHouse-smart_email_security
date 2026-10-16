@@ -69,6 +69,9 @@ const STATE_COLORS = {
   unscanned: '#8A949B',
 };
 
+/** How many findings the first screen shows before pointing to the details card. */
+const MAX_FINDINGS_ON_CARD = 3;
+
 /** Key used in CacheService to stash the last analysis for the details card. */
 const CACHE_KEY_PREFIX = 'last_analysis_';
 
@@ -120,7 +123,7 @@ function buildAddOn(e) {
     const email = extractEmailData(message);
     const trusted = isTrustedSender(email.senderEmail);
 
-    // Trusted senders are still scanned: a spoofed "trusted" address must not bypass the checks.
+    // Trusted senders are still scanned silently: a forged "trusted" address must not bypass the checks.
     const result = callBackend(email);
     if (result.error) {
       return [buildNotScannedCard()];
@@ -134,7 +137,8 @@ function buildAddOn(e) {
       1800 // 30 minutes
     );
 
-    if (trusted && stateForResult(result) === 'safe') {
+    // Trusted sender: calm "0" card, unless the scan says the email is dangerous.
+    if (trusted && stateForResult(result) !== 'malicious') {
       return [buildTrustedSenderCard(email)];
     }
     return [buildResultCard(email, result, messageId, trusted)];
@@ -288,19 +292,9 @@ function saveTrustedSenders(list) {
   PropertiesService.getUserProperties().setProperty(TRUSTED_SENDERS_KEY, JSON.stringify(list));
 }
 
-/**
- * Returns true if senderEmail matches a trusted full address
- * (alice@example.com) or a trusted bare domain (example.com).
- */
+/** True if the sender is on the user's trusted list (see isTrustedBy for the matching rules). */
 function isTrustedSender(senderEmail) {
-  if (!senderEmail) return false;
-  const email = senderEmail.toLowerCase().trim();
-  const domain = email.split('@')[1] || '';
-  const trusted = getTrustedSenders();
-  return trusted.some((entry) => {
-    const normalized = entry.toLowerCase().trim();
-    return normalized === email || normalized === domain;
-  });
+  return isTrustedBy(senderEmail, getTrustedSenders());
 }
 
 /** Very small validation: either a full address or a bare domain. */
@@ -309,8 +303,8 @@ function isValidSenderEntry(entry) {
 }
 
 /**
- * Action handler: adds the email/domain typed into the "Manage Trusted
- * Senders" card's text input to the user's whitelist.
+ * Action handler: adds the email/domain typed into the "Trusted senders" card's text input
+ * to the user's list. Whole free-mail provider domains (gmail.com...) are refused.
  */
 function onAddTrustedSender(e) {
   const entry = ((e.formInput && e.formInput.newTrustedEntry) || '').toLowerCase().trim();
@@ -320,6 +314,8 @@ function onAddTrustedSender(e) {
     notificationText = 'Please enter an email address or domain first.';
   } else if (!isValidSenderEntry(entry)) {
     notificationText = '"' + entry + '" doesn\'t look like a valid email or domain.';
+  } else if (entry.indexOf('@') === -1 && isPublicMailDomain(entry)) {
+    notificationText = 'Trusting all of ' + entry + ' would trust millions of strangers. Add specific addresses instead.';
   } else {
     const trusted = getTrustedSenders();
     if (trusted.indexOf(entry) === -1) {
@@ -350,16 +346,17 @@ function onRemoveTrustedSender(e) {
 }
 
 /**
- * Action handler: one-tap "Trust This Sender" button shown on a scan-result
- * card. Adds the current message's sender to the whitelist and re-renders
- * the current message's card as a Trusted Sender card.
+ * Action handler: one-tap "Trust sender" on a scan-result card. Adds the sender's full address
+ * (never the whole domain) and re-renders the card as a Trusted sender card.
  */
 function onTrustThisSender(e) {
-  const senderEmail = e.parameters.senderEmail;
-  const trusted = getTrustedSenders();
-  if (trusted.indexOf(senderEmail) === -1) {
-    trusted.push(senderEmail);
-    saveTrustedSenders(trusted);
+  const senderEmail = (e.parameters.senderEmail || '').toLowerCase().trim();
+  if (senderEmail) {
+    const trusted = getTrustedSenders();
+    if (trusted.indexOf(senderEmail) === -1) {
+      trusted.push(senderEmail);
+      saveTrustedSenders(trusted);
+    }
   }
 
   const email = {
@@ -369,9 +366,21 @@ function onTrustThisSender(e) {
 
   return CardService.newActionResponseBuilder()
     .setNavigation(CardService.newNavigation().updateCard(buildTrustedSenderCard(email)))
-    .setNotification(
-      CardService.newNotification().setText(senderEmail + ' is now a familiar, trusted face to the Lighthouse.')
+    .setNotification(CardService.newNotification().setText(senderEmail + ' was added to your trusted senders.'))
+    .build();
+}
+
+/** Action handler: "Remove from trusted" on the Trusted sender card. */
+function onUntrustThisSender(e) {
+  const senderEmail = (e.parameters.senderEmail || '').toLowerCase().trim();
+  saveTrustedSenders(getTrustedSenders().filter((item) => item !== senderEmail));
+  return CardService.newActionResponseBuilder()
+    .setNavigation(
+      CardService.newNavigation().updateCard(
+        buildSimpleMessageCard('Removed from trusted', senderEmail + ' is no longer trusted. Re-open the email for a normal scan.')
+      )
     )
+    .setNotification(CardService.newNotification().setText('Removed from your trusted senders.'))
     .build();
 }
 
@@ -434,32 +443,56 @@ function buildResultCard(email, result, messageId, isTrusted) {
   const view = presentationFor(state);
   const isDanger = state === 'malicious';
   const score = normalizeScore(result.score);
+  const color = STATE_COLORS[state];
 
-  // One hero image carries the verdict color, the big score and the gradient gauge:
-  // the two things that matter most. Everything else is deliberately secondary.
-  const section = CardService.newCardSection().addWidget(
-    CardService.newImage()
-      .setImageUrl(assetUrl(heroFile(score)))
-      .setAltText(view.headline + ' \u2014 risk ' + score + ' out of 100')
-  );
+  // The band carries the verdict color and the gradient gauge; the score itself is native text.
+  const bandSection = CardService.newCardSection()
+    .addWidget(
+      CardService.newImage()
+        .setImageUrl(assetUrl(heroFile(score)))
+        .setAltText(view.headline + ' — risk ' + score + ' out of 100')
+    )
+    .addWidget(
+      CardService.newDecoratedText()
+        .setTopLabel('RISK SCORE')
+        .setText('<font color="' + color + '"><b>' + score + '</b></font> / 100')
+        .setBottomLabel('Scanned just now')
+    )
+    .addWidget(CardService.newTextParagraph().setText(checkStripText(checkStatuses(result.reasoning))));
 
-  const finding = state === 'safe' ? null : topFinding(result.reasoning);
-  if (finding) {
-    section.addWidget(CardService.newTextParagraph().setText(safeText(wisdomForRule(finding.rule), 200)));
-  }
-  if (isTrusted && state !== 'safe') {
-    section.addWidget(
-      CardService.newTextParagraph().setText('<i>This sender is on your trusted list, but something looks off.</i>')
+  if (isTrusted) {
+    bandSection.addWidget(
+      CardService.newTextParagraph().setText('<b>This sender is on your trusted list, but this email looks dangerous.</b>')
     );
   }
+
+  const card = CardService.newCardBuilder().addSection(bandSection);
+
+  const findings = state === 'safe' ? [] : topFindings(result.reasoning, MAX_FINDINGS_ON_CARD);
+  if (findings.length > 0) {
+    const findingsSection = CardService.newCardSection();
+    findings.forEach((item) => {
+      const meta = CATEGORY_LABELS[item.category] || { icon: 'info' };
+      findingsSection.addWidget(
+        CardService.newDecoratedText()
+          .setStartIcon(materialIconImage(meta.icon))
+          .setText(safeText(wisdomForRule(item.rule), 160))
+          .setWrapText(true)
+      );
+    });
+    const more = result.reasoning.length - findings.length;
+    if (more > 0) {
+      findingsSection.addWidget(CardService.newTextParagraph().setText('<i>+' + more + ' more in the details</i>'));
+    }
+    card.addSection(findingsSection);
+  }
+
+  const actionsSection = CardService.newCardSection();
   if (isDanger) {
-    section.addWidget(
-      CardService.newTextParagraph().setText(
-        '<font color="' + STATE_COLORS.malicious + '"><b>' + view.todo + '</b></font>'
-      )
+    actionsSection.addWidget(
+      CardService.newTextParagraph().setText('<font color="' + STATE_COLORS.malicious + '"><b>' + view.todo + '</b></font>')
     );
   }
-
   const detailsButton = CardService.newTextButton()
     .setText(isDanger ? 'View why this is dangerous' : 'View details')
     .setOnClickAction(
@@ -470,34 +503,47 @@ function buildResultCard(email, result, messageId, isTrusted) {
   } else {
     detailsButton.setTextButtonStyle(CardService.TextButtonStyle.OUTLINED);
   }
-  section.addWidget(detailsButton);
+  actionsSection.addWidget(detailsButton);
   if (isDanger) {
-    section.addWidget(
+    actionsSection.addWidget(
       CardService.newTextButton()
         .setText('Report this email')
         .setOnClickAction(CardService.newAction().setFunctionName('onReportEmail'))
     );
   }
 
-  // Secondary actions live in the card's overflow menu (the three dots) to keep the card quiet.
-  return CardService.newCardBuilder()
-    .addSection(section)
-    .addCardAction(
-      CardService.newCardAction()
-        .setText('Trust this sender')
+  // Quiet secondary actions side by side. A likely-malicious sender is never offered as "trust".
+  const secondary = CardService.newButtonSet();
+  if (!isDanger) {
+    secondary.addButton(
+      CardService.newTextButton()
+        .setText('Trust sender')
         .setOnClickAction(
           CardService.newAction().setFunctionName('onTrustThisSender').setParameters({
             senderEmail: email.senderEmail,
             senderDisplayName: email.senderDisplayName || '',
           })
         )
-    )
-    .addCardAction(
-      CardService.newCardAction()
-        .setText('I think this is a mistake')
-        .setOnClickAction(CardService.newAction().setFunctionName('onSubmitFeedback'))
-    )
-    .build();
+    );
+  }
+  secondary.addButton(
+    CardService.newTextButton()
+      .setText('This is a mistake')
+      .setOnClickAction(CardService.newAction().setFunctionName('onSubmitFeedback'))
+  );
+  actionsSection.addWidget(secondary);
+  card.addSection(actionsSection);
+
+  return withMenu(card).build();
+}
+
+/** Adds the overflow-menu (three dots) entry that opens the trusted-senders list. */
+function withMenu(cardBuilder) {
+  return cardBuilder.addCardAction(
+    CardService.newCardAction()
+      .setText('Trusted senders')
+      .setOnClickAction(CardService.newAction().setFunctionName('onOpenManageTrustedSenders'))
+  );
 }
 
 /**
@@ -563,7 +609,7 @@ function buildDetailsCard(result) {
       )
     );
   } else {
-    const byCategory = groupByCategory(result.reasoning);
+    const byCategory = groupByCategory(sortFindings(result.reasoning));
     Object.keys(byCategory).forEach((category) => {
       const meta = CATEGORY_LABELS[category] || { title: capitalize(category), icon: 'info' };
       const section = CardService.newCardSection().setHeader(safeText(meta.title, 60));
@@ -590,6 +636,12 @@ function buildDetailsCard(result) {
     card.addSection(checked);
   }
 
+  card.addSection(
+    CardService.newCardSection()
+      .setHeader('How to read this score')
+      .addWidget(CardService.newTextParagraph().setText(SCORE_LEGEND))
+  );
+
   return card.build();
 }
 
@@ -612,25 +664,29 @@ function capitalize(str) {
 // --------------------------------------------------------------------------
 
 function buildTrustedSenderCard(email) {
-  const view = presentationFor('safe');
-  const header = CardService.newCardHeader()
-    .setTitle('A familiar face')
-    .setSubtitle(APP_NAME)
-    .setImageUrl(assetUrl(view.icon))
-    .setImageStyle(CardService.ImageStyle.SQUARE);
-
-  const section = CardService.newCardSection().addWidget(
-    CardService.newDecoratedText()
-      .setStartIcon(materialIconImage('verified'))
-      .setText(
+  const view = presentationFor('trusted');
+  const section = CardService.newCardSection()
+    .addWidget(CardService.newImage().setImageUrl(assetUrl(HERO_TRUSTED_FILE)).setAltText('Trusted sender \u2014 risk 0'))
+    .addWidget(
+      CardService.newDecoratedText()
+        .setTopLabel('RISK SCORE')
+        .setText('<font color="' + STATE_COLORS.safe + '"><b>0</b></font> / 100')
+        .setBottomLabel('Trusted sender')
+    )
+    .addWidget(
+      CardService.newTextParagraph().setText(
         '<b>' + safeText(email.senderDisplayName || email.senderEmail, 80) + '</b> (' +
-          safeText(email.senderEmail, 120) +
-          ') is on your trusted list, and Lighthouse found nothing unusual in this message.'
+          safeText(email.senderEmail, 120) + ') is on your trusted list.'
       )
-      .setWrapText(true)
-  );
-
-  return CardService.newCardBuilder().setHeader(header).addSection(section).build();
+    )
+    .addWidget(
+      CardService.newTextButton()
+        .setText('Remove from trusted')
+        .setOnClickAction(
+          CardService.newAction().setFunctionName('onUntrustThisSender').setParameters({ senderEmail: email.senderEmail })
+        )
+    );
+  return withMenu(CardService.newCardBuilder().addSection(section)).build();
 }
 
 function buildNotScannedCard() {
@@ -663,7 +719,7 @@ function buildManageTrustedSendersCard() {
   return CardService.newCardBuilder()
     .setHeader(
       CardService.newCardHeader()
-        .setTitle('Familiar Faces')
+        .setTitle('Trusted senders')
         .setSubtitle(APP_NAME)
         .setImageUrl(assetUrl('icon_safe.png'))
         .setImageStyle(CardService.ImageStyle.SQUARE)
@@ -674,7 +730,7 @@ function buildManageTrustedSendersCard() {
 
 /** The reusable section (input + list) embedded in both the homepage and the standalone card. */
 function buildManageTrustedSendersSection() {
-  const section = CardService.newCardSection().setHeader('Trusted Senders — Familiar Faces');
+  const section = CardService.newCardSection().setHeader('Trusted senders');
 
   section.addWidget(
     CardService.newTextInput()

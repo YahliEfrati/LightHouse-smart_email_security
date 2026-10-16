@@ -23,6 +23,11 @@ const STATE_PRESENTATION = {
     headline: 'DANGER — LIKELY MALICIOUS', subtitle: 'Steer clear of this one',
     todo: 'Do not click links or open attachments. Report this email.',
   },
+  trusted: {
+    icon: 'icon_safe.png',
+    headline: 'Trusted sender', subtitle: 'A familiar face',
+    todo: '',
+  },
   unscanned: {
     icon: 'icon_unscanned.png',
     headline: 'Not scanned', subtitle: 'The beacon is resting',
@@ -55,6 +60,7 @@ function heroFile(score) {
 }
 
 const HERO_UNSCANNED_FILE = 'hero_unscanned.png';
+const HERO_TRUSTED_FILE = 'hero_trusted.png';
 
 function assetUrl(file) {
   return ASSET_BASE_URL + file;
@@ -89,6 +95,75 @@ function safeText(value, maxLen) {
     .replace(/"/g, '&quot;');
 }
 
+/** Copy of the findings ordered heaviest first (stable for equal weights); never mutates the input. */
+function sortFindings(reasoning) {
+  if (!Array.isArray(reasoning)) return [];
+  return reasoning
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => (b.item.weight - a.item.weight) || (a.index - b.index))
+    .map((entry) => entry.item);
+}
+
+/** Footer for the details card: how to read the score (mirrors the backend thresholds). */
+const SCORE_LEGEND = '0\u201334 safe \u00B7 35\u201369 suspicious \u00B7 70+ likely malicious.<br>' +
+  '<i>An automated estimate, not a guarantee.</i>';
+
+const STATUS_COLORS = { ok: '#2E7D6B', warn: '#C98A2C', alert: '#D32F2F' };
+const STATUS_SYMBOLS = { ok: '\u2713', warn: '\u26A0', alert: '\u2715' };
+const CHECK_SHORT_LABELS = { header: 'Sender', content: 'Message', link: 'Links', attachment: 'Files' };
+
+/**
+ * Status of each check category: 'ok' (no finding), 'warn' (some weight), 'alert' (summed weight >= 35,
+ * the backend's suspicious threshold).
+ */
+function checkStatuses(reasoning) {
+  const totals = {};
+  (Array.isArray(reasoning) ? reasoning : []).forEach((item) => {
+    totals[item.category] = (totals[item.category] || 0) + (Number(item.weight) || 0);
+  });
+  return Object.keys(CHECK_SHORT_LABELS).map((key) => {
+    const total = totals[key] || 0;
+    const status = total >= 35 ? 'alert' : total > 0 ? 'warn' : 'ok';
+    return { category: key, label: CHECK_SHORT_LABELS[key], status: status };
+  });
+}
+
+/** Compact colored status strip: "✓ Sender · ⚠ Message · ✓ Links · ✓ Files". */
+function checkStripText(statuses) {
+  return statuses
+    .map((s) => '<font color="' + STATUS_COLORS[s.status] + '">' + STATUS_SYMBOLS[s.status] + ' ' + s.label + '</font>')
+    .join(' &nbsp;\u00B7&nbsp; ');
+}
+
+/** The n heaviest findings (see sortFindings). */
+function topFindings(reasoning, n) {
+  return sortFindings(reasoning).slice(0, n);
+}
+
+/** Free-mail providers: trusting a whole provider domain would trust millions of strangers. */
+const PUBLIC_MAIL_DOMAINS = ['gmail.com', 'googlemail.com', 'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
+  'yahoo.com', 'ymail.com', 'icloud.com', 'me.com', 'aol.com', 'proton.me', 'protonmail.com', 'gmx.com', 'mail.com',
+  'walla.co.il', 'zoho.com'];
+
+function isPublicMailDomain(domain) {
+  return PUBLIC_MAIL_DOMAINS.indexOf(String(domain || '').toLowerCase().trim()) !== -1;
+}
+
+/**
+ * True if senderEmail matches a trusted full address or a trusted bare domain (exact match; subdomains
+ * do not match). Bare public-mail domains in the list are ignored, even if they were stored earlier.
+ */
+function isTrustedBy(senderEmail, trustedList) {
+  if (!senderEmail || !Array.isArray(trustedList)) return false;
+  const email = String(senderEmail).toLowerCase().trim();
+  const domain = email.split('@')[1] || '';
+  return trustedList.some((entry) => {
+    const normalized = String(entry).toLowerCase().trim();
+    if (normalized.indexOf('@') === -1 && isPublicMailDomain(normalized)) return false;
+    return normalized === email || normalized === domain;
+  });
+}
+
 /** Labels of the check categories that raised no finding ("what we checked"). */
 function checksPassed(reasoning) {
   const fired = {};
@@ -98,7 +173,7 @@ function checksPassed(reasoning) {
 
 if (typeof module !== 'undefined') {
   module.exports = {
-    normalizeScore, heroFile, HERO_UNSCANNED_FILE, assetUrl, stateForResult, presentationFor,
-    topFinding, safeText, checksPassed, CHECKS_PERFORMED,
+    normalizeScore, heroFile, HERO_UNSCANNED_FILE, HERO_TRUSTED_FILE, isPublicMailDomain, isTrustedBy, assetUrl, stateForResult, presentationFor,
+    topFinding, topFindings, sortFindings, checkStatuses, checkStripText, safeText, checksPassed, CHECKS_PERFORMED, SCORE_LEGEND,
   };
 }

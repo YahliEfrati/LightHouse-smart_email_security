@@ -46,7 +46,7 @@ blast radius is a single opened email, not the user's whole mailbox.
 ├── appsscript.json         Manifest: oauth scopes, contextual trigger, homepage trigger
 ├── Code.gs                 Add-on logic (CardService UI + backend client)
 ├── Presentation.gs         Pure helpers: state -> hero image/copy, top finding, escaping (unit-tested in Node)
-├── assets/                 Generated PNGs: 4 icons + one hero image per score 0-100 (served via GitHub raw)
+├── assets/                 Generated PNGs: 4 icons + one color-band image per score 0-100 (served via GitHub raw)
 ├── tools/generate_assets.py  Regenerates /assets  (python tools/generate_assets.py)
 ├── tests/                  Node tests for Presentation.gs and a CardService smoke test
 └── docs/                   Design spec, implementation plan, demo script
@@ -69,10 +69,10 @@ Run the tests with `node --test tests/presentation.test.js tests/code_smoke.test
    stack trace. Trusted senders (user whitelist in `PropertiesService`) are
    **still scanned**: a spoofed "trusted" address must not bypass the checks. They
    get the calm "A familiar face" card only when the verdict is Safe.
-3. **Result card** — deliberately quiet. A single full-width **hero image** (one pre-rendered
-   PNG per score, 0-100) carries what matters most: the verdict color, a big score and the
-   green-to-red gauge. Below it: one plain-language finding, a "What to do" line for malicious
-   email only, and one button (**View details**; red when malicious, plus **Report this email**,
+3. **Result card** — deliberately quiet. A full-width **color band** (one pre-rendered
+   PNG per score, 0-100: verdict color, headline, green-to-red gauge) leads, followed by the score as
+   native text, a compact check strip (✓ Sender · ⚠ Message · ✓ Links · ✓ Files) and up to three
+   plain-language findings. A "What to do" line (malicious only) and one button (**View details**; red when malicious, plus **Report this email**,
    which opens Google's reporting instructions — reporting in place would need `gmail.modify`,
    which we deliberately do not request). **Trust this sender** and **I think this is a mistake**
    live in the card's overflow menu (⋮). The hero's colors mirror the backend thresholds (35, 70);
@@ -121,14 +121,19 @@ Then:
 > Note: every time ngrok restarts, its URL changes — update `BACKEND_URL`
 > and re-push/re-deploy.
 
-## Managing trusted senders
+## Trusted senders
 
-From the add-on's homepage (when no email is open) or from the result
-card's "Trust This Sender" button, users can add an email address
-(`alice@example.com`) or a bare domain (`example.com`) to their personal
-whitelist, stored via `PropertiesService.getUserProperties()` (private to
-that user, not shared or synced anywhere else). Entries can be removed
-individually from the "Manage Trusted Senders" section.
+A **Trust sender** button on the result card (and a **Trusted senders** list in the card's ⋮ menu)
+lets users add and remove addresses they know. The list lives in `PropertiesService.getUserProperties()`
+(private to that user). Design decisions:
+
+- A trusted sender shows a calm green card with risk **0** — but the email is **still scanned silently**.
+  Sender addresses can be forged, so a forged "trusted" address must not be a free pass: if the scan
+  says *Malicious* (70+), the normal red card appears with "this sender is on your trusted list, but this
+  email looks dangerous". The button is never offered on a likely-malicious email.
+- The button adds the **full address** only. A bare domain can be added by hand, but **free-mail
+  providers (gmail.com, outlook.com, …) are refused**, and are ignored even if stored.
+- The point of the feature is reducing false-positive fatigue, not skipping analysis.
 
 ## Known limitations
 
