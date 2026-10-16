@@ -19,7 +19,7 @@ reputation lookup or LLM (the demo's tunnel is the one third party in the path; 
   ([details](#evaluation)).
 - **English and Hebrew.** Wording rules understand both; Hebrew links and Hebrew domains are not treated as
   suspicious.
-- **Tested.** 184 backend tests, 61 add-on tests, 7 asset-generator tests.
+- **Tested.** 184 backend tests, 62 add-on tests, 7 asset-generator tests.
 
 ## Contents
 
@@ -357,7 +357,7 @@ pip install -r requirements-dev.txt
 pytest
 python eval/run_eval.py          # evaluation on the 50-email set
 
-# add-on: 61 tests (from the repository root)
+# add-on: 62 tests (from the repository root)
 node --test tests/presentation.test.js tests/code_smoke.test.js
 
 # asset generator: 7 tests (from the repository root)
