@@ -397,7 +397,9 @@ function registrableDomain(host) {
 
 /** First domain-looking token in the visible link text ('' when the text is just words). */
 function domainInText(text) {
-  const match = /(?:https?:\/\/)?(?:www\.)?((?:[a-z0-9-]+\.)+[a-z]{2,})/i.exec(String(text == null ? '' : text));
+  // An email address ("mailed to you@gmail.com") is not a promise about which site the link opens.
+  const withoutEmails = String(text == null ? '' : text).replace(/[^\s@<>()\[\]"',;]+@[^\s@<>()\[\]"',;]+/g, ' ');
+  const match = /(?:https?:\/\/)?(?:www\.)?((?:[a-z0-9-]+\.)+[a-z]{2,})/i.exec(withoutEmails);
   return match ? match[1].toLowerCase() : '';
 }
 

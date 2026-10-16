@@ -582,9 +582,13 @@ class LinkAnalyzer(Analyzer):
         except ValueError:
             return ""
 
+    #: An email address in link text ("mailed to you@gmail.com") is not a promise about which *site*
+    #: the link opens, so it is removed before looking for a domain.
+    EMAIL_IN_TEXT_RE = re.compile(r"[^\s@<>()\[\]\"',;]+@[^\s@<>()\[\]\"',;]+")
+
     @classmethod
     def _extract_domain_from_text(cls, text: str) -> str:
-        match = cls.URL_LIKE_IN_TEXT_RE.search(text or "")
+        match = cls.URL_LIKE_IN_TEXT_RE.search(cls.EMAIL_IN_TEXT_RE.sub(" ", text or ""))
         if not match:
             return ""
         return cls._domain(match.group())

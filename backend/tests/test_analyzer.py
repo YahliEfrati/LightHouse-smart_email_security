@@ -604,3 +604,13 @@ def test_netflix_marketing_mail_is_not_malicious():
     )
     score, verdict, findings = EmailRiskAnalyzer().analyze(email)
     assert verdict == "Safe", (score, [f.rule for f in findings])
+
+
+# Regression: Netflix footer "mailed to yahli@gmail.com" linked to netflix.com was a "mismatch".
+@pytest.mark.parametrize("text", ["yahli7@gmail.com", "This message was mailed to [yahli7@gmail.com] by Netflix", "Contact support@paypal.com"])
+def test_email_address_in_link_text_is_not_a_site_promise(text):
+    assert not _mismatch(text, "https://www.netflix.com/account")
+
+
+def test_site_shown_next_to_an_email_address_still_counts():
+    assert _mismatch("Write to me@gmail.com or visit paypal.com", "https://evil.example/")

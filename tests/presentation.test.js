@@ -324,3 +324,9 @@ test('registrableDomain treats shared-hosting subdomains as separate sites', () 
   assert.strictEqual(p.inspectLink(L('paypal.com', 'https://paypal.github.io/')).status, 'mismatch');
   assert.strictEqual(p.inspectLink(L('netflix.com', 'https://www.netflix.com/x')).status, 'ok');
 });
+
+test('domainInText ignores email addresses but still finds a site named next to one', () => {
+  assert.strictEqual(p.domainInText('mailed to [yahli7@gmail.com] by Netflix'), '');
+  assert.strictEqual(p.domainInText('Write to me@gmail.com or visit paypal.com'), 'paypal.com');
+  assert.strictEqual(p.inspectLink(L('yahli7@gmail.com', 'https://www.netflix.com/account')).status, 'ok');
+});
