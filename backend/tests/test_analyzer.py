@@ -700,3 +700,20 @@ def test_document_disguised_as_html_is_double_extension():
 def test_ordinary_attachments_not_flagged(name):
     email = make_email(attachments=[AttachmentInfo(filename=name)])
     assert AttachmentAnalyzer().analyze(email) == []
+
+
+# Regression: the one holdout false alarm was a genuine PayPal email from paypal.co.il.
+@pytest.mark.parametrize(
+    "address,name",
+    [("service@paypal.co.il", "PayPal"), ("service@intl.paypal.com", "PayPal"), ("ship-confirm@amazon.de", "Amazon.de")],
+)
+def test_official_regional_brand_domains_are_legitimate(address, name):
+    assert _header_rules(address, name) == set()
+
+
+@pytest.mark.parametrize(
+    "address",
+    ["service@paypal.tk", "service@paypa1.co.il", "service@paypal.co.il.evil.example", "service@paypal-co-il.com"],
+)
+def test_regional_look_alikes_are_still_flagged(address):
+    assert _header_rules(address, "PayPal") & {"typosquat_domain", "display_name_domain_mismatch"}

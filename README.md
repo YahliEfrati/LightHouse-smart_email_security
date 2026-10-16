@@ -16,7 +16,7 @@ does the analysis with explainable, local heuristics: no email content is ever s
   rules: 7 of 20 malicious emails caught, 1 of 30 legitimate emails flagged. Strong where rules exist
   (malware delivery 3/4, known brands 3/4), weak where they don't (phishing without a brand 0/4)
   ([details](#evaluation)).
-- **Tested.** 153 backend tests, 59 add-on tests, 7 asset-generator tests.
+- **Tested.** 160 backend tests, 59 add-on tests, 7 asset-generator tests.
 
 ## Contents
 
@@ -258,8 +258,9 @@ money). It is a stress test, not a sample of a normal inbox. By batch:
   authority impersonation; rephrased payment fraud ("client gifts", "has updated our banking details");
   phone-call scams with no link; a malicious installer behind a link rather than attached.
 - **The one false alarm** was a genuine PayPal email from `paypal.co.il`: the brand list knows only
-  `paypal.com` and `paypal.co.uk`, so the Israeli domain looked like a look-alike. It was *not* fixed after
-  the run, so the holdout stays a holdout; it is the first item in the Roadmap.
+  `paypal.com` and `paypal.co.uk`, so the Israeli domain looked like a look-alike. **Fixed after the run**:
+  official regional domains of PayPal and Amazon are now listed explicitly (never `paypal.<anything>`, so
+  `paypal.tk` is still caught). The holdout numbers above were measured *before* this fix and are left as is.
 - **`reply_to_mismatch` fired on 8 legitimate emails and 0 malicious ones** in the holdout: as a standalone
   signal it is noise.
 - **The lesson:** rule-based detection is precise but narrow. It catches the patterns it was written for and
@@ -305,7 +306,7 @@ ngrok http 8000                        # or, with a reserved domain: ngrok http 
 **Tests**
 
 ```powershell
-# backend: 153 tests (from backend/, with the virtual environment active)
+# backend: 160 tests (from backend/, with the virtual environment active)
 pip install -r requirements-dev.txt
 pytest
 python eval/run_eval.py          # evaluation on the 50-email set
@@ -358,8 +359,8 @@ Where a rule exists, it held up on data it had never seen (known brands 3/4, mal
 blind holdout); the misses are attack types with no rule yet. So the next step is **more coverage, each new
 rule measured on a fresh holdout**, not tuning the rules we have. What the holdout points to, in order:
 
-- **Brands beyond a fixed list.** Every regional domain of a known brand (`paypal.co.il`), and brands outside
-  the list, via a maintained brand-domain list or domain-age / reputation data.
+- **Brands beyond a fixed list.** Regional domains of every listed brand (done for PayPal and Amazon after
+  the holdout), and brands outside the list, via a maintained brand-domain list or domain-age / reputation data.
 - **Phishing without a brand.** Detect generic authority impersonation ("IT Helpdesk", "Mail Server
   Administrator") from outside or free-mail domains.
 - **Payment fraud by meaning, not phrases.** A small classifier for BEC wording instead of regular

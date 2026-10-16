@@ -140,11 +140,16 @@ class HeaderAnalyzer(Analyzer):
     #: Kept intentionally small and local (no external lookups) per the
     #: "entirely local" requirement. Extend as needed.
     BRAND_DOMAINS: Dict[str, Set[str]] = {
-        "paypal": {"paypal.com", "paypal.co.uk"},
+        # Official regional domains are listed explicitly, never as "paypal.<anything>": a look-alike on
+        # another TLD (paypal.tk) must still be caught. paypal.co.il was the one holdout false alarm.
+        "paypal": {"paypal.com", "paypal.co.uk", "paypal.co.il", "paypal.de", "paypal.fr", "paypal.ca"},
         "google": {"google.com", "accounts.google.com", "gmail.com"},
         "microsoft": {"microsoft.com", "outlook.com", "live.com", "office.com"},
         "apple": {"apple.com", "icloud.com"},
-        "amazon": {"amazon.com", "amazon.co.uk"},
+        "amazon": {
+            "amazon.com", "amazon.co.uk", "amazon.de", "amazon.fr", "amazon.it", "amazon.es", "amazon.ca",
+            "amazon.co.jp", "amazon.in", "amazon.com.au",
+        },
         "bank of america": {"bankofamerica.com"},
         "chase": {"chase.com"},
         "wells fargo": {"wellsfargo.com"},
