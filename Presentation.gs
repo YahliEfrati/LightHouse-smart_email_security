@@ -144,7 +144,7 @@ function topFindings(reasoning, n) {
 /** Free-mail providers: trusting a whole provider domain would trust millions of strangers. */
 const PUBLIC_MAIL_DOMAINS = ['gmail.com', 'googlemail.com', 'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
   'yahoo.com', 'ymail.com', 'icloud.com', 'me.com', 'aol.com', 'proton.me', 'protonmail.com', 'gmx.com', 'mail.com',
-  'walla.co.il', 'zoho.com'];
+  'walla.co.il', 'zoho.com', 'yandex.com', 'yandex.ru'];
 
 function isPublicMailDomain(domain) {
   return PUBLIC_MAIL_DOMAINS.indexOf(String(domain || '').toLowerCase().trim()) !== -1;
@@ -279,6 +279,8 @@ const RULE_SHORT_LABELS = {
   dmarc_fail: 'Authenticity check failed',
   urgency_financial_proximity: 'Pressure plus money talk',
   credential_request_language: 'Asks for your login details',
+  payment_request_pressure: 'Money request under pressure',
+  payment_request_unverified_sender: 'Money request from a personal address',
   base64_obfuscation: 'Hidden encoded text',
   excessive_url_encoding: 'Scrambled link encoding',
   html_entity_obfuscation: 'Disguised characters',

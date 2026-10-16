@@ -454,6 +454,8 @@ const RULE_WISDOM = {
   dkim_fail: "This email's digital signature didn't check out. Worth a second look.",
   dmarc_fail: 'This email failed its own sender-authenticity check.',
   urgency_financial_proximity: 'This message leans on urgency right alongside money or personal details — a classic pressure tactic.',
+  payment_request_pressure: 'This message asks for money or new payment details and pushes you to act fast or keep it quiet. Before you do anything, call the person on a number you already know, not one from this email.',
+  payment_request_unverified_sender: 'A request for money or new payment details is coming from a personal mailbox. Real executives and vendors do not handle payments that way. Verify by phone on a number you already know.',
   credential_request_language: 'This message asks you to enter or confirm your login or payment details — the one thing a phishing email really wants.',
   base64_obfuscation: "There's a long block of hidden, encoded text tucked into this email — sometimes used to slip something past the usual checks.",
   excessive_url_encoding: "This email's links are oddly scrambled with encoding, which can be used to hide where they really lead.",

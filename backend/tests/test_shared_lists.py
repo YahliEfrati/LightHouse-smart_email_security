@@ -39,3 +39,9 @@ def test_domain_suffix_lists_match():
 
     assert _js_list("TWO_PART_SUFFIXES") == TWO_PART_SUFFIXES
     assert _js_list("SHARED_HOSTING_SUFFIXES") == SHARED_HOSTING_SUFFIXES
+
+
+def test_free_mail_lists_match():
+    from analyzer import FREE_MAIL_DOMAINS
+
+    assert _js_list("PUBLIC_MAIL_DOMAINS") == FREE_MAIL_DOMAINS

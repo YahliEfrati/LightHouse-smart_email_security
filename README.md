@@ -143,6 +143,8 @@ Category caps: `header` 50 · `content` 35 · `link` 40 · `attachment` 50.
 | `reply_to_mismatch` | header | 15 | Reply-To domain differs from the From domain |
 | `spf_fail` / `dkim_fail` / `dmarc_fail` | header | 20 each | `Authentication-Results` reports a failure (see Known limitations) |
 | `urgency_financial_proximity` | content | 20 (max 2) | Urgency phrase within ~120 chars of a money/credential term |
+| `payment_request_pressure` | content | 35 | **New (BEC).** A request for money or new payment details (buy gift cards, wire transfer, changed bank / payroll details) together with pressure or secrecy ("urgent", "I'm in a meeting", "keep this confidential"). Marketing words ("today only") don't count, so a store selling gift cards doesn't fire |
+| `payment_request_unverified_sender` | header | 35 | **New (BEC).** The same kind of request from a free-mail address, or with replies routed to one. Together with the rule above it reaches 70 (Malicious): two categories, normal scoring, no special case |
 | `credential_request_language` | content | 15 | **New.** Asks the reader to hand over login or payment details: an action verb followed by a credential noun ("verify your account", "confirm your password", "sign in to continue", "update your billing details"). A bare mention of "password" ("you changed your password") does not fire. Once per message |
 | `base64_obfuscation` | content | 25 | Long base64 blob in the body |
 | `excessive_url_encoding` | content | 15 | 10+ `%XX` sequences |
@@ -154,7 +156,7 @@ Category caps: `header` 50 · `content` 35 · `link` 40 · `attachment` 50.
 | `punycode_lookalike_domain` | link | 20 | **New.** A link host with punycode (`xn--`) or raw non-Latin letters, the homograph trick (`раураl.com` in Cyrillic). Alone it stays below Suspicious, since real non-Latin domains exist. Once per message |
 | `suspicious_tld` | link | 10 | **New.** A link's host ends in a TLD commonly abused for phishing (`LinkAnalyzer.SUSPICIOUS_TLDS`: `.top .xyz .click .gq .tk .ml .cf .ga .zip .mov .work .rest .support`). Normal TLDs (`.com`, `.org`, `.io`, `.co.il`, …) never fire. Once per message |
 | `double_extension` | attachment | 45 | `invoice.pdf.exe` |
-| `dangerous_extension` | attachment | 35 | Executable/script attachment (`.exe`, `.js`, …) |
+| `dangerous_extension` | attachment | 35 | Attachment that can run code or open a fake login page: executables and scripts (`.exe`, `.js`, …), plus HTML smuggling (`.html`), disk images (`.iso`, `.img`, `.vhd`), shortcuts (`.lnk`) and OneNote (`.one`) |
 | `macro_enabled_with_pressure_context` | attachment | 45 | Macro Office file plus urgency/financial wording |
 | `macro_enabled_attachment` | attachment | 20 | Macro-enabled Office file |
 
@@ -188,6 +190,25 @@ subdomain looked like typosquatting. Subdomains (only the owner can create them)
 links are compared by site. Shared-hosting suffixes keep `mybank.github.io` vs `evil.github.io` apart, so
 the fix opens no hole. The lesson is in the Roadmap: build a labelled set of real mail to measure the
 false-positive rate before tuning weights further.
+
+## Evaluation
+
+The engine was measured on 50 emails (30 legitimate, 20 malicious) written by a separate model (Gemini) that
+was told nothing about the rules: `backend/eval/raw/`, run with `python eval/run_eval.py` from `backend/`.
+Full write-up (Hebrew): [docs/Lighthouse_Evaluation_Report_HE.docx](docs/Lighthouse_Evaluation_Report_HE.docx).
+
+| Run | Caught (of 20) | False alarms (of 30) | Reached Malicious |
+|---|---|---|---|
+| First run | 10 (50%) | 0 | 3 |
+| After BEC rules + file types | 15 (75%) | 0 | 5 |
+
+- **Lowering the threshold would not have helped:** 6 of the 10 first-run misses scored 0 (no rule fired). The gap
+  was coverage (BEC, `.html`/`.iso`), so the fix was new signals, not more sensitivity.
+- **Read the second row with care:** those rules were designed after seeing the misses, so a gain on the same set
+  is expected. What it does show is that no legitimate email's score changed. The next step is a fresh set that
+  includes hard legitimate cases (real vendor invoices, a manager asking for a transfer).
+- **0 false alarms is optimistic:** LLM-written mail is cleaner than real mail; one day on a real inbox found three
+  legitimate emails flagged (see "Iterating on real mail").
 
 ## Setup & local testing
 
@@ -293,5 +314,5 @@ lets users add and remove addresses they know. The list lives in `PropertiesServ
   spoofed; a Malicious verdict from other checks still shows). The backend keeps counts only (rule fired
   / rule disputed, no content or addresses). Users see just their own mutes, with Undo; per-rule
   false-positive rates are an operator view (terminal, backend key), not shown to every user.
-- **Measure, then tune:** a small labelled corpus (own inbox + public phishing samples) and a script
-  that reports precision and false-positive rate per rule, so weight changes are evidence-based.
+- **Measure, then tune:** grow the labelled set (own inbox + public phishing samples) beyond the 50-email
+  synthetic set in `backend/eval/`, and measure every rule change on a fresh set, not the one it was designed on.

@@ -1,0 +1,547 @@
+{
+  "summary": [
+    {
+      "threshold": 35,
+      "tp": 15,
+      "fn": 5,
+      "fp": 0,
+      "tn": 30,
+      "detection_rate": 0.75,
+      "false_positive_rate": 0.0,
+      "precision": 1.0,
+      "accuracy": 0.9
+    },
+    {
+      "threshold": 70,
+      "tp": 5,
+      "fn": 15,
+      "fp": 0,
+      "tn": 30,
+      "detection_rate": 0.25,
+      "false_positive_rate": 0.0,
+      "precision": 1.0,
+      "accuracy": 0.7
+    }
+  ],
+  "emails": [
+    {
+      "id": "b1-01",
+      "label": "legit",
+      "category": "newsletter",
+      "note": "Standard retail marketing email with tracking links, URL encoding, and HTML entities.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b1-02",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Netflix impersonation with a look-alike domain and a fake payment decline trick.",
+      "score": 50,
+      "verdict": "Suspicious",
+      "rules": [
+        "display_name_domain_mismatch",
+        "credential_request_language"
+      ]
+    },
+    {
+      "id": "b1-03",
+      "label": "legit",
+      "category": "marketing",
+      "note": "Airline promotional email from a subdomain, featuring HTML entities and standard formatting.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b1-04",
+      "label": "malicious",
+      "category": "bec",
+      "note": "PayPal impersonation using an unrelated compromised domain to bypass filters.",
+      "score": 35,
+      "verdict": "Suspicious",
+      "rules": [
+        "display_name_domain_mismatch"
+      ]
+    },
+    {
+      "id": "b1-05",
+      "label": "legit",
+      "category": "newsletter",
+      "note": "Streaming service marketing email with tracking tokens.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b1-06",
+      "label": "legit",
+      "category": "marketing",
+      "note": "B2B SaaS tips email with plain-looking but rich HTML.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b1-07",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Subtle iCloud impersonation targeting storage limits.",
+      "score": 75,
+      "verdict": "Malicious",
+      "rules": [
+        "display_name_domain_mismatch",
+        "high_entropy_domain",
+        "high_entropy_domain",
+        "high_entropy_domain",
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "b1-08",
+      "label": "legit",
+      "category": "marketing",
+      "note": "Amazon e-commerce recommendation email.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b1-09",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Blatant O365 phish sent from a free-mail address to bypass simple domain checks.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "b1-10",
+      "label": "legit",
+      "category": "marketing",
+      "note": "Food delivery promotional email with emoji and long query string.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b2-1",
+      "label": "legit",
+      "category": "new-login",
+      "note": "Standard Google new device login alert",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b2-2",
+      "label": "legit",
+      "category": "2fa-code",
+      "note": "Standard GitHub 2FA code email",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b2-3",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Fake Microsoft 365 password expiry notice leading to lookalike domain",
+      "score": 70,
+      "verdict": "Malicious",
+      "rules": [
+        "display_name_domain_mismatch",
+        "urgency_financial_proximity",
+        "credential_request_language"
+      ]
+    },
+    {
+      "id": "b2-4",
+      "label": "legit",
+      "category": "new-login",
+      "note": "Netflix new sign-in alert with marketing footer",
+      "score": 20,
+      "verdict": "Safe",
+      "rules": [
+        "urgency_financial_proximity"
+      ]
+    },
+    {
+      "id": "b2-5",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Fake PayPal security hold",
+      "score": 65,
+      "verdict": "Suspicious",
+      "rules": [
+        "display_name_domain_mismatch",
+        "credential_request_language",
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "b2-6",
+      "label": "legit",
+      "category": "password-changed",
+      "note": "Slack confirmation of password change",
+      "score": 20,
+      "verdict": "Safe",
+      "rules": [
+        "urgency_financial_proximity"
+      ]
+    },
+    {
+      "id": "b2-7",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Fake Apple App Store receipt with a fake cancellation link",
+      "score": 50,
+      "verdict": "Suspicious",
+      "rules": [
+        "display_name_domain_mismatch",
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "b2-8",
+      "label": "legit",
+      "category": "password-reset",
+      "note": "Dropbox user-requested password reset",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b2-9",
+      "label": "malicious",
+      "category": "bec",
+      "note": "Fake internal IT helpdesk alert (BEC-style)",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "b2-10",
+      "label": "legit",
+      "category": "new-login",
+      "note": "Spotify new login notification with review button",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b3-1",
+      "label": "legit",
+      "category": "work-file-macro",
+      "note": "Legitimate colleague sending an internal excel file with macros",
+      "score": 20,
+      "verdict": "Safe",
+      "rules": [
+        "macro_enabled_attachment"
+      ]
+    },
+    {
+      "id": "b3-2",
+      "label": "malicious",
+      "category": "malware-delivery",
+      "note": "Fake Quickbooks invoice dropping a ZIP file that likely contains malware.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b3-3",
+      "label": "legit",
+      "category": "shared-document",
+      "note": "Legitimate Google Drive sharing notification.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    },
+    {
+      "id": "b3-4",
+      "label": "malicious",
+      "category": "malware-delivery",
+      "note": "HTML attachment smuggling masquerading as a benefits enrollment form.",
+      "score": 35,
+      "verdict": "Suspicious",
+      "rules": [
+        "dangerous_extension"
+      ]
+    },
+    {
+      "id": "b3-5",
+      "label": "legit",
+      "category": "receipt",
+      "note": "Legitimate SaaS receipt sent via Stripe.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    },
+    {
+      "id": "b3-6",
+      "label": "malicious",
+      "category": "malware-delivery",
+      "note": "Fake DocuSign lure with a double extension executable (.pdf.exe).",
+      "score": 85,
+      "verdict": "Malicious",
+      "rules": [
+        "typosquat_domain",
+        "double_extension"
+      ]
+    },
+    {
+      "id": "b3-7",
+      "label": "legit",
+      "category": "automated-report",
+      "note": "Legitimate automated Salesforce CSV report delivery.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b3-8",
+      "label": "malicious",
+      "category": "malware-delivery",
+      "note": "ISO attachment bypassing MOTW, masquerading as an urgent KPMG audit request.",
+      "score": 35,
+      "verdict": "Suspicious",
+      "rules": [
+        "dangerous_extension"
+      ]
+    },
+    {
+      "id": "b3-9",
+      "label": "legit",
+      "category": "work-file-consultant",
+      "note": "Legitimate email from a consultant delivering PPT and Excel files.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b3-10",
+      "label": "legit",
+      "category": "file-share",
+      "note": "Legitimate WeTransfer notification for design assets.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b4-01",
+      "label": "legit",
+      "category": "shipping",
+      "note": "Amazon shipping confirmation with complex tracking URL, marketing HTML, and unsubscribe footer.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b4-02",
+      "label": "legit",
+      "category": "order confirmation",
+      "note": "Zara clothing order receipt with HTML entities and brand subdomain.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    },
+    {
+      "id": "b4-03",
+      "label": "malicious",
+      "category": "customs fee",
+      "note": "Fake DHL customs fee using a look-alike domain to steal credit card info.",
+      "score": 35,
+      "verdict": "Suspicious",
+      "rules": [
+        "display_name_domain_mismatch"
+      ]
+    },
+    {
+      "id": "b4-04",
+      "label": "legit",
+      "category": "bank statement",
+      "note": "Legitimate Chase Bank monthly statement notification.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b4-05",
+      "label": "malicious",
+      "category": "failed payment",
+      "note": "Fake Netflix billing failure using a compromised or weird domain.",
+      "score": 65,
+      "verdict": "Suspicious",
+      "rules": [
+        "display_name_domain_mismatch",
+        "credential_request_language",
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "b4-06",
+      "label": "legit",
+      "category": "shipping",
+      "note": "UPS package scheduled delivery notification. Very standard.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b4-07",
+      "label": "malicious",
+      "category": "refund scam",
+      "note": "Geek Squad auto-renewal BEC scam. Uses a freemail sender and fake invoice attachment to drive inbound calls.",
+      "score": 30,
+      "verdict": "Safe",
+      "rules": [
+        "urgency_financial_proximity",
+        "url_shortener"
+      ]
+    },
+    {
+      "id": "b4-08",
+      "label": "legit",
+      "category": "order confirmation",
+      "note": "Airbnb booking confirmation receipt.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b4-09",
+      "label": "malicious",
+      "category": "delivery fee",
+      "note": "Generic postal service scam pretending a package is stuck.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b4-10",
+      "label": "legit",
+      "category": "bank statement",
+      "note": "PayPal receipt for a digital purchase.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b5-1",
+      "label": "legit",
+      "category": "team-notes",
+      "note": "Legitimate short meeting notes with a link to a Google Doc",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b5-2",
+      "label": "malicious",
+      "category": "bec-wire",
+      "note": "CEO fraud / wire transfer request from a look-alike domain",
+      "score": 85,
+      "verdict": "Malicious",
+      "rules": [
+        "reply_to_mismatch",
+        "urgency_financial_proximity",
+        "payment_request_pressure",
+        "payment_request_unverified_sender"
+      ]
+    },
+    {
+      "id": "b5-3",
+      "label": "legit",
+      "category": "personal",
+      "note": "Short personal email from a friend",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b5-4",
+      "label": "malicious",
+      "category": "bec-giftcards",
+      "note": "CEO fraud asking for Apple gift cards via freemail address",
+      "score": 70,
+      "verdict": "Malicious",
+      "rules": [
+        "payment_request_pressure",
+        "payment_request_unverified_sender"
+      ]
+    },
+    {
+      "id": "b5-5",
+      "label": "legit",
+      "category": "team-thread",
+      "note": "Internal team thread with quoted reply text",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b5-6",
+      "label": "malicious",
+      "category": "bec-payroll",
+      "note": "Employee payroll diversion fraud from a freemail account",
+      "score": 35,
+      "verdict": "Suspicious",
+      "rules": [
+        "payment_request_unverified_sender"
+      ]
+    },
+    {
+      "id": "b5-7",
+      "label": "legit",
+      "category": "newsletter",
+      "note": "Legitimate rich marketing HTML newsletter with tracking links and HTML entities",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    },
+    {
+      "id": "b5-8",
+      "label": "malicious",
+      "category": "bec-vendor",
+      "note": "Vendor impersonation claiming changed bank details, utilizing a look-alike domain",
+      "score": 35,
+      "verdict": "Suspicious",
+      "rules": [
+        "urgency_financial_proximity",
+        "payment_request_pressure"
+      ]
+    },
+    {
+      "id": "b5-9",
+      "label": "legit",
+      "category": "meeting-invite",
+      "note": "Legitimate meeting invite with a video conferencing link",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b5-10",
+      "label": "legit",
+      "category": "team-followup",
+      "note": "Short team follow up mentioning an attachment",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    }
+  ]
+}

@@ -595,6 +595,95 @@ class LinkAnalyzer(Analyzer):
 
 
 # --------------------------------------------------------------------------- #
+# Payment-request (BEC) analyzer
+# --------------------------------------------------------------------------- #
+
+#: Free-mail providers: a "CEO" or "vendor" asking for money from one of these is a classic BEC sign.
+#: Keep in sync with PUBLIC_MAIL_DOMAINS in Presentation.gs (tests/test_shared_lists.py checks it).
+FREE_MAIL_DOMAINS: Set[str] = {
+    "gmail.com", "googlemail.com", "outlook.com", "hotmail.com", "live.com", "msn.com", "yahoo.com",
+    "ymail.com", "icloud.com", "me.com", "aol.com", "proton.me", "protonmail.com", "gmx.com", "mail.com",
+    "walla.co.il", "zoho.com", "yandex.com", "yandex.ru",
+}
+
+
+class PaymentRequestAnalyzer(Analyzer):
+    """CEO / vendor fraud (BEC): a request for money or for new payment details, which often comes
+    with no link and no attachment at all. Three ingredients, each harmless alone:
+
+    1. the request itself (buy gift cards, wire money, change bank / payroll details);
+    2. pressure or secrecy ("urgent", "I'm in a meeting", "keep this confidential");
+    3. a sender who should not be asking (free-mail address, or replies routed elsewhere).
+
+    Request + pressure -> content finding (35); request + sender -> header finding (35). Each alone is
+    "Suspicious"; all three land in two categories and reach "Malicious" (70) by the normal scoring.
+    """
+
+    category = "content"
+
+    MONEY_REQUEST_RES: Tuple[re.Pattern, ...] = (
+        re.compile(r"\b(?:buy|purchase|get|pick up)\b[^.\n]{0,40}\b(?:gift|itunes|apple|google play|steam|amazon) ?cards?\b"),
+        re.compile(r"\bwire (?:transfer|the (?:funds|money|payment)|instructions)\b"),
+        re.compile(r"\b(?:bank|banking|account|payment|remittance) (?:details|information|info) (?:have|has) (?:been )?(?:changed|updated)\b"),
+        re.compile(r"\b(?:update|change)\b[^.\n]{0,40}\b(?:direct deposit|bank details|bank account|account details|banking details|payroll)\b"),
+        re.compile(r"\bremit (?:the )?payment\b[^.\n]{0,40}\bnew account\b"),
+    )
+    #: BEC-style pressure. Deliberately not marketing words ("today only", "limited time"), so a store
+    #: promoting gift cards does not look like a CEO asking for them.
+    PRESSURE_RES: Tuple[re.Pattern, ...] = (
+        re.compile(r"\b(?:urgent(?:ly)?|immediately|asap|right now|as soon as you (?:get|see|read) this)\b"),
+        re.compile(r"\b(?:before |by )?(?:end of (?:the )?day|eod|close of business)\b"),
+        re.compile(r"\b(?:confidential|discreet(?:ly)?|do not (?:discuss|tell|share)|don't (?:tell|mention)|between us)\b"),
+        re.compile(r"\b(?:in a meeting|can(?:no|')t (?:talk|take calls)|are you (?:at your desk|available))\b"),
+    )
+
+    def analyze(self, email: EmailAnalysisRequest) -> List[Finding]:
+        text = " ".join(f"{email.subject}\n{email.body_text or ''}".lower().split())
+        request = next((m.group() for r in self.MONEY_REQUEST_RES for m in [r.search(text)] if m), None)
+        if not request:
+            return []
+
+        findings: List[Finding] = []
+        pressure = next((m.group() for r in self.PRESSURE_RES for m in [r.search(text)] if m), None)
+        if pressure:
+            findings.append(
+                self._finding(
+                    rule="payment_request_pressure",
+                    weight=35,
+                    description=(
+                        f"Asks for money or new payment details ('{request}') under pressure or secrecy "
+                        f"('{pressure}') - the pattern of CEO / vendor fraud. Verify by phone before acting."
+                    ),
+                )
+            )
+
+        unverified = self._unverified_sender(email)
+        if unverified:
+            findings.append(
+                Finding(
+                    category="header",
+                    rule="payment_request_unverified_sender",
+                    weight=35,
+                    description=(
+                        f"Asks for money or new payment details ('{request}') from {unverified}. Real "
+                        "executives and vendors do not handle payments from personal mailboxes."
+                    ),
+                )
+            )
+        return findings
+
+    @staticmethod
+    def _unverified_sender(email: EmailAnalysisRequest) -> Optional[str]:
+        sender = HeaderAnalyzer._domain(email.sender.email)
+        reply = HeaderAnalyzer._domain(email.reply_to or "")
+        if sender in FREE_MAIL_DOMAINS:
+            return f"a free-mail address ({sender})"
+        if reply and reply in FREE_MAIL_DOMAINS:
+            return f"a sender whose replies go to a free-mail address ({reply})"
+        return None
+
+
+# --------------------------------------------------------------------------- #
 # Attachment analyzer
 # --------------------------------------------------------------------------- #
 
@@ -609,6 +698,9 @@ class AttachmentAnalyzer(Analyzer):
 
     DANGEROUS_EXTENSIONS: Set[str] = {
         "exe", "scr", "bat", "cmd", "js", "vbs", "ps1", "jar", "msi", "com", "pif", "hta", "wsf",
+        # Common modern delivery vehicles: HTML smuggling, disk images (bypass Mark-of-the-Web),
+        # shortcut files and OneNote notebooks.
+        "html", "htm", "shtml", "iso", "img", "vhd", "vhdx", "lnk", "one",
     }
     MACRO_EXTENSIONS: Set[str] = {"docm", "xlsm", "pptm", "dotm", "xltm", "ppsm"}
     #: Common benign/document "carrier" extensions seen before a dangerous
@@ -655,7 +747,10 @@ class AttachmentAnalyzer(Analyzer):
                     self._finding(
                         rule="dangerous_extension",
                         weight=35,
-                        description=f"Attachment '{attachment.filename}' is a directly executable/script file (.{ext}).",
+                        description=(
+                            f"Attachment '{attachment.filename}' is a .{ext} file, a type that can run code or open "
+                            "a fake login page, and is commonly used to deliver malware."
+                        ),
                     )
                 )
             elif ext in self.MACRO_EXTENSIONS:
@@ -722,6 +817,7 @@ class EmailRiskAnalyzer:
         self.analyzers: List[Analyzer] = list(analyzers) if analyzers is not None else [
             HeaderAnalyzer(),
             ContentAnalyzer(),
+            PaymentRequestAnalyzer(),
             LinkAnalyzer(),
             AttachmentAnalyzer(),
         ]

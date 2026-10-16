@@ -614,3 +614,89 @@ def test_email_address_in_link_text_is_not_a_site_promise(text):
 
 def test_site_shown_next_to_an_email_address_still_counts():
     assert _mismatch("Write to me@gmail.com or visit paypal.com", "https://evil.example/")
+
+
+# --------------------------------------------------------------------------- #
+# PaymentRequestAnalyzer (BEC: money requests, often with no link at all)
+# --------------------------------------------------------------------------- #
+
+from analyzer import PaymentRequestAnalyzer  # noqa: E402
+
+
+def _bec_rules(body: str, sender: str = "ceo@company.example", reply_to=None, subject: str = "Request"):
+    email = make_email(sender=SenderInfo(email=sender, display_name="X"), reply_to=reply_to, subject=subject, body_text=body)
+    return {f.rule: f.category for f in PaymentRequestAnalyzer().analyze(email)}
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "I'm in a meeting and can't talk. Please buy some Apple gift cards for a client today.",
+        "Are you at your desk? I need an urgent wire transfer processed before end of day.",
+        "Our bank details have changed. Please remit payment immediately to the new account.",
+        "Keep this confidential: update my direct deposit to the account below asap.",
+    ],
+)
+def test_money_request_under_pressure(body):
+    assert _bec_rules(body) == {"payment_request_pressure": "content"}
+
+
+@pytest.mark.parametrize(
+    "sender,reply_to",
+    [("robert.smith22@yahoo.com", None), ("ceo@company.example", "ceo.private@gmail.com")],
+)
+def test_money_request_from_personal_mailbox(sender, reply_to):
+    body = "Please update my direct deposit information for the next payroll."
+    assert _bec_rules(body, sender, reply_to) == {"payment_request_unverified_sender": "header"}
+
+
+def test_all_three_ingredients_reach_malicious():
+    email = make_email(
+        sender=SenderInfo(email="ceo.office11@gmail.com", display_name="Michael Boss"),
+        subject="Quick request",
+        body_text="I'm in a meeting right now. I need you to purchase some gift cards for a client. Keep it discreet.",
+    )
+    score, verdict, findings = EmailRiskAnalyzer().analyze(email)
+    assert {"payment_request_pressure", "payment_request_unverified_sender"} <= {f.rule for f in findings}
+    assert verdict == "Malicious", score
+
+
+@pytest.mark.parametrize(
+    "body,sender",
+    [
+        # vendor invoice from the vendor's own domain, no pressure
+        ("Please find attached invoice #4411. Payment is due within 30 days to the account on file.", "billing@vendor.example"),
+        # store promoting gift cards: marketing words, not BEC pressure
+        ("Holiday gifts made easy! Buy a gift card today - limited time, free shipping.", "news@shop.example"),
+        # friend from Gmail mentions money, but no request for new payment details
+        ("Thanks for dinner! I sent you the money on PayPal, let me know it arrived.", "friend@gmail.com"),
+        # manager approving a budget
+        ("Looks good to me, go ahead and approve the Q3 budget.", "david@company.example"),
+        # pressure without any money request (first-contact BEC opener is out of scope here)
+        ("Are you at your desk? I need a quick favor, reply as soon as you get this.", "ceo@company.example"),
+    ],
+)
+def test_legitimate_money_talk_is_not_bec(body, sender):
+    assert _bec_rules(body, sender) == {}
+
+
+# --------------------------------------------------------------------------- #
+# Dangerous attachment types (HTML smuggling, disk images, shortcuts, OneNote)
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize("name", ["Benefits_2024.html", "Remittance.HTM", "Audit_Q3.iso", "photo.img", "invoice.lnk", "notes.one"])
+def test_modern_malware_delivery_types_flagged(name):
+    email = make_email(attachments=[AttachmentInfo(filename=name)])
+    assert "dangerous_extension" in {f.rule for f in AttachmentAnalyzer().analyze(email)}
+
+
+def test_document_disguised_as_html_is_double_extension():
+    email = make_email(attachments=[AttachmentInfo(filename="invoice.pdf.html")])
+    assert "double_extension" in {f.rule for f in AttachmentAnalyzer().analyze(email)}
+
+
+@pytest.mark.parametrize("name", ["report.pdf", "Q3.xlsx", "deck.pptx", "photo.jpg", "data.csv", "archive.zip"])
+def test_ordinary_attachments_not_flagged(name):
+    email = make_email(attachments=[AttachmentInfo(filename=name)])
+    assert AttachmentAnalyzer().analyze(email) == []

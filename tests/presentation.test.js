@@ -106,7 +106,7 @@ test('every backend rule has a short one-line label; unknown rules get a fallbac
     'urgency_financial_proximity', 'base64_obfuscation', 'excessive_url_encoding', 'html_entity_obfuscation',
     'link_text_href_mismatch', 'ip_literal_host', 'url_shortener', 'high_entropy_domain', 'double_extension',
     'dangerous_extension', 'macro_enabled_with_pressure_context', 'macro_enabled_attachment',
-    'credential_request_language', 'suspicious_tld', 'punycode_lookalike_domain', 'trusted_contact_impersonation'];
+    'credential_request_language', 'suspicious_tld', 'punycode_lookalike_domain', 'trusted_contact_impersonation', 'payment_request_pressure', 'payment_request_unverified_sender'];
   rules.forEach((r) => {
     const label = p.shortLabelForRule(r);
     assert.notStrictEqual(label, 'Something unusual', r);
