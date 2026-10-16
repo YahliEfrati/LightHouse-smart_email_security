@@ -250,7 +250,7 @@ second scan.
 
 | Decision | Why | What it costs |
 |---|---|---|
-| **Explainable heuristics, not ML or an LLM** | Every point maps to a named rule with a readable reason. Offline, deterministic, testable. | Misses novel phrasing a model might catch. Weights are hand-tuned, not learned. |
+| **Explainable heuristics, not ML or an LLM** | Every point maps to a readable reason. Training a model needs a current labeled corpus, which doesn't fit 48 hours; an LLM would send email content to a third party. | Misses novel phrasing a model might catch. Weights are hand-tuned, not learned. |
 | **Nothing leaves the backend** | Email content is sensitive; third-party lookups are a privacy and compliance risk. | No knowledge of known-bad URLs or domain age. |
 | **Narrowest Gmail scope** | Blast radius of a bug or compromise is one open email. | The add-on can't read raw headers, so the SPF/DKIM/DMARC rules can't fire today. |
 | **Per-category caps** | Many weak signals in one category shouldn't alone mean Malicious; independent ones should add up. | A truly single-category attack can stay below 70. |
@@ -421,6 +421,7 @@ rule measured on a fresh holdout**, not tuning the rules we have. What the holdo
 - **Executables behind links.** Apply the risky-file check to link targets (`.msi`, `.exe`), not only attachments.
 - **Measure on real mail.** Public phishing corpora and real legitimate mail, and a fresh holdout for every
   round of rule changes.
+- **Learned weights.** Learn the rule weights from labeled data, keeping every point explainable.
 - **QR codes.** Decode QR images on the backend and send the extracted link through the existing link rules.
 - **SPF/DKIM/DMARC** from message headers, if a broader scope is acceptable.
 - **A real feedback loop.** "Which of these is wrong?" lets the user mute only the wrong findings, only for
