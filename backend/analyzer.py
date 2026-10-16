@@ -345,17 +345,27 @@ class ContentAnalyzer(Analyzer):
             ]
         return []
 
+    @staticmethod
+    def _spells_letter_or_digit(entity: str) -> bool:
+        """True for &#112; / &#x70; style entities that encode a plain ASCII letter or digit."""
+        body = entity[2:-1]
+        code = int(body[1:], 16) if body[:1] in ("x", "X") else int(body)
+        return 48 <= code <= 57 or 65 <= code <= 90 or 97 <= code <= 122
+
     def _html_entity_findings(self, html: str) -> List[Finding]:
-        count = len(self.HTML_ENTITY_RE.findall(html))
+        # Only entities that spell plain letters/digits count (&#112;&#97;&#121; = "pay"): that is the
+        # evasion trick. Typographic ones (&#160; nbsp, &#8217; quote, dashes, emoji) are in every
+        # rich newsletter; counting all of them flagged a real welcome email (921 entities).
+        count = sum(1 for entity in self.HTML_ENTITY_RE.findall(html) if self._spells_letter_or_digit(entity))
         if count >= 6:
             return [
                 self._finding(
                     rule="html_entity_obfuscation",
                     weight=20,
                     description=(
-                        f"Found {count} HTML numeric/hex character entities (e.g. &#x..;) in the HTML "
-                        "body, a technique used to spell out words/links in a way that evades "
-                        "plain-text keyword scanners while still rendering normally to the victim."
+                        f"Found {count} HTML character entities (e.g. &#x70;) that spell out ordinary "
+                        "letters or digits, a technique used to hide words/links from plain-text keyword "
+                        "scanners while still rendering normally to the victim."
                     ),
                 )
             ]

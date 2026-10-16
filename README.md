@@ -146,7 +146,7 @@ Category caps: `header` 50 · `content` 35 · `link` 40 · `attachment` 50.
 | `credential_request_language` | content | 15 | **New.** Asks the reader to hand over login or payment details: an action verb followed by a credential noun ("verify your account", "confirm your password", "sign in to continue", "update your billing details"). A bare mention of "password" ("you changed your password") does not fire. Once per message |
 | `base64_obfuscation` | content | 25 | Long base64 blob in the body |
 | `excessive_url_encoding` | content | 15 | 10+ `%XX` sequences |
-| `html_entity_obfuscation` | content | 20 | 6+ `&#x..;` entities in the HTML body |
+| `html_entity_obfuscation` | content | 20 | 6+ HTML entities that spell plain letters or digits (`&#112;&#97;&#121;` = "pay"). Typographic entities (`&#160;`, `&#8217;`, dashes, emoji) don't count |
 | `link_text_href_mismatch` | link | 25 (max 2) | Link text shows one domain, the link goes to another. Links through mainstream newsletter click trackers (`LinkAnalyzer.ESP_CLICK_TRACKERS`: Mailchimp, SendGrid, …) are exempt, since legit newsletters wrap every link that way |
 | `ip_literal_host` | link | 20 | Link to a bare IP address |
 | `url_shortener` | link | 10 | Known shortener hides the destination |
@@ -175,11 +175,14 @@ details-card sentence (`RULE_WISDOM` in `Code.gs`).
 | **Pre-rendered images and GIFs** | `CardService` cannot draw custom graphics or run code; images are the only way to show a gauge or animation. | 101 GIFs (~17 MB) in the repo; changing thresholds means regenerating them. |
 | **Shared secret + ngrok for the demo** | Simple, keeps strangers off a public tunnel. | Static key, no rate limiting; production would use a Google OIDC identity token. |
 
-**Iterating on real mail.** Testing on a real inbox surfaced a false positive: a Mailchimp newsletter
-scored 70 (Malicious). Two causes. Reply-To arrived as `Name <info@tlvsalon.com>`, so the domain parsed
+**Iterating on real mail.** Testing on a real inbox surfaced two false positives. First, a Mailchimp
+newsletter scored 70 (Malicious), for two reasons. Reply-To arrived as `Name <info@tlvsalon.com>`, so the domain parsed
 as `tlvsalon.com>`. And every newsletter link goes through a click tracker (`us.list-manage.com`), so it
 looked like a text/href mismatch. Both are fixed and covered by a regression test that rebuilds that
-email (now Safe). The lesson is in the Roadmap: build a labelled set of real mail to measure the
+email (now Safe). Second, a welcome email from a large vendor was flagged for "disguised characters"
+because the rule counted all 921 of its HTML entities, including the spaces, quotes and dashes rich
+HTML is full of. The rule now counts only
+entities that spell ordinary letters or digits, which is the actual evasion trick. The lesson is in the Roadmap: build a labelled set of real mail to measure the
 false-positive rate before tuning weights further.
 
 ## Setup & local testing

@@ -483,3 +483,35 @@ def test_punycode_lookalike_not_fired_on_ascii_hosts(href):
 
 def test_punycode_lookalike_fires_once_per_message():
     assert len(_lookalike_findings("https://xn--pypal-4ve.com/", "https://xn--80ak6aa92e.com/")) == 1
+
+
+# --------------------------------------------------------------------------- #
+# Regression: html_entity_obfuscation on ordinary rich HTML (Claude welcome email)
+# --------------------------------------------------------------------------- #
+
+
+def _entity_rules(html: str):
+    return {f.rule for f in ContentAnalyzer().analyze(make_email(body_html=html))}
+
+
+def test_typographic_entities_are_not_obfuscation():
+    # nbsp, curly quotes, dashes, ellipsis, emoji: 921 of these were in a real welcome email.
+    html = "<p>We&#8217;re glad&#160;you&#8217;re here &#8212; welcome&#8230; &#x1F44B; &#x2013;</p>" * 150
+    assert "html_entity_obfuscation" not in _entity_rules(html)
+
+
+@pytest.mark.parametrize(
+    "html",
+    [
+        "".join(f"&#{ord(c)};" for c in "paypal") + ".com",  # decimal letters
+        "".join(f"&#x{ord(c):X};" for c in "verify123"),  # uppercase hex letters and digits
+        "<a href='x'>" + "".join(f"&#x{ord(c):x};" for c in "Login") + "&#160;" * 50 + "&#x6e;</a>",  # mixed with nbsp
+    ],
+)
+def test_entities_spelling_letters_are_obfuscation(html):
+    assert "html_entity_obfuscation" in _entity_rules(html)
+
+
+def test_entity_rule_survives_absurd_codepoints():
+    html = "&#99999999999999999999;&#x110000;" + "&#160;" * 10
+    assert "html_entity_obfuscation" not in _entity_rules(html)
