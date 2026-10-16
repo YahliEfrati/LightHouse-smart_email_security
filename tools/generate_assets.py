@@ -235,9 +235,7 @@ def main(out_dir: Path) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     for state in STATE_COLORS:
         render_icon(state).save(out_dir / f"icon_{state}.png")
-    for score in range(0, 101):
-        render_hero(score).save(out_dir / f"hero_{score}.png")
-    generate_hero_gifs(out_dir)
+    generate_hero_gifs(out_dir)  # the score heroes are animated GIFs only
     render_hero(None).save(out_dir / "hero_unscanned.png")
     render_hero(0, trusted=True).save(out_dir / "hero_trusted.png")
 

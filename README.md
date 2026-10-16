@@ -242,7 +242,7 @@ told nothing about the rules**. Each blind run happened once, before any change 
 - **After that, this set became a development set, not a test set.** The new rules were written after
   seeing these misses, so re-running them here proves little and is *not* reported as a detection rate.
   It was used only as a regression check: the re-run changed no legitimate email's score.
-  (`results_v1_before_bec.json` is the blind run, `results.json` the re-run.) Measuring the new rules
+  (`results_dev_blind.json` is the blind run, `results_dev_rerun.json` the re-run, `results_holdout.json` run 2.) Measuring the new rules
   needs a fresh set they were not designed on.
 
 ### Run 2: the holdout

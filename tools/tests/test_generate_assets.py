@@ -55,10 +55,14 @@ class GenerateAssetsTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             out = Path(d)
             ga.main(out)
-            files = {p.name for p in out.glob("*.png")}
-            self.assertEqual(len(files), 4 + 101 + 2)
-            for name in ("hero_0.png", "hero_100.png", "hero_unscanned.png", "hero_trusted.png", "icon_safe.png"):
-                self.assertIn(name, files)
+            pngs = {p.name for p in out.glob("*.png")}
+            gifs = {p.name for p in out.glob("*.gif")}
+            self.assertEqual(len(pngs), 4 + 2)  # icons + the static not-scanned / trusted heroes
+            self.assertEqual(len(gifs), 101)  # one animated hero per score
+            for name in ("hero_unscanned.png", "hero_trusted.png", "icon_safe.png"):
+                self.assertIn(name, pngs)
+            for name in ("hero_0.gif", "hero_100.gif"):
+                self.assertIn(name, gifs)
             with Image.open(out / "icon_safe.png") as im:
                 self.assertEqual(im.size, (128, 128))
 
