@@ -315,3 +315,12 @@ test('applyTrustedLookalike adds a header finding, raises the score by 40 and re
 test('verdictForScore mirrors the backend thresholds', () => {
   assert.deepStrictEqual([0, 34, 35, 69, 70, 100].map(p.verdictForScore), ['Safe', 'Safe', 'Suspicious', 'Suspicious', 'Malicious', 'Malicious']);
 });
+
+test('registrableDomain treats shared-hosting subdomains as separate sites', () => {
+  assert.strictEqual(p.registrableDomain('mybank.github.io'), 'mybank.github.io');
+  assert.strictEqual(p.registrableDomain('a.b.mysite.s3.amazonaws.com'), 'mysite.s3.amazonaws.com');
+  assert.strictEqual(p.registrableDomain('members.netflix.com'), 'netflix.com');
+  assert.strictEqual(p.inspectLink(L('mybank.github.io', 'https://evil.github.io/x')).status, 'mismatch');
+  assert.strictEqual(p.inspectLink(L('paypal.com', 'https://paypal.github.io/')).status, 'mismatch');
+  assert.strictEqual(p.inspectLink(L('netflix.com', 'https://www.netflix.com/x')).status, 'ok');
+});

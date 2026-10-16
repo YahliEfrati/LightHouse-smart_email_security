@@ -44,6 +44,40 @@ from urllib.parse import urlparse
 from models import EmailAnalysisRequest
 
 # --------------------------------------------------------------------------- #
+# Domain helpers
+# --------------------------------------------------------------------------- #
+
+#: Country suffixes where the "site" is three labels (example.co.uk). Keep in sync with
+#: TWO_PART_SUFFIXES in Presentation.gs (tests/test_shared_lists.py checks it).
+TWO_PART_SUFFIXES: Set[str] = {
+    "co.uk", "org.uk", "ac.uk", "gov.uk", "com.au", "net.au", "org.au", "co.nz", "co.il", "org.il",
+    "ac.il", "co.jp", "co.in", "com.br", "com.mx", "com.tr", "com.cn", "co.za",
+}
+#: Shared-hosting suffixes: anyone can get name.github.io, so each subdomain is a separate site.
+#: Without this, mybank.github.io and evil.github.io would look like one site - and phishing pages
+#: are often hosted exactly there. Keep in sync with SHARED_HOSTING_SUFFIXES in Presentation.gs.
+SHARED_HOSTING_SUFFIXES: Set[str] = {
+    "github.io", "gitlab.io", "web.app", "firebaseapp.com", "netlify.app", "vercel.app", "pages.dev",
+    "workers.dev", "herokuapp.com", "azurewebsites.net", "blogspot.com", "wixsite.com", "weebly.com",
+    "glitch.me", "onrender.com", "appspot.com", "s3.amazonaws.com", "r2.dev", "ngrok-free.app",
+}
+
+
+def registrable_domain(host: str) -> str:
+    """The "site" a host belongs to: a.b.example.com -> example.com, shop.example.co.uk ->
+    example.co.uk, evil.github.io -> evil.github.io. Small built-in suffix lists, no network."""
+    host = (host or "").lower().rstrip(".")
+    if not host or LinkAnalyzer.IPV4_RE.match(host):
+        return host
+    for suffix in sorted(TWO_PART_SUFFIXES | SHARED_HOSTING_SUFFIXES, key=len, reverse=True):
+        if host == suffix:
+            return host
+        if host.endswith("." + suffix):
+            return host[: -len(suffix) - 1].rsplit(".", 1)[-1] + "." + suffix
+    return ".".join(host.split(".")[-2:])
+
+
+# --------------------------------------------------------------------------- #
 # Shared data structures
 # --------------------------------------------------------------------------- #
 
@@ -125,7 +159,9 @@ class HeaderAnalyzer(Analyzer):
             claims_brand = brand in display_name or brand in local_and_domain
             if not claims_brand or not sender_domain:
                 continue
-            if sender_domain in legit_domains:
+            # Exact domain or a real subdomain (members.netflix.com): only the domain's owner can create
+            # those. Never "contains": netflix.com.evil.example belongs to evil.example.
+            if any(sender_domain == d or sender_domain.endswith("." + d) for d in legit_domains):
                 continue  # genuinely from the brand, nothing to flag
 
             close = get_close_matches(sender_domain, legit_domains, n=1, cutoff=self.TYPOSQUAT_CUTOFF)
@@ -435,9 +471,10 @@ class LinkAnalyzer(Analyzer):
                 continue
 
             text_domain = self._extract_domain_from_text(link.text)
+            # Same site = no mismatch: "netflix.com" text with a www./links. host is normal.
             if (
                 text_domain
-                and text_domain != href_domain
+                and registrable_domain(text_domain) != registrable_domain(href_domain)
                 and not self._is_click_tracker(href_domain)
                 and mismatches_reported < 2
             ):

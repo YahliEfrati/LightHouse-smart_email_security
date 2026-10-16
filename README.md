@@ -137,7 +137,7 @@ Category caps: `header` 50 · `content` 35 · `link` 40 · `attachment` 50.
 
 | Rule | Category | Weight | What it catches |
 |---|---|---|---|
-| `typosquat_domain` | header | 40 | Sender claims a known brand from a look-alike domain (`paypa1.com`) |
+| `typosquat_domain` | header | 40 | Sender claims a known brand from a look-alike domain (`paypa1.com`). Real subdomains of the brand (`members.netflix.com`) are legitimate; `netflix.com.evil.example` is not |
 | `display_name_domain_mismatch` | header | 35 | Display name/address names a brand, but the domain isn't one of its domains |
 | `trusted_contact_impersonation` | header | 40 | **New, runs in the add-on.** An untrusted sender poses as someone on *your* trusted list: the display name shows a trusted address, or the domain is a near-copy of a trusted contact's (`acmec0rp.com`, `acme-corp.com`). Free-mail domains are never compared |
 | `reply_to_mismatch` | header | 15 | Reply-To domain differs from the From domain |
@@ -147,7 +147,7 @@ Category caps: `header` 50 · `content` 35 · `link` 40 · `attachment` 50.
 | `base64_obfuscation` | content | 25 | Long base64 blob in the body |
 | `excessive_url_encoding` | content | 15 | 10+ `%XX` sequences |
 | `html_entity_obfuscation` | content | 20 | 6+ HTML entities that spell plain letters or digits (`&#112;&#97;&#121;` = "pay"). Typographic entities (`&#160;`, `&#8217;`, dashes, emoji) don't count |
-| `link_text_href_mismatch` | link | 25 (max 2) | Link text shows one domain, the link goes to another. Links through mainstream newsletter click trackers (`LinkAnalyzer.ESP_CLICK_TRACKERS`: Mailchimp, SendGrid, …) are exempt, since legit newsletters wrap every link that way |
+| `link_text_href_mismatch` | link | 25 (max 2) | Link text shows one *site*, the link goes to another. Compared by registrable domain (`www.`/`links.` of the same site match), with shared hosting (`github.io`, `web.app`, …) treated as separate sites per subdomain. Links through mainstream newsletter click trackers (`LinkAnalyzer.ESP_CLICK_TRACKERS`: Mailchimp, SendGrid, …) are exempt, since legit newsletters wrap every link that way |
 | `ip_literal_host` | link | 20 | Link to a bare IP address |
 | `url_shortener` | link | 10 | Known shortener hides the destination |
 | `high_entropy_domain` | link | 15 | Random-looking (DGA-style) domain label |
@@ -182,7 +182,11 @@ looked like a text/href mismatch. Both are fixed and covered by a regression tes
 email (now Safe). Second, a welcome email from a large vendor was flagged for "disguised characters"
 because the rule counted all 921 of its HTML entities, including the spaces, quotes and dashes rich
 HTML is full of. The rule now counts only
-entities that spell ordinary letters or digits, which is the actual evasion trick. The lesson is in the Roadmap: build a labelled set of real mail to measure the
+entities that spell ordinary letters or digits, which is the actual evasion trick. Third, a real Netflix
+email from `members.netflix.com` scored 100: the brand check accepted only the exact domain, so its own
+subdomain looked like typosquatting. Subdomains (only the owner can create them) are now legitimate, and
+links are compared by site. Shared-hosting suffixes keep `mybank.github.io` vs `evil.github.io` apart, so
+the fix opens no hole. The lesson is in the Roadmap: build a labelled set of real mail to measure the
 false-positive rate before tuning weights further.
 
 ## Setup & local testing
@@ -257,6 +261,8 @@ lets users add and remove addresses they know. The list lives in `PropertiesServ
 - `headers` are sent empty, so the SPF/DKIM/DMARC rules in the backend never fire; reading
   authentication headers needs access the add-on does not request today.
 - No URL-reputation lookups — a deliberate privacy choice (nothing leaves the backend).
+- "Same site" uses a small built-in suffix list, not the full Public Suffix List; an unlisted shared
+  host could make two strangers' subdomains look like one site.
 - QR codes (quishing) are not decoded: images are never sent to the backend, by design (least
   privilege / data minimisation).
 - No mailbox-level actions (label, move to spam): they require `gmail.modify`.

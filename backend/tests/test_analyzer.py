@@ -515,3 +515,92 @@ def test_entities_spelling_letters_are_obfuscation(html):
 def test_entity_rule_survives_absurd_codepoints():
     html = "&#99999999999999999999;&#x110000;" + "&#160;" * 10
     assert "html_entity_obfuscation" not in _entity_rules(html)
+
+
+# --------------------------------------------------------------------------- #
+# Regression: real Netflix mail from a subdomain scored 100 ("typosquatting")
+# --------------------------------------------------------------------------- #
+
+from analyzer import registrable_domain  # noqa: E402
+
+
+def _header_rules(email_address: str, display_name: str):
+    email = make_email(sender=SenderInfo(email=email_address, display_name=display_name))
+    return {f.rule for f in HeaderAnalyzer().analyze(email)}
+
+
+@pytest.mark.parametrize("address", ["info@members.netflix.com", "x@mailer.members.netflix.com", "a@netflix.com"])
+def test_brand_subdomain_is_legitimate(address):
+    assert _header_rules(address, "Netflix") == set()
+
+
+@pytest.mark.parametrize(
+    "address",
+    [
+        "info@netflix.com.evil.example",  # brand name as a *subdomain of the attacker's* domain
+        "info@members-netflix.com",  # hyphen, not a subdomain
+        "info@notnetflix.com",  # ends with the text but not with ".netflix.com"
+        "info@netfl1x.com",  # classic typosquat
+    ],
+)
+def test_brand_lookalikes_are_still_flagged(address):
+    assert _header_rules(address, "Netflix") & {"typosquat_domain", "display_name_domain_mismatch"}
+
+
+@pytest.mark.parametrize(
+    "host,site",
+    [
+        ("members.netflix.com", "netflix.com"),
+        ("paypal.com.evil.example", "evil.example"),
+        ("shop.example.co.uk", "example.co.uk"),
+        ("mybank.github.io", "mybank.github.io"),
+        ("a.b.mysite.s3.amazonaws.com", "mysite.s3.amazonaws.com"),
+        ("192.168.1.1", "192.168.1.1"),
+        ("", ""),
+    ],
+)
+def test_registrable_domain(host, site):
+    assert registrable_domain(host) == site
+
+
+def _mismatch(text: str, href: str) -> bool:
+    email = make_email(links=[LinkInfo(text=text, href=href)])
+    return "link_text_href_mismatch" in {f.rule for f in LinkAnalyzer().analyze(email)}
+
+
+@pytest.mark.parametrize(
+    "text,href",
+    [
+        ("netflix.com", "https://www.netflix.com/browse"),
+        ("www.netflix.com", "https://links.netflix.com/track?x=1"),
+        ("example.co.uk", "https://shop.example.co.uk/"),
+    ],
+)
+def test_same_site_subdomains_are_not_a_mismatch(text, href):
+    assert not _mismatch(text, href)
+
+
+@pytest.mark.parametrize(
+    "text,href",
+    [
+        ("paypal.com", "https://paypal.com.evil.example/login"),
+        ("mybank.github.io", "https://evil.github.io/login"),  # shared hosting: different sites
+        ("paypal.com", "https://paypal.github.io/"),
+        ("example.co.uk", "https://example.co.uk.evil.example/"),
+    ],
+)
+def test_different_sites_are_still_a_mismatch(text, href):
+    assert _mismatch(text, href)
+
+
+def test_netflix_marketing_mail_is_not_malicious():
+    email = make_email(
+        sender=SenderInfo(email="info@members.netflix.com", display_name="Netflix"),
+        subject="Time to come back",
+        links=[
+            LinkInfo(text="netflix.com", href="https://www.netflix.com/browse?trkid=1"),
+            LinkInfo(text="www.netflix.com", href="https://links.netflix.com/track?x=2"),
+        ],
+    )
+    score, verdict, findings = EmailRiskAnalyzer().analyze(email)
+    assert verdict == "Safe", (score, [f.rule for f in findings])

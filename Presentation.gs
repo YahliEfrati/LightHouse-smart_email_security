@@ -347,6 +347,13 @@ function findingsByRule(items) {
 
 const TWO_PART_SUFFIXES = ['co.uk', 'org.uk', 'ac.uk', 'gov.uk', 'com.au', 'net.au', 'org.au', 'co.nz', 'co.il', 'org.il',
   'ac.il', 'co.jp', 'co.in', 'com.br', 'com.mx', 'com.tr', 'com.cn', 'co.za'];
+/**
+ * Shared hosting: anyone can get name.github.io, so each subdomain is its own site (mybank.github.io and
+ * evil.github.io must not look like one site). Keep in sync with backend/analyzer.py (test_shared_lists.py).
+ */
+const SHARED_HOSTING_SUFFIXES = ['github.io', 'gitlab.io', 'web.app', 'firebaseapp.com', 'netlify.app', 'vercel.app',
+  'pages.dev', 'workers.dev', 'herokuapp.com', 'azurewebsites.net', 'blogspot.com', 'wixsite.com', 'weebly.com',
+  'glitch.me', 'onrender.com', 'appspot.com', 's3.amazonaws.com', 'r2.dev', 'ngrok-free.app'];
 const SHORTENER_DOMAINS = ['bit.ly', 'tinyurl.com', 't.co', 'goo.gl', 'ow.ly', 'is.gd', 'buff.ly', 'cutt.ly', 'rebrand.ly',
   'shorturl.at', 'tiny.cc', 'rb.gy'];
 /**
@@ -374,10 +381,18 @@ function isIpHost(host) {
 /** The "site" part of a host: example.com for a.b.example.com (small built-in suffix list, no network). */
 function registrableDomain(host) {
   if (!host || isIpHost(host)) return host || '';
-  const labels = host.split('.');
-  if (labels.length <= 2) return host;
-  const lastTwo = labels.slice(-2).join('.');
-  return TWO_PART_SUFFIXES.indexOf(lastTwo) !== -1 ? labels.slice(-3).join('.') : lastTwo;
+  // Longest matching suffix wins (mysite.s3.amazonaws.com before amazonaws.com); same logic as
+  // registrable_domain() in backend/analyzer.py.
+  const suffixes = TWO_PART_SUFFIXES.concat(SHARED_HOSTING_SUFFIXES).sort((a, b) => b.length - a.length);
+  for (let i = 0; i < suffixes.length; i++) {
+    const suffix = suffixes[i];
+    if (host === suffix) return host;
+    if (host.slice(-(suffix.length + 1)) === '.' + suffix) {
+      const rest = host.slice(0, -(suffix.length + 1)).split('.');
+      return rest[rest.length - 1] + '.' + suffix;
+    }
+  }
+  return host.split('.').slice(-2).join('.');
 }
 
 /** First domain-looking token in the visible link text ('' when the text is just words). */

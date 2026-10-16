@@ -149,10 +149,10 @@ pip install -r requirements-dev.txt
 pytest -v
 ```
 
-100 tests cover every heuristic rule in isolation (including that
+123 tests cover every heuristic rule in isolation (including that
 legitimate/benign emails are *not* flagged), the full scoring/verdict
 aggregation, and the HTTP layer end-to-end (including malformed and
-oversized-payload rejection with `422`). All 100 currently pass; the
+oversized-payload rejection with `422`). All 123 currently pass; the
 real server was also manually smoke-tested end-to-end via a standalone
 `uvicorn` process hitting `/health` and `/api/v1/analyze` over HTTP.
 

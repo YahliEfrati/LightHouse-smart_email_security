@@ -32,3 +32,10 @@ def test_verdict_thresholds_match():
     from analyzer import EmailRiskAnalyzer
 
     assert dict(EmailRiskAnalyzer.VERDICT_THRESHOLDS) == {int(match.group(1)): "Malicious", int(match.group(2)): "Suspicious"}
+
+
+def test_domain_suffix_lists_match():
+    from analyzer import SHARED_HOSTING_SUFFIXES, TWO_PART_SUFFIXES
+
+    assert _js_list("TWO_PART_SUFFIXES") == TWO_PART_SUFFIXES
+    assert _js_list("SHARED_HOSTING_SUFFIXES") == SHARED_HOSTING_SUFFIXES
