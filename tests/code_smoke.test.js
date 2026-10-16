@@ -293,6 +293,25 @@ test('Reply-To is sent to the backend as a bare address, without the display nam
   assert.strictEqual(sent.reply_to, 'info@tlvsalon.com');
 });
 
+test('Gmail\'s SPF/DKIM/DMARC verdict headers are sent to the backend; a missing one is left out', () => {
+  let sent = null;
+  const s = services({ backend: { body: { score: 0, verdict: 'Safe', reasoning: [] } }, onFetch: (u, o) => { sent = JSON.parse(o.payload); } });
+  const base = s.globals.GmailApp.getMessageById();
+  const auth = 'mx.google.com; dkim=pass header.i=@corp.example; spf=fail smtp.mailfrom=x.example; dmarc=fail';
+  s.globals.GmailApp.getMessageById = () => ({ ...base, getHeader: (name) => (name === 'Authentication-Results' ? auth : '') });
+  const { ctx } = load(s.globals);
+  open(ctx);
+  assert.deepStrictEqual(sent.headers, { 'Authentication-Results': auth });
+});
+
+test('a message without getHeader still scans, with no headers', () => {
+  let sent = null;
+  const s = services({ backend: { body: { score: 0, verdict: 'Safe', reasoning: [] } }, onFetch: (u, o) => { sent = JSON.parse(o.payload); } });
+  const { ctx } = load(s.globals);
+  open(ctx);
+  assert.deepStrictEqual(sent.headers, {});
+});
+
 test('an untrusted sender posing as a trusted contact gets a raised score and a clear finding', () => {
   const s = services({ trusted: ['ceo@acmecorp.example'], backend: { body: { score: 10, verdict: 'Safe', reasoning: [] } } });
   const base = s.globals.GmailApp.getMessageById();

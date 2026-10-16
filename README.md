@@ -20,7 +20,7 @@ reputation lookup or LLM (the demo's tunnel is the one third party in the path; 
   ([details](#evaluation)).
 - **English and Hebrew.** Wording rules understand both; Hebrew links and Hebrew domains are not treated as
   suspicious.
-- **Tested.** 184 backend tests, 62 add-on tests, 7 asset-generator tests.
+- **Tested.** 186 backend tests, 64 add-on tests, 7 asset-generator tests.
 
 ## Contents
 
@@ -71,7 +71,7 @@ that can't explain itself.
 
 | Add-on (Apps Script, runs in Google's cloud) | Backend (FastAPI, runs on our host) |
 |---|---|
-| Reads **only the open message** and extracts sender, Reply-To, subject, bodies, links (visible text and real target) and attachment **metadata**, never file bytes. | Treats every field as attacker-controlled: request models cap every string and list, so oversized input is rejected with `422`. |
+| Reads **only the open message** and extracts sender, Reply-To, subject, bodies, links (visible text and real target), attachment **metadata** (never file bytes) and Gmail's own SPF/DKIM/DMARC verdict (`Authentication-Results`). | Treats every field as attacker-controlled: request models cap every string and list, so oversized input is rejected with `422`. |
 | Owns everything that needs Gmail context or user data: trusted senders, caching, the "Check the links" card, the trusted-contact impersonation check, all UI. | Owns all scoring: five analyzers, each looking at one part of the email, and an aggregator that caps each category. Pure Python, unit-tested. |
 | Escapes every string it renders, because finding descriptions quote attacker text. | Never fetches, executes or renders its input. No third-party lookups, no LLM, no persistence. |
 | Any failure (backend down, `401`, timeout, bad JSON) shows a grey **Not scanned** card, which never looks safe. | Shared-secret authentication, compared in constant time; a rejection never says why. |
@@ -152,7 +152,7 @@ Weights in parentheses. "Once" means the rule counts at most once per email.
 | `display_name_domain_mismatch` (35) | The name or address claims a known brand, but the domain is not one of that brand's. |
 | `payment_request_unverified_sender` (35) | A request for money or new payment details comes from a free-mail address, or replies go to one. |
 | `reply_to_mismatch` (15) | Replies would go to a different domain than the sender's. |
-| `spf_fail`, `dkim_fail`, `dmarc_fail` (20 each) | Authentication headers report a failure. *Cannot fire today*: see [limitations](#known-limitations). |
+| `spf_fail`, `dkim_fail`, `dmarc_fail` (20 each) | Gmail's `Authentication-Results` header reports a failure. SPF and DKIM failures are ignored when DMARC passes (normal for forwarded mail and mailing lists). |
 | `trusted_contact_impersonation` (40) | *Runs in the add-on.* An untrusted sender poses as someone on your trusted list: the display name shows a trusted address, or the domain is a near-copy of a trusted contact's (`acmec0rp.com`). |
 
 **Message content** (cap 35)
@@ -252,7 +252,7 @@ second scan.
 |---|---|---|
 | **Explainable heuristics, not ML or an LLM** | Every point maps to a readable reason. Training a model needs a current labeled corpus, which doesn't fit 48 hours; an LLM would send email content to a third party. | Misses novel phrasing a model might catch. Weights are hand-tuned, not learned. |
 | **Nothing leaves the backend** | Email content is sensitive; third-party lookups are a privacy and compliance risk. | No knowledge of known-bad URLs or domain age. |
-| **Narrowest Gmail scope** | Blast radius of a bug or compromise is one open email. | The add-on can't read raw headers, so the SPF/DKIM/DMARC rules can't fire today. |
+| **Narrowest Gmail scope** | Blast radius of a bug or compromise is one open email. | No sender history ("have you had mail from this address before?" needs the whole mailbox), and no reporting or moving mail. |
 | **Per-category caps** | Many weak signals in one category shouldn't alone mean Malicious; independent ones should add up. | A truly single-category attack can stay below 70. |
 | **Impersonation check in the add-on** | It needs the trusted list, which should never leave Google. | A small piece of scoring lives in JS; a test keeps its thresholds equal to the backend's. |
 | **Trusted senders: amber is hidden, red is not** | Trusting someone should stop the false alarms on their normal mail, but a forged address or a hacked account ("urgent, transfer me ₪3,500") must not be a free pass. | One backend call even for known senders, and a *Suspicious* email from a trusted sender (for example a hacked account) passes without a warning. |
@@ -355,12 +355,12 @@ ngrok http 8000                        # or, with a reserved domain: ngrok http 
 **Tests**
 
 ```powershell
-# backend: 184 tests (from backend/, with the virtual environment active)
+# backend: 186 tests (from backend/, with the virtual environment active)
 pip install -r requirements-dev.txt
 pytest
 python eval/run_eval.py          # evaluation on the 50-email set
 
-# add-on: 62 tests (from the repository root)
+# add-on: 64 tests (from the repository root)
 node --test tests/presentation.test.js tests/code_smoke.test.js
 
 # asset generator: 7 tests (from the repository root)
@@ -390,7 +390,9 @@ python -m unittest discover -s tools/tests
 
 ## Known limitations
 
-- **No SPF/DKIM/DMARC.** The add-on's scope can't read raw headers, so these rules exist but can't fire.
+- **SPF/DKIM/DMARC catch forgery, not look-alikes.** An attacker who owns `paypa1-support.com` passes all three;
+  these rules only fire when someone forges an address they don't control. Neither evaluation set has headers,
+  so they are unit-tested but not measured.
 - **No URL reputation.** A deliberate privacy choice: nothing leaves the backend.
 - **Languages: English and Hebrew only**, and the card itself is in English. The Hebrew wording rules are unit-tested
   but have no evaluation set yet (both 50-email sets are in English).
@@ -423,7 +425,6 @@ rule measured on a fresh holdout**, not tuning the rules we have. What the holdo
   round of rule changes.
 - **Learned weights.** Learn the rule weights from labeled data, keeping every point explainable.
 - **QR codes.** Decode QR images on the backend and send the extracted link through the existing link rules.
-- **SPF/DKIM/DMARC** from message headers, if a broader scope is acceptable.
 - **A real feedback loop.** "Which of these is wrong?" lets the user mute only the wrong findings, only for
   that sender (identity checks can never be muted). The backend keeps counts only, so per-rule false-alarm
   rates become visible to the operator without storing email content.

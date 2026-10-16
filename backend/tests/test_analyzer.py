@@ -83,6 +83,24 @@ def test_reply_to_mismatch_detected():
     assert "reply_to_mismatch" in rules
 
 
+def test_auth_fail_ignored_when_dmarc_passes():
+    # A forwarded email: SPF breaks on the forwarder, but DMARC still verifies the sender via DKIM.
+    email = make_email(headers={"Authentication-Results": "mx.google.com; dkim=pass header.i=@corp.example; "
+                                "dkim=fail header.i=@list.example; spf=fail smtp.mailfrom=fwd.example; "
+                                "dmarc=pass (p=NONE) header.from=corp.example"})
+    rules = {f.rule for f in HeaderAnalyzer().analyze(email)}
+    assert not rules & {"spf_fail", "dkim_fail", "dmarc_fail"}
+
+
+def test_real_gmail_pass_header_adds_nothing():
+    email = make_email(headers={"Authentication-Results": "mx.google.com; dkim=pass header.i=@activetrail.com; "
+                                "spf=pass (google.com: domain of x@bounce.example designates 1.2.3.4 as permitted "
+                                "sender) smtp.mailfrom=x@bounce.example; dmarc=pass (p=NONE sp=NONE dis=NONE) "
+                                "header.from=jafi.org"})
+    rules = {f.rule for f in HeaderAnalyzer().analyze(email)}
+    assert not rules & {"spf_fail", "dkim_fail", "dmarc_fail"}
+
+
 def test_spf_fail_detected():
     email = make_email(headers={"Authentication-Results": "mx.google.com; spf=fail smtp.mailfrom=evil.com"})
     findings = HeaderAnalyzer().analyze(email)

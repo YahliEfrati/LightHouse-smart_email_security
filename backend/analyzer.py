@@ -240,7 +240,12 @@ class HeaderAnalyzer(Analyzer):
             if key.lower() in ("authentication-results", "received-spf"):
                 auth_results += f" {value}".lower()
 
+        # dmarc=pass means the visible From domain was verified through SPF or DKIM. A failing check
+        # beside it is the normal side effect of forwarding or mailing lists, not a forgery.
+        dmarc_passed = re.search(r"\bdmarc\s*=\s*pass\b", auth_results) is not None
         for mechanism in ("spf", "dkim", "dmarc"):
+            if mechanism != "dmarc" and dmarc_passed:
+                continue
             if re.search(rf"\b{mechanism}\s*=\s*fail\b", auth_results):
                 findings.append(
                     self._finding(

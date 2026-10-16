@@ -196,7 +196,21 @@ function extractEmailData(message) {
     bodyHtml: bodyHtml.substring(0, 400000),
     links: extractLinks(bodyHtml).slice(0, 200),
     attachments: extractAttachmentMetadata(message).slice(0, 50),
+    authHeaders: extractAuthHeaders(message),
   };
+}
+
+/**
+ * The receiving server's SPF/DKIM/DMARC verdicts. getHeader returns the topmost copy, which Gmail
+ * adds itself; a forged copy lower down can only add a "fail", never hide one.
+ */
+function extractAuthHeaders(message) {
+  const headers = {};
+  ['Authentication-Results', 'Received-SPF'].forEach((name) => {
+    const value = safeGet(() => message.getHeader(name));
+    if (value) headers[name] = String(value).substring(0, 4000);
+  });
+  return headers;
 }
 
 /** Splits a raw "From" header like `"Alice" <alice@example.com>` into parts. */
@@ -271,7 +285,7 @@ function callBackend(email) {
     body_html: email.bodyHtml,
     links: email.links,
     attachments: email.attachments,
-    headers: {},
+    headers: email.authHeaders || {},
   };
 
   const options = {
