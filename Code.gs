@@ -223,6 +223,15 @@ function safeGet(fn) {
 // --------------------------------------------------------------------------
 
 /**
+ * Shared secret for the backend, kept in Script Properties (never in source or git):
+ * Apps Script editor -> Project Settings -> Script Properties -> BACKEND_API_KEY.
+ * If it is missing or wrong the backend answers 401 and the user sees the grey "Not scanned" card.
+ */
+function getBackendApiKey() {
+  return (PropertiesService.getScriptProperties().getProperty('BACKEND_API_KEY') || '').trim();
+}
+
+/**
  * Calls the FastAPI backend's /api/v1/analyze endpoint.
  * Never throws: on any network error, timeout, or non-2xx response it
  * returns { error: true } so the caller can render a friendly fallback card
@@ -243,6 +252,7 @@ function callBackend(email) {
   const options = {
     method: 'post',
     contentType: 'application/json',
+    headers: { 'X-Lighthouse-Key': getBackendApiKey() },
     payload: JSON.stringify(payload),
     muteHttpExceptions: true,
     followRedirects: true,

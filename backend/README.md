@@ -93,26 +93,18 @@ python -m venv .venv
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Set the shared secret (any long random string; must match the add-on's BACKEND_API_KEY)
-$env:LIGHTHOUSE_API_KEY = "<paste-a-long-random-string>"      # Windows PowerShell
-# export LIGHTHOUSE_API_KEY="<...>"                           # macOS/Linux
-
-# 4. Start the API
+# 3. Start the API
 uvicorn main:app --reload --port 8000
 
-# 5. Interactive docs at http://127.0.0.1:8000/docs
+# 4. Interactive docs at http://127.0.0.1:8000/docs
 ```
 
 ### Authentication
 
-`/api/v1/analyze` requires the header `X-Lighthouse-Key: <LIGHTHOUSE_API_KEY>`.
-
-- Missing or wrong key -> `401 Unauthorized` (the body never says why).
-- Key not configured on the server -> `503` (it **fails closed**, never silently runs open).
-- The comparison is constant-time (`secrets.compare_digest`).
-- `/health` stays open and returns only `{"status": "ok"}`.
-
-Generate a key with: `python -c "import secrets; print(secrets.token_urlsafe(32))"`
+`/api/v1/analyze` requires the header `X-Lighthouse-Key`. On first start the backend creates
+`backend/.env` (git-ignored) containing `LIGHTHOUSE_API_KEY=<random>`; copy that value into the
+add-on's Script Property `BACKEND_API_KEY`. Wrong or missing key -> `401`. `/health` stays open and
+returns only `{"status": "ok"}`. The file is the single source of truth.
 
 ### Example request
 

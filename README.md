@@ -97,7 +97,6 @@ cannot reach `localhost` directly, so you need a tunnel:
 ```powershell
 # 1. Start the backend (see /backend/README.md)
 cd backend
-$env:LIGHTHOUSE_API_KEY = "<long-random-string>"
 uvicorn main:app --reload --port 8000
 
 # 2. In a second terminal, expose it publicly
@@ -111,7 +110,7 @@ Then:
    Apps Script project (or use `clasp push` with the existing
    `.clasp.json` in this folder).
 2. Paste `Code.gs`, `Presentation.gs` and `appsscript.json` into the project (or `clasp push`).
-   Then add the Script Property `BACKEND_API_KEY` (see *Backend authentication* below).
+   Then add the Script Property `BACKEND_API_KEY` with the value from `backend/.env`.
 3. In `Code.gs`, set `BACKEND_URL` to
    `https://xxxx.ngrok-free.app/api/v1/analyze`.
 4. **Deploy → Test deployments → Install add-on** (or use "Run" from the
@@ -128,16 +127,15 @@ Then:
 The backend is reachable through a public tunnel and its URL lives in this public repo, so it must
 not answer strangers (flooding, using it as a free oracle to tune evasive emails, probing it).
 
-- The add-on sends `X-Lighthouse-Key` with every scan. The key lives in **Script Properties**
+- The add-on sends an `X-Lighthouse-Key` header with every scan; the key lives in **Script Properties**
   (`BACKEND_API_KEY`), never in the source or git.
-- The backend compares it, in constant time, with the `LIGHTHOUSE_API_KEY` environment variable.
-  Wrong or missing key -> `401`; no key configured on the server -> `503` (fails closed).
+- The backend checks it in constant time. Wrong or missing key -> `401` with a body that never says why.
+- **Zero-setup key:** on first start the backend creates `backend/.env` (git-ignored) with a random key
+  and logs where to find it (the key itself is never logged). Copy that value once into Script Properties.
+  If a `LIGHTHOUSE_API_KEY` environment variable exists, it only seeds the file the first time.
 - On any non-2xx answer the user sees the grey **Not scanned** card, which never implies safety.
-- Setup: generate a key (`python -c "import secrets; print(secrets.token_urlsafe(32))"`), set it as
-  `LIGHTHOUSE_API_KEY` before starting uvicorn, and add the same value as the Script Property
-  `BACKEND_API_KEY` (Apps Script editor -> Project Settings -> Script Properties).
 - Not covered (documented follow-ups): rate limiting, key rotation, and for production a Google
-  OIDC identity token instead of a shared secret.
+  OIDC identity token instead of a static shared secret.
 
 ## Trusted senders
 

@@ -130,10 +130,11 @@ test('adding a whole free-mail provider as trusted is refused; a full address is
   assert.deepStrictEqual(JSON.parse(s.store.trustedSenders), []);
 });
 
-test('backend call sends the shared secret from Script Properties', () => {
+
+test('backend call sends the shared secret from Script Properties (trimmed)', () => {
   let seen;
   const s = services({
-    scriptProps: { BACKEND_API_KEY: 'k-123' },
+    scriptProps: { BACKEND_API_KEY: ' k-123 ' },
     onFetch: (url, options) => { seen = options; },
     backend: { body: { score: 5, verdict: 'Safe', reasoning: [] } },
   });

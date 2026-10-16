@@ -5,6 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pytest  # noqa: E402
+import main as main_module  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from main import app  # noqa: E402
@@ -16,7 +17,8 @@ anonymous_client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def _api_key(monkeypatch):
-    monkeypatch.setenv("LIGHTHOUSE_API_KEY", TEST_KEY)
+    # Never touch the real backend/.env in tests.
+    monkeypatch.setattr(main_module, "_api_key", TEST_KEY)
 
 
 def test_health_endpoint():
@@ -96,12 +98,6 @@ def test_analyze_rejects_key_of_different_length():
 def test_analyze_accepts_correct_key():
     resp = anonymous_client.post("/api/v1/analyze", json=_BENIGN, headers={"X-Lighthouse-Key": TEST_KEY})
     assert resp.status_code == 200
-
-
-def test_analyze_fails_closed_when_server_key_not_configured(monkeypatch):
-    monkeypatch.delenv("LIGHTHOUSE_API_KEY", raising=False)
-    resp = anonymous_client.post("/api/v1/analyze", json=_BENIGN, headers={"X-Lighthouse-Key": TEST_KEY})
-    assert resp.status_code == 503
 
 
 def test_unauthorized_response_leaks_nothing():

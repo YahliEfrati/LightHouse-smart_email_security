@@ -44,53 +44,62 @@ Run instructions
          "attachments": [{"filename": "invoice.pdf.exe"}]
        }
 
-Authentication: set LIGHTHOUSE_API_KEY (see README) and send it as the X-Lighthouse-Key header.
+Authentication: the add-on sends the header X-Lighthouse-Key. The key is created automatically in
+backend/.env on first start (see config.py and README).
 
 Run tests with:  pytest
 """
 from __future__ import annotations
 
 import logging
-import os
 import secrets
+from contextlib import asynccontextmanager
+from typing import Optional
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from analyzer import EmailRiskAnalyzer
+from config import load_api_key
 from models import AnalysisResponse, EmailAnalysisRequest, ReasoningItem
 
 logger = logging.getLogger("malicious_email_scorer")
 logging.basicConfig(level=logging.INFO)
 
-app = FastAPI(
-    title="Malicious Email Scorer API",
-    description="Local, explainable heuristic scoring of email maliciousness for the Gmail Security Add-on.",
-    version="1.0.0",
-)
+_api_key: Optional[str] = None
 
-API_KEY_ENV = "LIGHTHOUSE_API_KEY"
+
+def get_api_key() -> str:
+    """The shared secret, loaded lazily (and created on first run) by ``config.load_api_key``."""
+    global _api_key
+    if not _api_key:
+        _api_key = load_api_key()
+    return _api_key
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    get_api_key()  # create/load the key at startup so first-run instructions appear immediately
+    yield
 
 
 def require_api_key(x_lighthouse_key: str = Header(default="")) -> None:
     """Shared-secret authentication between the Gmail Add-on and this API.
 
-    The expected key comes from the ``LIGHTHOUSE_API_KEY`` environment variable and is
-    read per request. If it is not configured the endpoint **fails closed** (503) rather
-    than silently running open. The comparison is constant-time to avoid timing leaks, and
-    rejections never say *why* a key was wrong.
+    The comparison is constant-time (no timing leak) and a rejection never says *why*.
     """
-    expected = os.environ.get(API_KEY_ENV, "")
-    if not expected:
-        logger.error("%s is not set; refusing all analysis requests.", API_KEY_ENV)
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Service is not configured.",
-        )
+    expected = get_api_key()
     if not secrets.compare_digest(x_lighthouse_key.encode("utf-8"), expected.encode("utf-8")):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
+
+app = FastAPI(
+    lifespan=lifespan,
+    title="Malicious Email Scorer API",
+    description="Local, explainable heuristic scoring of email maliciousness for the Gmail Security Add-on.",
+    version="1.0.0",
+)
 
 # A single, stateless, reusable instance of the analysis pipeline.
 _risk_analyzer = EmailRiskAnalyzer()
