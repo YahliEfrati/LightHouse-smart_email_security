@@ -423,7 +423,7 @@ rule measured on a fresh holdout**, not tuning the rules we have. What the holdo
 - **Executables behind links.** Apply the risky-file check to link targets (`.msi`, `.exe`), not only attachments.
 - **Measure on real mail.** Public phishing corpora and real legitimate mail, and a fresh holdout for every
   round of rule changes.
-- **Learned weights.** Learn the rule weights from labeled data, keeping every point explainable.
+- **Learned weights.** Learn the rule weights from the feedback loop's labels, keeping every point explainable.
 - **QR codes.** Decode QR images on the backend and send the extracted link through the existing link rules.
 - **A real feedback loop.** "Which of these is wrong?" lets the user mute only the wrong findings, only for
   that sender (identity checks can never be muted). The backend keeps counts only, so per-rule false-alarm
