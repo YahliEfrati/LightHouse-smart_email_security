@@ -1,0 +1,6 @@
+# Only these files belong in the Apps Script project.
+# Everything else (assets, tools, tests, docs, backend) is repo-only.
+**/**
+!Code.gs
+!Presentation.gs
+!appsscript.json

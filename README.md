@@ -49,7 +49,10 @@ blast radius is a single opened email, not the user's whole mailbox.
 ├── assets/                 Generated PNGs: icons, state banners, risk gauges (served via GitHub raw)
 ├── tools/generate_assets.py  Regenerates /assets  (python tools/generate_assets.py)
 ├── tests/                  Node tests for Presentation.gs and a CardService smoke test
-└── docs/                   Design spec, implementation plan, demo script
+├── docs/                   Design spec, implementation plan, demo script
+├── backend/                FastAPI scoring service (see backend/README.md)
+├── .claspignore            Keeps clasp from pushing anything except Code.gs, Presentation.gs, appsscript.json
+└── .gitignore
 ```
 
 Images in Gmail cards must come from a public HTTPS URL, so the PNGs are committed and loaded from
@@ -94,7 +97,7 @@ cannot reach `localhost` directly, so you need a tunnel:
 
 ```powershell
 # 1. Start the backend (see /backend/README.md)
-cd ../backend
+cd backend
 uvicorn main:app --reload --port 8000
 
 # 2. In a second terminal, expose it publicly
