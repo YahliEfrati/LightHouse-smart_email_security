@@ -164,6 +164,32 @@ function isTrustedBy(senderEmail, trustedList) {
   });
 }
 
+/** One-line labels for the first screen; the full, friendlier sentences live in the details card. */
+const RULE_SHORT_LABELS = {
+  typosquat_domain: 'Look-alike sender address',
+  display_name_domain_mismatch: 'Sender name doesn\u2019t match address',
+  reply_to_mismatch: 'Replies go somewhere else',
+  spf_fail: 'Sender not verified',
+  dkim_fail: 'Signature check failed',
+  dmarc_fail: 'Authenticity check failed',
+  urgency_financial_proximity: 'Pressure plus money talk',
+  base64_obfuscation: 'Hidden encoded text',
+  excessive_url_encoding: 'Scrambled link encoding',
+  html_entity_obfuscation: 'Disguised characters',
+  link_text_href_mismatch: 'Link goes somewhere else',
+  ip_literal_host: 'Link to a bare IP address',
+  url_shortener: 'Shortened link',
+  high_entropy_domain: 'Random-looking link domain',
+  double_extension: 'Disguised file extension',
+  dangerous_extension: 'Program or script attached',
+  macro_enabled_with_pressure_context: 'Macro file plus pressure',
+  macro_enabled_attachment: 'Macro-enabled attachment',
+};
+
+function shortLabelForRule(rule) {
+  return RULE_SHORT_LABELS[rule] || 'Something unusual';
+}
+
 /** Labels of the check categories that raised no finding ("what we checked"). */
 function checksPassed(reasoning) {
   const fired = {};
@@ -174,6 +200,6 @@ function checksPassed(reasoning) {
 if (typeof module !== 'undefined') {
   module.exports = {
     normalizeScore, heroFile, HERO_UNSCANNED_FILE, HERO_TRUSTED_FILE, isPublicMailDomain, isTrustedBy, assetUrl, stateForResult, presentationFor,
-    topFinding, topFindings, sortFindings, checkStatuses, checkStripText, safeText, checksPassed, CHECKS_PERFORMED, SCORE_LEGEND,
+    topFinding, topFindings, sortFindings, checkStatuses, checkStripText, shortLabelForRule, RULE_SHORT_LABELS, safeText, checksPassed, CHECKS_PERFORMED, SCORE_LEGEND,
   };
 }

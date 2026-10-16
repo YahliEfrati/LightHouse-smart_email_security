@@ -60,6 +60,8 @@ test('first screen: score is native text, check strip and at most 3 findings sho
   assert.ok(texts.some((s) => s.includes('\u26A0 Links')), 'check strip');
   assert.strictEqual(calls.filter(([m]) => m === 'setStartIcon').length, 3);
   assert.ok(texts.includes('<i>+2 more in the details</i>'));
+  assert.ok(texts.includes('Shortened link'), 'short one-line label, not the long sentence');
+  assert.ok(!texts.some((t) => t.includes('behind a shortener')), 'no long sentence on the first screen');
 });
 
 test('safe first screen has the strip and no findings', () => {

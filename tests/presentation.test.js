@@ -89,3 +89,16 @@ test('public mail provider domains are never trusted as a whole, but full addres
   assert.strictEqual(p.isTrustedBy('stranger@gmail.com', ['gmail.com']), false);
   assert.strictEqual(p.isTrustedBy('friend@gmail.com', ['friend@gmail.com']), true);
 });
+
+test('every backend rule has a short one-line label; unknown rules get a fallback', () => {
+  const rules = ['typosquat_domain', 'display_name_domain_mismatch', 'reply_to_mismatch', 'spf_fail', 'dkim_fail', 'dmarc_fail',
+    'urgency_financial_proximity', 'base64_obfuscation', 'excessive_url_encoding', 'html_entity_obfuscation',
+    'link_text_href_mismatch', 'ip_literal_host', 'url_shortener', 'high_entropy_domain', 'double_extension',
+    'dangerous_extension', 'macro_enabled_with_pressure_context', 'macro_enabled_attachment'];
+  rules.forEach((r) => {
+    const label = p.shortLabelForRule(r);
+    assert.notStrictEqual(label, 'Something unusual', r);
+    assert.ok(label.length <= 40, r + ' label too long');
+  });
+  assert.strictEqual(p.shortLabelForRule('nope'), 'Something unusual');
+});

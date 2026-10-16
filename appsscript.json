@@ -13,7 +13,7 @@
     "name": "Lighthouse",
     "logoUrl": "https://raw.githubusercontent.com/YahliEfrati/LightHouse-smart_email_security/main/assets/icon_safe.png",
     "primaryColor": "#0B3D59",
-    "secondaryColor": "#FDB813",
+    "secondaryColor": "#0B3D59",
     "contextualTriggers": [
       {
         "unconditional": {},

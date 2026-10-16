@@ -476,8 +476,7 @@ function buildResultCard(email, result, messageId, isTrusted) {
       findingsSection.addWidget(
         CardService.newDecoratedText()
           .setStartIcon(materialIconImage(meta.icon))
-          .setText(safeText(wisdomForRule(item.rule), 160))
-          .setWrapText(true)
+          .setText(safeText(shortLabelForRule(item.rule), 60))
       );
     });
     const more = result.reasoning.length - findings.length;
