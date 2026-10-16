@@ -11,6 +11,17 @@ test('heroFile is one image per integer score, clamped to 0-100', () => {
   assert.strictEqual(p.HERO_UNSCANNED_FILE, 'hero_unscanned.png');
 });
 
+test('animated hero: listed scores use the GIF, and every hero file exists in assets', () => {
+  const fs = require('fs');
+  const path = require('path');
+  assert.strictEqual(p.heroFile(10), 'hero_10.gif');
+  assert.strictEqual(p.heroFile(9.6), 'hero_10.gif');
+  assert.strictEqual(p.heroFile(11), 'hero_11.png');
+  for (let s = 0; s <= 100; s++) {
+    assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', p.heroFile(s))), p.heroFile(s) + ' missing');
+  }
+});
+
 test('stateForResult maps verdicts and falls back to suspicious', () => {
   assert.strictEqual(p.stateForResult({ verdict: 'Safe' }), 'safe');
   assert.strictEqual(p.stateForResult({ verdict: 'Suspicious' }), 'suspicious');

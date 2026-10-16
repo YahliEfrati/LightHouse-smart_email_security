@@ -6,11 +6,12 @@ from a public HTTPS URL (raw.githubusercontent.com).
 """
 from __future__ import annotations
 
+import math
 import sys
 from pathlib import Path
 from typing import Optional, Tuple
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 RGB = Tuple[int, int, int]
 SS = 4  # supersampling factor for anti-aliasing
@@ -99,17 +100,61 @@ def _fit_font(draw: ImageDraw.ImageDraw, text: str, size: int, max_width: int) -
     return font
 
 
-def render_hero(score: Optional[int], trusted: bool = False) -> Image.Image:
+LAMP = (54, 35)  # lighthouse lamp position inside the 600x146 hero (icon pasted at 24,16, 60px)
+
+
+def _beam_layer(w: int, h: int, angle: float) -> Image.Image:
+    """White light beam from the lamp, as seen while the light turns.
+
+    angle is the rotation around the tower (0 = pointing right, pi/2 = at the viewer): the beam's
+    visible length follows cos(angle) and the lamp flares as it faces the viewer.
+    """
+    size = (w * SS, h * SS)
+    layer = Image.new("RGBA", size, (0, 0, 0, 0))
+    lx, ly = LAMP[0] * SS, LAMP[1] * SS
+    reach = math.cos(angle) * (w - LAMP[0])
+    if abs(reach) > 4:
+        tip = lx + reach * SS
+        length = max(1, round(abs(tip - lx)))
+        # Alpha fades from full at the lamp to 0 at this beam's own tip.
+        ramp = Image.linear_gradient("L").rotate(90, expand=True).resize((length, size[1]))  # 0 left -> 255 right
+        if reach > 0:
+            ramp = ramp.transpose(Image.FLIP_LEFT_RIGHT)
+        fade = Image.new("L", size, 0)
+        fade.paste(ramp, (round(min(lx, tip)), 0))
+        light = Image.new("L", size, 0)
+        # Wide soft glow plus a bright narrow core reads as a real beam even at sidebar size.
+        for half_open, strength, blur in ((8 + 30 * abs(reach) / (w - LAMP[0]), 0.75, 5), (3 + 9 * abs(reach) / (w - LAMP[0]), 1.0, 2)):
+            shape = Image.new("L", size, 0)
+            ImageDraw.Draw(shape).polygon([(lx, ly - 3 * SS), (tip, ly - half_open * SS), (tip, ly + half_open * SS), (lx, ly + 3 * SS)],
+                                          fill=round(255 * strength))
+            light = ImageChops.lighter(light, shape.filter(ImageFilter.GaussianBlur(blur * SS)))
+        layer = Image.new("RGBA", size, (255, 250, 225, 255))
+        layer.putalpha(ImageChops.multiply(light, fade.point(lambda v: min(255, round(v * 1.15)))))
+    flare = max(0.0, math.sin(angle))
+    if flare > 0.05:
+        glow = Image.new("RGBA", size, (0, 0, 0, 0))
+        r = (10 + 22 * flare) * SS
+        ImageDraw.Draw(glow).ellipse((lx - r, ly - r, lx + r, ly + r), fill=(255, 244, 200, round(235 * flare)))
+        glow = glow.filter(ImageFilter.GaussianBlur(7 * SS))
+        layer = Image.alpha_composite(layer, glow)
+    return layer
+
+
+def render_hero(score: Optional[int], trusted: bool = False, beam_angle: Optional[float] = None) -> Image.Image:
     """600x146 band: state color, lighthouse, verdict headline and the gradient gauge.
 
     The score itself is rendered as native text by the add-on (it feels part of the UI),
     so the image only carries color + gauge. score=None renders the grey "not scanned" variant; trusted=True the green "trusted sender" variant (score 0).
+    beam_angle adds a sweeping light beam (animation frames only); None is the static image.
     """
     w, h = 600, 146
     state = "trusted" if trusted else "unscanned" if score is None else state_for_score(score)
     if trusted:
         score = 0
     img = Image.new("RGB", (w * SS, h * SS), STATE_COLORS["safe" if trusted else state])
+    if beam_angle is not None:
+        img = Image.alpha_composite(img.convert("RGBA"), _beam_layer(w, h, beam_angle)).convert("RGB")
     d = ImageDraw.Draw(img)
     icon = render_icon("safe" if trusted else state).resize((60 * SS, 60 * SS), Image.LANCZOS)
     img.paste(icon, (24 * SS, 16 * SS), icon)
@@ -139,6 +184,21 @@ def render_hero(score: Optional[int], trusted: bool = False) -> Image.Image:
     ring = STATE_COLORS["malicious"] if alert else score_color(score)
     d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=WHITE, outline=ring, width=4 * SS)
     return img.resize((w, h), Image.LANCZOS)
+
+
+def save_hero_animation(path: Path, score: Optional[int], trusted: bool = False, turns: int = 2, frames_per_turn: int = 24) -> None:
+    """GIF that plays ONCE: the light makes `turns` full turns, then rests on the exact static hero."""
+    frames = turns * frames_per_turn
+    angles = [-math.pi / 2 + 2 * math.pi * turns * i / frames for i in range(1, frames)]
+    images = [render_hero(score, trusted, beam_angle=a) for a in angles] + [render_hero(score, trusted)]
+    # One shared palette built from every frame: no colour shifts between frames, no banding in the beam.
+    sheet = Image.new("RGB", (images[0].width, images[0].height * len(images)))
+    for i, im in enumerate(images):
+        sheet.paste(im, (0, im.height * i))
+    palette = sheet.quantize(colors=255, method=Image.Quantize.MEDIANCUT)
+    gif = [im.quantize(palette=palette, dither=Image.Dither.NONE) for im in images]
+    # No `loop` argument: no NETSCAPE loop block, so viewers play the animation once and stop.
+    gif[0].save(path, save_all=True, append_images=gif[1:], duration=[45] * (len(gif) - 1) + [60000], optimize=False)
 
 
 def main(out_dir: Path) -> None:
