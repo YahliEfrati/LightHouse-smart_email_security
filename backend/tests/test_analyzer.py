@@ -266,3 +266,133 @@ def test_score_is_clamped_between_0_and_100():
 )
 def test_verdict_thresholds(score, expected):
     assert EmailRiskAnalyzer()._verdict_for(score) == expected
+
+
+# --------------------------------------------------------------------------- #
+# credential_request_language (content)
+# --------------------------------------------------------------------------- #
+
+
+def _credential_findings(body: str, subject: str = "Hello"):
+    findings = ContentAnalyzer().analyze(make_email(subject=subject, body_text=body))
+    return [f for f in findings if f.rule == "credential_request_language"]
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "Please verify your account to keep using our service.",
+        "To restore access, confirm your password using the form below.",
+        "You must sign in to continue.",
+        "Update your billing details before Friday.",
+        "Enter your password on the next page.",
+        "Kindly confirm your Microsoft\ncredentials here.",
+    ],
+)
+def test_credential_request_language_detected(body):
+    found = _credential_findings(body)
+    assert len(found) == 1
+    assert found[0].category == "content"
+    assert found[0].weight == 15
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "You changed your password on Monday. If this was you, no action is needed.",
+        "Your password was updated successfully.",
+        "Reminder: never share your password with anyone, including us.",
+        "Click here to reset your password.",
+        "Please confirm your attendance at Thursday's meeting.",
+    ],
+)
+def test_credential_request_language_not_fired_on_bare_mentions(body):
+    assert _credential_findings(body) == []
+
+
+def test_credential_request_language_fires_once_per_message():
+    body = (
+        "Verify your account now. Confirm your password. Enter your password. "
+        "Sign in to continue. Update your payment details."
+    )
+    assert len(_credential_findings(body, subject="Confirm your login")) == 1
+
+
+def test_credential_request_language_respects_content_cap():
+    # urgency/financial proximity (2 x 20) + credential request (15) = 55 raw content points
+    email = make_email(
+        body_text=(
+            "URGENT: verify your account immediately by confirming your bank account details. "
+            "Act now and enter your password."
+        )
+    )
+    score, _, findings = EmailRiskAnalyzer().analyze(email)
+    content = [f for f in findings if f.category == "content"]
+    assert "credential_request_language" in {f.rule for f in content}
+    assert sum(f.weight for f in content) > EmailRiskAnalyzer.CATEGORY_CAPS["content"]
+    assert {f.category for f in findings} == {"content"}
+    assert score == EmailRiskAnalyzer.CATEGORY_CAPS["content"]
+
+
+# --------------------------------------------------------------------------- #
+# suspicious_tld (link)
+# --------------------------------------------------------------------------- #
+
+
+def _tld_findings(*hrefs: str):
+    links = [LinkInfo(text="Click here", href=h) for h in hrefs]
+    return [f for f in LinkAnalyzer().analyze(make_email(links=links)) if f.rule == "suspicious_tld"]
+
+
+@pytest.mark.parametrize(
+    "href",
+    [
+        "https://secure-login.top/verify",
+        "http://parcel-update.xyz/track?id=1",
+        "https://WWW.Account-Help.Support/",
+        "https://invoice.zip/",
+        "http://free-gift.tk",
+    ],
+)
+def test_suspicious_tld_detected(href):
+    found = _tld_findings(href)
+    assert len(found) == 1
+    assert found[0].category == "link"
+    assert found[0].weight == 10
+
+
+@pytest.mark.parametrize(
+    "href",
+    [
+        "https://example.com/page",
+        "https://wikipedia.org/wiki/Phishing",
+        "https://example.net/",
+        "https://github.io/",
+        "https://www.gov.co.il/",
+        "https://top.example.com/",  # abused TLD as a subdomain label only
+        "https://shop.example.com/archive.zip",  # .zip in the path, not the host
+        "http://192.168.1.50/login",
+    ],
+)
+def test_suspicious_tld_not_fired_on_normal_tlds(href):
+    assert _tld_findings(href) == []
+
+
+def test_suspicious_tld_fires_once_per_message():
+    assert len(_tld_findings("https://a.top/x", "https://b.xyz/y", "https://c.click/z")) == 1
+
+
+def test_suspicious_tld_respects_link_cap():
+    # 2 x text/href mismatch (25 each) + suspicious TLD (10) = 60 raw link points
+    email = make_email(
+        links=[
+            LinkInfo(text="https://paypal.com/a", href="https://paypal-help.top/a"),
+            LinkInfo(text="https://paypal.com/b", href="https://paypal-help.top/b"),
+        ]
+    )
+    score, _, findings = EmailRiskAnalyzer().analyze(email)
+    link = [f for f in findings if f.category == "link"]
+    assert "suspicious_tld" in {f.rule for f in link}
+    assert sum(f.weight for f in link) > EmailRiskAnalyzer.CATEGORY_CAPS["link"]
+    assert {f.category for f in findings} == {"link"}
+    assert score == EmailRiskAnalyzer.CATEGORY_CAPS["link"]

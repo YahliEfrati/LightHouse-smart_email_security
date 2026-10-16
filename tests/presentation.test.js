@@ -94,7 +94,8 @@ test('every backend rule has a short one-line label; unknown rules get a fallbac
   const rules = ['typosquat_domain', 'display_name_domain_mismatch', 'reply_to_mismatch', 'spf_fail', 'dkim_fail', 'dmarc_fail',
     'urgency_financial_proximity', 'base64_obfuscation', 'excessive_url_encoding', 'html_entity_obfuscation',
     'link_text_href_mismatch', 'ip_literal_host', 'url_shortener', 'high_entropy_domain', 'double_extension',
-    'dangerous_extension', 'macro_enabled_with_pressure_context', 'macro_enabled_attachment'];
+    'dangerous_extension', 'macro_enabled_with_pressure_context', 'macro_enabled_attachment',
+    'credential_request_language', 'suspicious_tld'];
   rules.forEach((r) => {
     const label = p.shortLabelForRule(r);
     assert.notStrictEqual(label, 'Something unusual', r);
@@ -203,4 +204,14 @@ test('groupedFindings merges identical labels, heaviest first, never mutates inp
   assert.deepStrictEqual(g.map((x) => [x.label, x.count]), [['Hidden encoded text', 1], ['Shortened link', 2]]);
   assert.strictEqual(JSON.stringify(input), copy);
   assert.deepStrictEqual(p.groupedFindings(null), []);
+});
+
+test('new rules get plain-English short labels, not the raw rule id', () => {
+  assert.strictEqual(p.shortLabelForRule('credential_request_language'), 'Asks for your login details');
+  assert.strictEqual(p.shortLabelForRule('suspicious_tld'), 'Link to a risky web ending');
+  const g = p.groupedFindings([
+    { category: 'link', rule: 'suspicious_tld', weight: 10 },
+    { category: 'content', rule: 'credential_request_language', weight: 15 },
+  ]);
+  assert.deepStrictEqual(g.map((x) => x.label), ['Asks for your login details', 'Link to a risky web ending']);
 });

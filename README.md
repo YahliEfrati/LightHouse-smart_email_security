@@ -95,6 +95,39 @@ Run the tests with `node --test tests/presentation.test.js tests/code_smoke.test
    ("Thank you! Your feedback helps calibrate the Lighthouse.") without
    navigating away.
 
+## How scoring works
+
+The backend (`backend/analyzer.py`) runs four analyzers. Every rule that fires adds its weight to its
+category; each category is then capped, so one noisy vector can't decide the verdict alone, while
+independent signals across vectors still add up. The capped totals are summed and clamped to 0-100:
+**70+ = Malicious**, **35-69 = Suspicious**, below 35 = Safe.
+
+Category caps: `header` 50 · `content` 35 · `link` 40 · `attachment` 50.
+
+| Rule | Category | Weight | What it catches |
+|---|---|---|---|
+| `typosquat_domain` | header | 40 | Sender claims a known brand from a look-alike domain (`paypa1.com`) |
+| `display_name_domain_mismatch` | header | 35 | Display name/address names a brand, but the domain isn't one of its domains |
+| `reply_to_mismatch` | header | 15 | Reply-To domain differs from the From domain |
+| `spf_fail` / `dkim_fail` / `dmarc_fail` | header | 20 each | `Authentication-Results` reports a failure (see Known limitations) |
+| `urgency_financial_proximity` | content | 20 (max 2) | Urgency phrase within ~120 chars of a money/credential term |
+| `credential_request_language` | content | 15 | **New.** Asks the reader to hand over login or payment details: an action verb followed by a credential noun ("verify your account", "confirm your password", "sign in to continue", "update your billing details"). A bare mention of "password" ("you changed your password") does not fire. Once per message |
+| `base64_obfuscation` | content | 25 | Long base64 blob in the body |
+| `excessive_url_encoding` | content | 15 | 10+ `%XX` sequences |
+| `html_entity_obfuscation` | content | 20 | 6+ `&#x..;` entities in the HTML body |
+| `link_text_href_mismatch` | link | 25 (max 2) | Link text shows one domain, the link goes to another |
+| `ip_literal_host` | link | 20 | Link to a bare IP address |
+| `url_shortener` | link | 10 | Known shortener hides the destination |
+| `high_entropy_domain` | link | 15 | Random-looking (DGA-style) domain label |
+| `suspicious_tld` | link | 10 | **New.** A link's host ends in a TLD commonly abused for phishing (`LinkAnalyzer.SUSPICIOUS_TLDS`: `.top .xyz .click .gq .tk .ml .cf .ga .zip .mov .work .rest .support`). Normal TLDs (`.com`, `.org`, `.io`, `.co.il`, …) never fire. Once per message |
+| `double_extension` | attachment | 45 | `invoice.pdf.exe` |
+| `dangerous_extension` | attachment | 35 | Executable/script attachment (`.exe`, `.js`, …) |
+| `macro_enabled_with_pressure_context` | attachment | 45 | Macro Office file plus urgency/financial wording |
+| `macro_enabled_attachment` | attachment | 20 | Macro-enabled Office file |
+
+Every rule also has a one-line card label (`RULE_SHORT_LABELS` in `Presentation.gs`) and a longer
+details-card sentence (`RULE_WISDOM` in `Code.gs`).
+
 ## Setup & local testing
 
 The backend runs locally; Apps Script executes in Google's cloud and
@@ -162,6 +195,8 @@ lets users add and remove addresses they know. The list lives in `PropertiesServ
 - `headers` are sent empty, so the SPF/DKIM/DMARC rules in the backend never fire; reading
   authentication headers needs access the add-on does not request today.
 - No URL-reputation lookups — a deliberate privacy choice (nothing leaves the backend).
+- QR codes (quishing) are not decoded: images are never sent to the backend, by design (least
+  privilege / data minimisation).
 - No mailbox-level actions (label, move to spam): they require `gmail.modify`.
 - The hero image is pre-rendered per score, so changing the backend's verdict thresholds means
   regenerating the assets (`python tools/generate_assets.py`).
@@ -177,3 +212,11 @@ lets users add and remove addresses they know. The list lives in `PropertiesServ
 - `UrlFetchApp` has no configurable timeout in Apps Script; a very slow
   backend will be bounded by the platform's own execution limits rather
   than an app-level timeout.
+
+## Roadmap
+
+- **QR codes:** decode QR images server-side and route the extracted URL through the existing link
+  inspector and link rules.
+- **SPF/DKIM/DMARC:** evaluate authentication results from the message headers. This needs a broader
+  scope than the add-on requests today, so it is off by design for now.
+- **Backend hardening:** rate limiting, and key rotation for the shared secret.

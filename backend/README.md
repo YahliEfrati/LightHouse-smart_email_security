@@ -61,8 +61,8 @@ one vector of the email and returns a list of `Finding`s:
 | Analyzer | Vector | Key checks |
 |---|---|---|
 | `HeaderAnalyzer` | Sender identity | In-memory whitelist of heavily-targeted brand domains; `difflib`-based typosquat detection (e.g. `paypa1.com` vs `paypal.com`); display-name/domain mismatch; Reply-To mismatch; SPF/DKIM/DMARC `=fail` in `Authentication-Results` |
-| `ContentAnalyzer` | Body/subject text | Proximity of urgency phrases to financial/credential terms; long base64 blobs; excessive `%XX` URL-encoding; HTML numeric/hex entity obfuscation (`&#x...;`) |
-| `LinkAnalyzer` | Hyperlinks | Visible-text-vs-`href` domain mismatch; IP-literal hosts; known URL shorteners; Shannon-entropy check for randomly-generated-looking domains |
+| `ContentAnalyzer` | Body/subject text | Proximity of urgency phrases to financial/credential terms; long base64 blobs; excessive `%XX` URL-encoding; HTML numeric/hex entity obfuscation (`&#x...;`); requests to enter/confirm login or payment details (verb + credential noun) |
+| `LinkAnalyzer` | Hyperlinks | Visible-text-vs-`href` domain mismatch; IP-literal hosts; known URL shorteners; Shannon-entropy check for randomly-generated-looking domains; hosts on phishing-abused TLDs (`SUSPICIOUS_TLDS`) |
 | `AttachmentAnalyzer` | Attachments | Double extensions (`invoice.pdf.exe`); directly dangerous extensions (`.exe`, `.scr`, `.js`, ...); macro-enabled Office files (`.docm`, `.xlsm`, ...), severity escalated when the email also has urgency/financial language |
 
 `EmailRiskAnalyzer` is the orchestrator: it runs all four analyzers,
@@ -148,10 +148,10 @@ pip install -r requirements-dev.txt
 pytest -v
 ```
 
-33 tests cover every heuristic rule in isolation (including that
+73 tests cover every heuristic rule in isolation (including that
 legitimate/benign emails are *not* flagged), the full scoring/verdict
 aggregation, and the HTTP layer end-to-end (including malformed and
-oversized-payload rejection with `422`). All 33 currently pass; the
+oversized-payload rejection with `422`). All 73 currently pass; the
 real server was also manually smoke-tested end-to-end via a standalone
 `uvicorn` process hitting `/health` and `/api/v1/analyze` over HTTP.
 

@@ -231,12 +231,32 @@ class ContentAnalyzer(Analyzer):
     URL_ENCODED_RE = re.compile(r"%[0-9A-Fa-f]{2}")
     HTML_ENTITY_RE = re.compile(r"&#x[0-9A-Fa-f]+;|&#[0-9]+;")
 
+    #: Requests to hand over login/payment details. Each pattern needs an
+    #: action verb *followed by* a credential noun, so a bare mention of
+    #: "password" (e.g. "you changed your password") never matches.
+    #: "reset your password" is deliberately absent: legit reset mails say it.
+    CREDENTIAL_REQUEST_RES: Tuple[re.Pattern, ...] = (
+        re.compile(
+            r"\b(?:verify|confirm|validate|re-?enter|enter|provide|submit)\s+(?:(?:your|the)\s+)?"
+            r"(?:[\w-]+\s+)?(?:account|identity|password|passcode|credentials|login|username)\b"
+        ),
+        re.compile(
+            r"\b(?:update|verify|confirm|validate|re-?enter|enter|provide|submit)\s+(?:(?:your|the)\s+)?"
+            r"(?:payment|billing|card|bank|banking)\s+(?:details|information|info|method|address)\b"
+        ),
+        re.compile(
+            r"\b(?:sign|log)[- ]?in\s+(?:(?:now|again|immediately)\s+)?to\s+"
+            r"(?:continue|avoid|keep|restore|unlock|verify|confirm|prevent|reactivate)\b"
+        ),
+    )
+
     def analyze(self, email: EmailAnalysisRequest) -> List[Finding]:
         findings: List[Finding] = []
         text = f"{email.subject}\n{email.body_text or ''}".lower()
         html = email.body_html or ""
 
         findings.extend(self._proximity_findings(text))
+        findings.extend(self._credential_request_findings(text))
         findings.extend(self._base64_findings(text + "\n" + html))
         findings.extend(self._url_encoding_findings(text + "\n" + html))
         findings.extend(self._html_entity_findings(html))
@@ -268,6 +288,23 @@ class ContentAnalyzer(Analyzer):
             if pairs_reported >= 2:  # cap evidence volume; category cap also protects the score
                 break
         return findings
+
+    def _credential_request_findings(self, text: str) -> List[Finding]:
+        for pattern in self.CREDENTIAL_REQUEST_RES:
+            match = pattern.search(text)
+            if match:
+                phrase = " ".join(match.group().split())
+                return [
+                    self._finding(
+                        rule="credential_request_language",
+                        weight=15,
+                        description=(
+                            f"Message asks the reader to hand over login or payment details ('{phrase}'), "
+                            "the core ask of a credential-phishing email."
+                        ),
+                    )
+                ]
+        return []
 
     def _base64_findings(self, text: str) -> List[Finding]:
         for match in self.BASE64_RE.finditer(text):
@@ -337,6 +374,12 @@ class LinkAnalyzer(Analyzer):
         "bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly", "is.gd", "buff.ly",
         "rebrand.ly", "cutt.ly", "shorturl.at",
     }
+    #: Small, conservative list of TLDs heavily abused for phishing (cheap or
+    #: free registration, or confusable with file names like .zip/.mov).
+    #: Matched against the last label of a link's host only.
+    SUSPICIOUS_TLDS: Set[str] = {
+        "top", "xyz", "click", "gq", "tk", "ml", "cf", "ga", "zip", "mov", "work", "rest", "support",
+    }
     IPV4_RE = re.compile(r"^\d{1,3}(?:\.\d{1,3}){3}$")
     #: Reasonably recognizable "this text is itself a URL/domain" pattern,
     #: used to extract the domain a user *believes* they are clicking.
@@ -350,6 +393,7 @@ class LinkAnalyzer(Analyzer):
     def analyze(self, email: EmailAnalysisRequest) -> List[Finding]:
         findings: List[Finding] = []
         mismatches_reported = 0
+        suspicious_tld_reported = False
         for link in email.links:
             href_domain = self._domain(link.href)
             if not href_domain:
@@ -386,6 +430,20 @@ class LinkAnalyzer(Analyzer):
                         description=f"Link uses a URL shortener ('{href_domain}') which hides the true destination.",
                     )
                 )
+
+            tld = href_domain.rsplit(".", 1)[-1]
+            if not suspicious_tld_reported and "." in href_domain and tld in self.SUSPICIOUS_TLDS:
+                findings.append(
+                    self._finding(
+                        rule="suspicious_tld",
+                        weight=10,
+                        description=(
+                            f"Link points to '{href_domain}', whose top-level domain '.{tld}' is "
+                            "frequently abused for phishing."
+                        ),
+                    )
+                )
+                suspicious_tld_reported = True
 
             entropy_finding = self._entropy_finding(href_domain)
             if entropy_finding:

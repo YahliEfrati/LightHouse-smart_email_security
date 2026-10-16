@@ -196,3 +196,23 @@ test('first screen merges identical findings instead of repeating the line', () 
   assert.ok(strings(calls).includes('Link goes somewhere else (\u00D72)'));
   assert.strictEqual(calls.filter(([m]) => m === 'setStartIcon').length, 1);
 });
+
+test('credential_request_language and suspicious_tld render with labels on both cards', () => {
+  const reasoning = [
+    { category: 'content', rule: 'credential_request_language', weight: 15, description: "asks 'verify your account'" },
+    { category: 'link', rule: 'suspicious_tld', weight: 10, description: "host 'a.top'" },
+  ];
+  const result = { verdict: 'Safe', score: 25, reasoning };
+  const first = load();
+  first.ctx.buildResultCard(email, { ...result, verdict: 'Suspicious' }, 'id', false);
+  const texts = strings(first.calls);
+  assert.ok(texts.includes('Asks for your login details'));
+  assert.ok(texts.includes('Link to a risky web ending'));
+  assert.ok(!texts.some((t) => t.includes('credential_request_language') || t.includes('suspicious_tld')), 'no raw rule ids');
+  const details = load();
+  details.ctx.buildDetailsCard({ ...result, verdict: 'Suspicious' });
+  const wisdom = vm.runInContext('RULE_WISDOM', details.ctx);
+  const detailTexts = strings(details.calls);
+  assert.ok(detailTexts.some((t) => t.includes(wisdom.credential_request_language)));
+  assert.ok(detailTexts.some((t) => t.includes(wisdom.suspicious_tld)));
+});
