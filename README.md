@@ -354,7 +354,9 @@ python -m unittest discover -s tools/tests
 
 ## Roadmap
 
-What the holdout points to, in order:
+Where a rule exists, it held up on data it had never seen (known brands 3/4, malware delivery 3/4 on the
+blind holdout); the misses are attack types with no rule yet. So the next step is **more coverage, each new
+rule measured on a fresh holdout**, not tuning the rules we have. What the holdout points to, in order:
 
 - **Brands beyond a fixed list.** Every regional domain of a known brand (`paypal.co.il`), and brands outside
   the list, via a maintained brand-domain list or domain-age / reputation data.
