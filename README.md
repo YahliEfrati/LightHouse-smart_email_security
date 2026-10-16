@@ -45,7 +45,7 @@ blast radius is a single opened email, not the user's whole mailbox.
 .
 ├── appsscript.json         Manifest: oauth scopes, contextual trigger, homepage trigger
 ├── Code.gs                 Add-on logic (CardService UI + backend client)
-├── Presentation.gs         Pure helpers: state -> hero image/copy, top finding, escaping (unit-tested in Node)
+├── Presentation.gs         Pure helpers: state -> hero image/copy, top finding, escaping, link inspector (unit-tested in Node)
 ├── assets/                 Generated PNGs: 4 icons + one color-band image per score 0-100 (served via GitHub raw)
 ├── tools/generate_assets.py  Regenerates /assets  (python tools/generate_assets.py)
 ├── tests/                  Node tests for Presentation.gs and a CardService smoke test
@@ -84,7 +84,13 @@ Run the tests with `node --test tests/presentation.test.js tests/code_smoke.test
    `RULE_WISDOM`) that was deliberately hidden from the main card to avoid
    overwhelming the user, followed by a "What we checked" list so a clean
    result is not an empty screen.
-5. **Feedback** — "I think this is a mistake" returns an
+5. **Check the links** — a button that opens a card listing every web link in the email: the real
+   host in bold, and what the link text claimed. It flags text that names a different site
+   (including the `paypal.com.evil.example` subdomain trick), numeric hosts, look-alike (punycode)
+   hosts and link shorteners. It runs entirely from the links already in the open message: **the
+   Lighthouse never visits them** (no privacy leak, no tracking pixels fired), and the card says so.
+   It shows where a link points, never "this link is safe".
+6. **Feedback** — "I think this is a mistake" returns an
    `ActionResponseBuilder` with `setNotification(...)`, showing a toast
    ("Thank you! Your feedback helps calibrate the Lighthouse.") without
    navigating away.

@@ -75,6 +75,9 @@ const MAX_FINDINGS_ON_CARD = 3;
 /** Key used in CacheService to stash the last analysis for the details card. */
 const CACHE_KEY_PREFIX = 'last_analysis_';
 
+/** CacheService key prefix for the per-message link report behind the "Check the links" button. */
+const LINKS_CACHE_PREFIX = 'links_';
+
 /** Key used in UserProperties to persist the trusted-sender list. */
 const TRUSTED_SENDERS_KEY = 'trustedSenders';
 
@@ -135,6 +138,14 @@ function buildAddOn(e) {
       CACHE_KEY_PREFIX + messageId,
       JSON.stringify(result),
       1800 // 30 minutes
+    );
+
+    // The link report is computed here (links are only available while the message is open) and cached
+    // so the "Check the links" button can render later without re-reading the message.
+    CacheService.getUserCache().put(
+      LINKS_CACHE_PREFIX + messageId,
+      JSON.stringify(inspectLinks(email.links, 8)),
+      1800
     );
 
     // Trusted sender: calm "0" card, unless the scan says the email is dangerous.
@@ -478,7 +489,8 @@ function buildResultCard(email, result, messageId, isTrusted) {
 
   const card = CardService.newCardBuilder().addSection(bandSection);
 
-  const findings = state === 'safe' ? [] : topFindings(result.reasoning, MAX_FINDINGS_ON_CARD);
+  const allGroups = state === 'safe' ? [] : groupedFindings(result.reasoning);
+  const findings = allGroups.slice(0, MAX_FINDINGS_ON_CARD);
   if (findings.length > 0) {
     const findingsSection = CardService.newCardSection();
     findings.forEach((item) => {
@@ -486,10 +498,10 @@ function buildResultCard(email, result, messageId, isTrusted) {
       findingsSection.addWidget(
         CardService.newDecoratedText()
           .setStartIcon(materialIconImage(meta.icon))
-          .setText(safeText(shortLabelForRule(item.rule), 60))
+          .setText(safeText(item.label, 60) + (item.count > 1 ? ' (\u00D7' + item.count + ')' : ''))
       );
     });
-    const more = result.reasoning.length - findings.length;
+    const more = allGroups.length - findings.length;
     if (more > 0) {
       findingsSection.addWidget(CardService.newTextParagraph().setText('<i>+' + more + ' more in the details</i>'));
     }
@@ -513,6 +525,13 @@ function buildResultCard(email, result, messageId, isTrusted) {
     detailsButton.setTextButtonStyle(CardService.TextButtonStyle.OUTLINED);
   }
   actionsSection.addWidget(detailsButton);
+  if (email.links && inspectLinks(email.links, 1).total > 0) {
+    actionsSection.addWidget(
+      CardService.newTextButton()
+        .setText('Check the links')
+        .setOnClickAction(CardService.newAction().setFunctionName('onInspectLinks').setParameters({ messageId: messageId }))
+    );
+  }
   if (isDanger) {
     actionsSection.addWidget(
       CardService.newTextButton()
@@ -594,6 +613,41 @@ function onViewDetails(e) {
   return CardService.newActionResponseBuilder()
     .setNavigation(CardService.newNavigation().pushCard(detailsCard))
     .build();
+}
+
+/** "Check the links": where each link really leads. Reads only the cached, already-analyzed report. */
+function onInspectLinks(e) {
+  const cached = CacheService.getUserCache().get(LINKS_CACHE_PREFIX + e.parameters.messageId);
+  let report = null;
+  try {
+    report = cached ? JSON.parse(cached) : null;
+  } catch (err) {
+    report = null;
+  }
+  const card = report
+    ? buildLinksCard(report)
+    : buildSimpleMessageCard('Links', 'This check has expired. Please re-open the email to run it again.');
+  return CardService.newActionResponseBuilder()
+    .setNavigation(CardService.newNavigation().pushCard(card))
+    .build();
+}
+
+function buildLinksCard(report) {
+  const section = CardService.newCardSection()
+    .setHeader('Where the links really go')
+    .addWidget(CardService.newTextParagraph().setText(linkSummaryText(report)));
+  report.rows.forEach((row) => {
+    section.addWidget(CardService.newDecoratedText().setWrapText(true).setText(linkRowText(row)));
+  });
+  if (report.more > 0) {
+    section.addWidget(CardService.newTextParagraph().setText('<i>+' + report.more + ' more links not shown</i>'));
+  }
+  section.addWidget(
+    CardService.newTextParagraph().setText(
+      '<font color="#6B6B6B"><i>The Lighthouse never opens these links. This shows where each one points, not whether the site is safe.</i></font>'
+    )
+  );
+  return withMenu(CardService.newCardBuilder().setName('links').addSection(section)).build();
 }
 
 function buildDetailsCard(result) {

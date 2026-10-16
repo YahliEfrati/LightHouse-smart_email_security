@@ -197,9 +197,150 @@ function checksPassed(reasoning) {
   return Object.keys(CHECKS_PERFORMED).filter((key) => !fired[key]).map((key) => CHECKS_PERFORMED[key]);
 }
 
+/**
+ * Findings for the first screen: heaviest first, identical short labels merged ("... (x2)") so the
+ * same line never repeats. Returns [{category, label, count}].
+ */
+function groupedFindings(reasoning) {
+  const groups = [];
+  const byLabel = {};
+  sortFindings(reasoning).forEach((item) => {
+    const label = shortLabelForRule(item.rule);
+    if (byLabel[label]) {
+      byLabel[label].count += 1;
+    } else {
+      byLabel[label] = { category: item.category, label: label, count: 1 };
+      groups.push(byLabel[label]);
+    }
+  });
+  return groups;
+}
+
+// --------------------------------------------------------------------------
+// Link inspector: where does each link REALLY go? (pure, never fetches anything)
+// --------------------------------------------------------------------------
+
+const TWO_PART_SUFFIXES = ['co.uk', 'org.uk', 'ac.uk', 'gov.uk', 'com.au', 'net.au', 'org.au', 'co.nz', 'co.il', 'org.il',
+  'ac.il', 'co.jp', 'co.in', 'com.br', 'com.mx', 'com.tr', 'com.cn', 'co.za'];
+const SHORTENER_DOMAINS = ['bit.ly', 'tinyurl.com', 't.co', 'goo.gl', 'ow.ly', 'is.gd', 'buff.ly', 'cutt.ly', 'rebrand.ly',
+  'shorturl.at', 'tiny.cc', 'rb.gy'];
+const LINK_STATUS_ORDER = { mismatch: 0, ip: 1, lookalike: 2, shortener: 3, ok: 4 };
+
+/** Host of an http(s) URL, lower-cased; '' for anything else (mailto:, javascript:, junk). */
+function hostOf(url) {
+  const match = /^https?:\/\/(?:[^\/?#@]*@)?(\[[^\]]+\]|[^\/?#:@]+)/i.exec(String(url == null ? '' : url).trim());
+  return match ? match[1].toLowerCase().replace(/\.$/, '') : '';
+}
+
+function isIpHost(host) {
+  return /^\d{1,3}(\.\d{1,3}){3}$/.test(host) || host.charAt(0) === '[';
+}
+
+/** The "site" part of a host: example.com for a.b.example.com (small built-in suffix list, no network). */
+function registrableDomain(host) {
+  if (!host || isIpHost(host)) return host || '';
+  const labels = host.split('.');
+  if (labels.length <= 2) return host;
+  const lastTwo = labels.slice(-2).join('.');
+  return TWO_PART_SUFFIXES.indexOf(lastTwo) !== -1 ? labels.slice(-3).join('.') : lastTwo;
+}
+
+/** First domain-looking token in the visible link text ('' when the text is just words). */
+function domainInText(text) {
+  const match = /(?:https?:\/\/)?(?:www\.)?((?:[a-z0-9-]+\.)+[a-z]{2,})/i.exec(String(text == null ? '' : text));
+  return match ? match[1].toLowerCase() : '';
+}
+
+/** Verdict on a single {text, href} link. status: mismatch | ip | lookalike | shortener | ok. */
+function inspectLink(link) {
+  const href = link && link.href;
+  const text = link && link.text;
+  const host = hostOf(href);
+  const shownDomain = domainInText(text);
+  const real = registrableDomain(host);
+  let status = 'ok';
+  if (shownDomain && registrableDomain(shownDomain) !== real) status = 'mismatch';
+  else if (isIpHost(host)) status = 'ip';
+  else if (host.split('.').some((label) => label.indexOf('xn--') === 0)) status = 'lookalike';
+  else if (SHORTENER_DOMAINS.indexOf(real) !== -1) status = 'shortener';
+  return { status: status, host: host, shownDomain: shownDomain, shown: safeText(String(text == null ? '' : text).trim(), 60) };
+}
+
+/**
+ * Report for the "Check the links" card: unique web links, worst first, capped at maxRows.
+ * { total, suspicious, more, rows: [{status, host, shownDomain, shown}] }
+ */
+function inspectLinks(links, maxRows) {
+  const seen = {};
+  const rows = [];
+  (Array.isArray(links) ? links : []).forEach((link) => {
+    if (!link || !hostOf(link.href)) return;
+    const row = inspectLink(link);
+    const key = row.host + '|' + row.shown;
+    if (seen[key]) return;
+    seen[key] = true;
+    rows.push(row);
+  });
+  // Fine links to the same host collapse into one row ("5 links go where they say").
+  const grouped = [];
+  const okByHost = {};
+  rows.forEach((row) => {
+    if (row.status !== 'ok') {
+      grouped.push(row);
+    } else if (okByHost[row.host]) {
+      okByHost[row.host].count += 1;
+    } else {
+      row.count = 1;
+      okByHost[row.host] = row;
+      grouped.push(row);
+    }
+  });
+  grouped.sort((a, b) => LINK_STATUS_ORDER[a.status] - LINK_STATUS_ORDER[b.status]);
+  const cap = maxRows > 0 ? maxRows : 8;
+  return {
+    total: rows.length,
+    suspicious: rows.filter((r) => r.status !== 'ok').length,
+    more: Math.max(0, grouped.length - cap),
+    rows: grouped.slice(0, cap),
+  };
+}
+
+/** One honest line above the list. Never claims the links are safe. */
+function linkSummaryText(report) {
+  const total = report && report.total ? report.total : 0;
+  const bad = report && report.suspicious ? report.suspicious : 0;
+  if (total === 0) return 'No web links in this email.';
+  const noun = total === 1 ? 'link' : 'links';
+  if (bad === 0) return total + ' ' + noun + ' · none hides where it goes.';
+  return total + ' ' + noun + ' · <font color="#D32F2F"><b>' + bad + ' worth a closer look</b></font>';
+}
+
+const LINK_STATUS_SYMBOL = { mismatch: '✕', ip: '✕', lookalike: '✕', shortener: '⚠', ok: '✓' };
+const LINK_STATUS_COLOR = { mismatch: '#D32F2F', ip: '#D32F2F', lookalike: '#D32F2F', shortener: '#C98A2C', ok: '#2E7D6B' };
+
+/** Headline (line 1) of a links-card row, without the symbol. */
+function linkHeadline(row) {
+  if (row.status === 'mismatch') return 'Says ' + safeText(row.shownDomain, 40);
+  if (row.status === 'ip') return 'Numeric address, not a website name';
+  if (row.status === 'lookalike') return 'Look-alike characters in the name';
+  if (row.status === 'shortener') return 'Shortened link';
+  return row.count > 1 ? row.count + ' links go where they say' : 'Goes where it says';
+}
+
+/** Two-line text for one row of the links card (HTML-safe): verdict, then the real destination. */
+function linkRowText(row) {
+  const color = LINK_STATUS_COLOR[row.status];
+  const head = '<font color="' + color + '"><b>' + LINK_STATUS_SYMBOL[row.status] + ' ' + linkHeadline(row) + '</b></font><br>';
+  const host = '<b>' + safeText(row.host, 60) + '</b>';
+  if (row.status === 'ok') return head + host;
+  if (row.status === 'shortener') return head + 'Real destination hidden — starts at ' + host;
+  return head + 'Goes to ' + host;
+}
+
 if (typeof module !== 'undefined') {
   module.exports = {
     normalizeScore, heroFile, HERO_UNSCANNED_FILE, HERO_TRUSTED_FILE, isPublicMailDomain, isTrustedBy, assetUrl, stateForResult, presentationFor,
     topFinding, topFindings, sortFindings, checkStatuses, checkStripText, shortLabelForRule, RULE_SHORT_LABELS, safeText, checksPassed, CHECKS_PERFORMED, SCORE_LEGEND,
+    hostOf, registrableDomain, domainInText, inspectLink, inspectLinks, linkSummaryText, linkRowText, linkHeadline, groupedFindings,
   };
 }

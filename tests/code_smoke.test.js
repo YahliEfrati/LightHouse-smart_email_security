@@ -53,7 +53,8 @@ test('malicious card has the report button and no banner/gauge images; safe card
 
 test('first screen: score is native text, check strip and at most 3 findings shown', () => {
   const { ctx, calls } = load();
-  const reasoning = [1, 2, 3, 4, 5].map((n) => ({ category: 'link', rule: 'url_shortener', weight: n, description: 'd' + n }));
+  const rules = ['url_shortener', 'base64_obfuscation', 'html_entity_obfuscation', 'excessive_url_encoding', 'ip_literal_host'];
+  const reasoning = rules.map((rule, n) => ({ category: 'link', rule: rule, weight: n === 0 ? 9 : n, description: 'd' + n }));
   ctx.buildResultCard(email, { verdict: 'Suspicious', score: 48, reasoning }, 'id', false);
   const texts = strings(calls);
   assert.ok(texts.some((s) => /<b>48<\/b><\/font> \/ 100/.test(s)), 'native score text');
@@ -148,4 +149,50 @@ test('backend 401 (missing/wrong key) -> grey Not scanned card, never a safe loo
   const { ctx, calls } = load(s.globals);
   open(ctx);
   assert.ok(urlsOf(calls).some((u) => u.endsWith('hero_unscanned.png')));
+});
+
+// ---- link inspector flow ----
+const linksEmail = { senderEmail: 'a@b.com', senderDisplayName: 'A', links: [{ text: 'https://paypal.com', href: 'https://evil.example/x' }] };
+
+test('result card offers "Check the links" only when the email has web links', () => {
+  const { ctx, calls } = load();
+  ctx.buildResultCard(linksEmail, { verdict: 'Suspicious', score: 40, reasoning: [] }, 'id', false);
+  assert.ok(strings(calls).includes('Check the links'));
+  const second = load();
+  second.ctx.buildResultCard({ ...linksEmail, links: [] }, { verdict: 'Suspicious', score: 40, reasoning: [] }, 'id', false);
+  assert.ok(!strings(second.calls).includes('Check the links'));
+});
+
+test('links card shows the real host, escapes hostile text, and never promises safety', () => {
+  const { ctx, calls } = load();
+  const report = ctx.inspectLinks([{ text: '<b>paypal.com</b>', href: 'https://evil.example/x' }], 8);
+  assert.doesNotThrow(() => ctx.buildLinksCard(report));
+  const texts = strings(calls);
+  assert.ok(texts.some((t) => t.includes('evil.example')));
+  assert.ok(!texts.some((t) => t.includes('<b>paypal.com</b>')), 'attacker HTML must be escaped');
+});
+
+test('onInspectLinks reads the cached report, and handles an expired cache', () => {
+  const store = {};
+  const cache = { put: (k, v) => { store[k] = v; }, get: (k) => store[k] || null };
+  const s = services({ backend: { body: { score: 40, verdict: 'Suspicious', reasoning: [] } } });
+  s.globals.CacheService = { getUserCache: () => cache };
+  s.globals.GmailApp.getMessageById = () => ({
+    getFrom: () => 'Ann <ann@corp.example>', getReplyTo: () => null, getSubject: () => 's',
+    getBody: () => '<a href="https://evil.example/x">https://paypal.com</a>', getPlainBody: () => 'hi', getAttachments: () => [],
+  });
+  const { ctx, calls } = load(s.globals);
+  open(ctx);
+  assert.ok(Object.keys(store).some((k) => k.startsWith('links_')), 'link report cached');
+  assert.doesNotThrow(() => ctx.onInspectLinks({ parameters: { messageId: 'm' } }));
+  assert.ok(strings(calls).some((t) => t.includes('evil.example')));
+  assert.doesNotThrow(() => ctx.onInspectLinks({ parameters: { messageId: 'gone' } }));
+});
+
+test('first screen merges identical findings instead of repeating the line', () => {
+  const { ctx, calls } = load();
+  const reasoning = [1, 2].map((n) => ({ category: 'link', rule: 'link_text_href_mismatch', weight: n, description: 'd' }));
+  ctx.buildResultCard(email, { verdict: 'Suspicious', score: 48, reasoning }, 'id', false);
+  assert.ok(strings(calls).includes('Link goes somewhere else (\u00D72)'));
+  assert.strictEqual(calls.filter(([m]) => m === 'setStartIcon').length, 1);
 });

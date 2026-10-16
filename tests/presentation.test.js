@@ -102,3 +102,105 @@ test('every backend rule has a short one-line label; unknown rules get a fallbac
   });
   assert.strictEqual(p.shortLabelForRule('nope'), 'Something unusual');
 });
+
+// ---- link inspector ----
+const L = (text, href) => ({ text, href });
+
+test('hostOf extracts the real host and ignores userinfo, port, path and case', () => {
+  assert.strictEqual(p.hostOf('https://Example.COM/a?b=c'), 'example.com');
+  assert.strictEqual(p.hostOf('http://paypal.com@evil.example:8080/x'), 'evil.example');
+  assert.strictEqual(p.hostOf('https://sub.a.co.uk./'), 'sub.a.co.uk');
+  assert.strictEqual(p.hostOf('mailto:a@b.com'), '');
+  assert.strictEqual(p.hostOf('javascript:alert(1)'), '');
+  assert.strictEqual(p.hostOf(''), '');
+  assert.strictEqual(p.hostOf(null), '');
+});
+
+test('registrableDomain handles common two-part suffixes and IPs', () => {
+  assert.strictEqual(p.registrableDomain('a.b.paypal.com'), 'paypal.com');
+  assert.strictEqual(p.registrableDomain('shop.example.co.uk'), 'example.co.uk');
+  assert.strictEqual(p.registrableDomain('mail.example.co.il'), 'example.co.il');
+  assert.strictEqual(p.registrableDomain('10.0.0.1'), '10.0.0.1');
+});
+
+test('inspectLink flags a link whose text names a different site', () => {
+  const r = p.inspectLink(L('https://paypal.com/verify', 'http://paypa1-support.com/verify'));
+  assert.strictEqual(r.status, 'mismatch');
+  assert.strictEqual(r.host, 'paypa1-support.com');
+  assert.strictEqual(r.shownDomain, 'paypal.com');
+});
+
+test('inspectLink: lookalike subdomain trick is a mismatch', () => {
+  assert.strictEqual(p.inspectLink(L('paypal.com', 'https://paypal.com.evil.example/x')).status, 'mismatch');
+});
+
+test('inspectLink: same site (even via subdomain) and plain words are ok', () => {
+  assert.strictEqual(p.inspectLink(L('www.telus.com', 'https://r.communications.telus.com/x')).status, 'ok');
+  assert.strictEqual(p.inspectLink(L('Unsubscribe', 'https://mailchimp.com/u')).status, 'ok');
+  assert.strictEqual(p.inspectLink(L('', 'https://example.com')).status, 'ok');
+});
+
+test('inspectLink flags numeric hosts, look-alike (punycode) hosts and shorteners', () => {
+  assert.strictEqual(p.inspectLink(L('Click', 'http://192.168.4.4/login')).status, 'ip');
+  assert.strictEqual(p.inspectLink(L('Click', 'https://xn--pypal-4ve.com/')).status, 'lookalike');
+  assert.strictEqual(p.inspectLink(L('Click', 'https://bit.ly/abc')).status, 'shortener');
+});
+
+test('inspectLinks: dedupes, drops non-web links, puts the worst first and caps rows', () => {
+  const links = [
+    L('Unsubscribe', 'https://mailchimp.com/u'),
+    L('Unsubscribe', 'https://mailchimp.com/u'),
+    L('mail us', 'mailto:a@b.com'),
+    L('https://paypal.com', 'https://evil.example/x'),
+    L('Click', 'https://bit.ly/z'),
+  ];
+  const r = p.inspectLinks(links, 8);
+  assert.strictEqual(r.total, 3);
+  assert.strictEqual(r.suspicious, 2);
+  assert.deepStrictEqual(r.rows.map((x) => x.status), ['mismatch', 'shortener', 'ok']);
+  const many = Array.from({ length: 20 }, (_, i) => L('t', 'https://site' + i + '.example/'));
+  const capped = p.inspectLinks(many, 5);
+  assert.strictEqual(capped.rows.length, 5);
+  assert.strictEqual(capped.more, 15);
+});
+
+test('inspectLinks tolerates junk input and hostile text', () => {
+  assert.deepStrictEqual(p.inspectLinks(null).rows, []);
+  assert.doesNotThrow(() => p.inspectLinks([null, {}, L(undefined, undefined), L('<script>', 'https://x.example')]));
+  const r = p.inspectLinks([L('<script>alert(1)</script>' + 'z'.repeat(5000), 'https://x.example')]);
+  assert.ok(!r.rows[0].shown.includes('<'), 'escaped');
+  assert.ok(r.rows[0].shown.length < 200, 'truncated before escaping');
+});
+
+test('linkSummaryText states counts honestly and never claims safety', () => {
+  assert.ok(p.linkSummaryText({ total: 5, suspicious: 2 }).includes('2'));
+  assert.ok(!/safe/i.test(p.linkSummaryText({ total: 3, suspicious: 0 })));
+  assert.ok(p.linkSummaryText({ total: 0, suspicious: 0 }).length > 0);
+});
+
+test('inspectLinks groups fine links that share a host into one row with a count', () => {
+  const r = p.inspectLinks([L('Apply', 'https://track.example/a'), L('Unsubscribe', 'https://track.example/b'),
+    L('https://paypal.com', 'https://evil.example/x')], 8);
+  assert.strictEqual(r.total, 3);
+  assert.strictEqual(r.suspicious, 1);
+  assert.deepStrictEqual(r.rows.map((x) => [x.status, x.count || 0]), [['mismatch', 0], ['ok', 2]]);
+});
+
+test('linkRowText leads with the verdict and shows the real host second', () => {
+  const bad = p.linkRowText({ status: 'mismatch', host: 'evil.example', shownDomain: 'paypal.com', shown: 'x' });
+  assert.ok(bad.indexOf('Says paypal.com') < bad.indexOf('evil.example'));
+  assert.ok(p.linkRowText({ status: 'ok', host: 'a.example', count: 5, shown: '' }).includes('5 links go where they say'));
+});
+
+test('groupedFindings merges identical labels, heaviest first, never mutates input', () => {
+  const input = [
+    { category: 'link', rule: 'url_shortener', weight: 5 },
+    { category: 'content', rule: 'base64_obfuscation', weight: 20 },
+    { category: 'link', rule: 'url_shortener', weight: 5 },
+  ];
+  const copy = JSON.stringify(input);
+  const g = p.groupedFindings(input);
+  assert.deepStrictEqual(g.map((x) => [x.label, x.count]), [['Hidden encoded text', 1], ['Shortened link', 2]]);
+  assert.strictEqual(JSON.stringify(input), copy);
+  assert.deepStrictEqual(p.groupedFindings(null), []);
+});
