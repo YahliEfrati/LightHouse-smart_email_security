@@ -1,0 +1,246 @@
+[
+  {
+    "id": "b7-01",
+    "label": "legit",
+    "category": "internal-it",
+    "note": "Internal IT reminding employee about mandatory MFA setup with a link to the internal wiki.",
+    "email": {
+      "sender": {
+        "email": "it-services@acmecorp.com",
+        "display_name": "AcmeCorp IT Services"
+      },
+      "reply_to": "it-support-desk@acmecorp.com",
+      "subject": "Action Required: Mandatory MFA Enrollment Deadline",
+      "body_text": "Hi Dana,\n\nAs part of our Q4 security rollout, all employees must enroll their devices in the new Multi-Factor Authentication (MFA) system by Friday, October 23rd.\n\nPlease review the setup guide on the employee intranet and complete your enrollment here: https://intranet.acmecorp.local/it/mfa-setup\n\nThank you,\nAcmeCorp IT Services",
+      "body_html": "<p style='font-family: Arial, sans-serif; font-size: 14px;'>Hi Dana,</p>\n<p style='font-family: Arial, sans-serif; font-size: 14px;'>As part of our Q4 security rollout, all employees must enroll their devices in the new Multi-Factor Authentication (MFA) system by <b>Friday, October 23rd</b>.</p>\n<p style='font-family: Arial, sans-serif; font-size: 14px;'>Please review the setup guide on the employee intranet and complete your enrollment here: <a href='https://intranet.acmecorp.local/it/mfa-setup' style='color: #0056b3; font-weight: bold;'>MFA Setup Guide</a>.</p>\n<p style='font-family: Arial, sans-serif; font-size: 14px;'>Thank you,<br/>AcmeCorp IT Services</p>",
+      "links": [
+        {
+          "text": "MFA Setup Guide",
+          "href": "https://intranet.acmecorp.local/it/mfa-setup"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b7-02",
+    "label": "legit",
+    "category": "security-notice",
+    "note": "Legitimate security notice from GitHub about a new device sign-in.",
+    "email": {
+      "sender": {
+        "email": "noreply@github.com",
+        "display_name": "GitHub"
+      },
+      "reply_to": null,
+      "subject": "[GitHub] Please verify your device",
+      "body_text": "New device sign-in\n\nA sign in attempt requires further verification because we did not recognize your device. To complete the sign in, enter the verification code on the unrecognized device.\n\nDevice: Chrome on Windows\nLocation: Tel Aviv, Israel\nVerification code: 938472\n\nIf you did not attempt to sign in to your account, please change your password immediately: https://github.com/settings/security/verify?tracking_id=xk39f82j",
+      "body_html": "<div style='font-family: Helvetica, sans-serif; max-width: 600px; margin: auto;'>\n<h2>New device sign-in</h2>\n<p>A sign in attempt requires further verification because we did not recognize your device. To complete the sign in, enter the verification code on the unrecognized device.</p>\n<p>Device: <strong>Chrome on Windows</strong><br/>Location: <strong>Tel Aviv, Israel</strong><br/>Verification code: <strong style='font-size: 18px;'>938472</strong></p>\n<p>If you did not attempt to sign in to your account, please <a href='https://github.com/settings/security/verify?tracking_id=xk39f82j' style='color: #2b3137;'>change your password</a> immediately.</p>\n<hr style='border: 0; border-top: 1px solid #eee;'/>\n<p style='font-size: 12px; color: #666;'>You&#8217;re receiving this email because a sign-in attempt was made on your account. <a href='https://github.com/settings/notifications' style='color: #0366d6;'>Manage notification preferences</a></p>\n</div>",
+      "links": [
+        {
+          "text": "change your password",
+          "href": "https://github.com/settings/security/verify?tracking_id=xk39f82j"
+        },
+        {
+          "text": "Manage notification preferences",
+          "href": "https://github.com/settings/notifications"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b7-03",
+    "label": "legit",
+    "category": "internal-it",
+    "note": "Standard internal communication regarding Q3 password policy changes, delivering a PDF payload safely.",
+    "email": {
+      "sender": {
+        "email": "infosec@acmecorp.com",
+        "display_name": "Information Security"
+      },
+      "reply_to": "compliance@acmecorp.com",
+      "subject": "Update: Q3 Password Policy Modifications",
+      "body_text": "Team,\n\nPlease find the attached Q3 Information Security Policy update regarding password requirements and external device usage.\n\nNo action is required at this time, but you are expected to read and understand the changes.\n\n- Information Security Team",
+      "body_html": "<p style='font-family: Calibri, sans-serif;'>Team,</p>\n<p style='font-family: Calibri, sans-serif;'>Please find the attached Q3 Information Security Policy update regarding password requirements and external device usage.</p>\n<p style='font-family: Calibri, sans-serif;'>No action is required at this time, but you are expected to read and understand the changes.</p>\n<p style='font-family: Calibri, sans-serif;'>- Information Security Team</p>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Q3_Infosec_Policy_Update.pdf",
+          "content_type": "application/pdf",
+          "size_bytes": 458920
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b7-04",
+    "label": "legit",
+    "category": "security-notice",
+    "note": "Legitimate notification from Slack regarding workspace authentication settings.",
+    "email": {
+      "sender": {
+        "email": "no-reply-security@slack.com",
+        "display_name": "Slack"
+      },
+      "reply_to": null,
+      "subject": "Workspace security settings have been updated",
+      "body_text": "Workspace settings updated\n\nHi there,\nAn administrator has updated the authentication settings for your Slack workspace. Two-factor authentication is now required for all members.\n\nLearn more about authentication settings: https://slack.com/help/articles/115005333806-Manage-workspace-authentication\n\nSent by Slack Technologies, LLC\nTo unsubscribe, visit your account settings: https://my.slack.com/account/notifications",
+      "body_html": "<div style='background-color: #f4ede4; padding: 20px;'><div style='background-color: #ffffff; padding: 30px; border-radius: 8px;'><h1 style='font-family: sans-serif; color: #1d1c1d;'>Workspace settings updated</h1><p style='font-family: sans-serif; color: #454245;'>Hi there,</p><p style='font-family: sans-serif; color: #454245;'>An administrator has updated the authentication settings for your Slack workspace. Two-factor authentication is now required for all members.</p><p style='font-family: sans-serif; color: #454245;'><a href='https://slack.com/help/articles/115005333806-Manage-workspace-authentication' style='background-color: #007a5a; color: white; padding: 10px 16px; text-decoration: none; border-radius: 4px;'>Learn more about authentication settings</a></p><br/><p style='font-size: 12px; color: #616061;'>Sent by Slack Technologies, LLC<br/>500 Howard Street, San Francisco, CA 94105, USA<br/>To unsubscribe, visit your <a href='https://my.slack.com/account/notifications' style='color: #007a5a;'>account settings</a>.</p></div></div>",
+      "links": [
+        {
+          "text": "Learn more about authentication settings",
+          "href": "https://slack.com/help/articles/115005333806-Manage-workspace-authentication"
+        },
+        {
+          "text": "account settings",
+          "href": "https://my.slack.com/account/notifications"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b7-05",
+    "label": "legit",
+    "category": "security-notice",
+    "note": "Dropbox notification about a new app linked to the account with tracking parameters.",
+    "email": {
+      "sender": {
+        "email": "no-reply@em-s.dropbox.com",
+        "display_name": "Dropbox Security"
+      },
+      "reply_to": null,
+      "subject": "A new app was connected to your Dropbox",
+      "body_text": "Hi Dana,\n\nYou recently linked a new application to your Dropbox account. If you did not authorize this, please review your account activity immediately.\n\nReview connected apps: https://www.dropbox.com/l/scl/AAAxB_yZ9jKL_3m9x2?tk=f823j92\n\nThanks,\nThe Dropbox Team",
+      "body_html": "<div style='font-family: sans-serif; font-size: 15px;'><p>Hi Dana,</p><p>You recently linked a new application to your Dropbox account. If you did not authorize this, please review your account activity immediately.</p><p><a href='https://www.dropbox.com/l/scl/AAAxB_yZ9jKL_3m9x2?tk=f823j92' style='color: #0061FF;'>Review connected apps</a></p><p>Thanks,<br/>The Dropbox Team</p></div>",
+      "links": [
+        {
+          "text": "Review connected apps",
+          "href": "https://www.dropbox.com/l/scl/AAAxB_yZ9jKL_3m9x2?tk=f823j92"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b7-06",
+    "label": "legit",
+    "category": "internal-it",
+    "note": "Routine IT maintenance notice about VPN downtime, sent as plain text only.",
+    "email": {
+      "sender": {
+        "email": "sysadmin@acmecorp.com",
+        "display_name": "Infrastructure Team"
+      },
+      "reply_to": null,
+      "subject": "Scheduled Maintenance: Global VPN Infrastructure",
+      "body_text": "IT Alert: Weekend VPN Maintenance\n\nPlease be advised that the global VPN infrastructure will undergo scheduled maintenance this Saturday from 02:00 AM to 06:00 AM EST.\n\nDuring this window, VPN connectivity will be intermittent or unavailable. Please plan your remote work accordingly.\n\nThank you,\nIT Infrastructure Team",
+      "body_html": "",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b7-07",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Generic IT helpdesk phishing using a fake quota warning to steal webmail credentials.",
+    "email": {
+      "sender": {
+        "email": "admin@server-web-portal.net",
+        "display_name": "Mail Server Administrator"
+      },
+      "reply_to": null,
+      "subject": "Notice: Mailbox Quota Exceeded for dana.levi@gmail.com",
+      "body_text": "MAILBOX QUOTA EXCEEDED\n\nDear dana.levi@gmail.com,\n\nYour mailbox has reached 99.8% of its allocated storage limit. You will not be able to send or receive new messages until you add more storage or delete older items.\n\nTo automatically expand your free tier storage, please re-authenticate your session below:\nhttps://secure-web-portal.net/auth/expand-quota?user=dana.levi%40gmail.com\n\nIT Helpdesk Notification System 2023",
+      "body_html": "<div style='border: 1px solid #cc0000; padding: 15px; font-family: Tahoma, sans-serif;'><h2 style='color: #cc0000;'>MAILBOX QUOTA EXCEEDED</h2><p>Dear <b>dana.levi@gmail.com</b>,</p><p>Your mailbox has reached 99.8% of its allocated storage limit. You will not be able to send or receive new messages until you add more storage or delete older items.</p><p>To automatically expand your free tier storage, please re-authenticate your session below:</p><p><a href='https://secure-web-portal.net/auth/expand-quota?user=dana.levi%40gmail.com' style='background-color: #cc0000; color: #fff; padding: 10px; text-decoration: none;'>Upgrade Quota Now</a></p><p style='font-size: 11px; color: #888;'>IT Helpdesk Notification System &#169; 2023</p></div>",
+      "links": [
+        {
+          "text": "Upgrade Quota Now",
+          "href": "https://secure-web-portal.net/auth/expand-quota?user=dana.levi%40gmail.com"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b7-08",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Vague generic account verification phish that doesn't name a specific brand to evade brand-matching filters.",
+    "email": {
+      "sender": {
+        "email": "noreply@verification-system-alerts.com",
+        "display_name": "System Verification"
+      },
+      "reply_to": "support@verification-system-alerts.com",
+      "subject": "Action Required: Verify your account immediately",
+      "body_text": "Dear User,\n\nWe detected irregular sign-in activity on your system account from an unrecognized IP address.\n\nFor your protection, your access has been temporarily restricted. You must verify your login details immediately to restore full system access.\n\nVerify Account Access: https://auth-verification-system.com/secure-login/verify.php?session=8f92ke20\n\nFailure to complete this verification within 24 hours will result in permanent suspension.\n\nSystem Administrator",
+      "body_html": "<p style='font-family: Arial, sans-serif;'>Dear User,</p>\n<p style='font-family: Arial, sans-serif;'>We detected irregular sign-in activity on your system account from an unrecognized IP address.</p>\n<p style='font-family: Arial, sans-serif;'>For your protection, your access has been temporarily restricted. You must verify your login details immediately to restore full system access.</p>\n<p style='font-family: Arial, sans-serif;'>&#187; <a href='https://auth-verification-system.com/secure-login/verify.php?session=8f92ke20' style='font-weight: bold;'>Verify Account Access</a></p>\n<p style='font-family: Arial, sans-serif;'>Failure to complete this verification within 24 hours will result in permanent suspension.</p>\n<p style='font-family: Arial, sans-serif;'>System Administrator</p>",
+      "links": [
+        {
+          "text": "Verify Account Access",
+          "href": "https://auth-verification-system.com/secure-login/verify.php?session=8f92ke20"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b7-09",
+    "label": "malicious",
+    "category": "bec",
+    "note": "Impersonates internal IT using a cousin domain linking to a fake SSO portal.",
+    "email": {
+      "sender": {
+        "email": "helpdesk@acmecorp-it.com",
+        "display_name": "IT Support Desk"
+      },
+      "reply_to": null,
+      "subject": "Mandatory Security Patch - Employee Portal",
+      "body_text": "All Staff,\n\nA critical security patch must be installed on your employee portal profile to maintain compliance with our new remote work policy.\n\nPlease log in to the secure employee portal below to apply the patch:\nhttps://sso-acmecorp-it.com/auth/login?redirect=/patch\n\nIf this patch is not applied by End of Day, your remote access privileges may be revoked.\n\nRegards,\nIT Support Desk",
+      "body_html": "<div style='font-family: Calibri, sans-serif;'><p>All Staff,</p><p>A critical security patch must be installed on your employee portal profile to maintain compliance with our new remote work policy.</p><p>Please log in to the secure employee portal below to apply the patch:</p><p><a href='https://sso-acmecorp-it.com/auth/login?redirect=/patch' style='color: blue;'>Install Security Patch</a></p><p>If this patch is not applied by End of Day, your remote access privileges may be revoked.</p><p>Regards,</p><p>IT Support Desk</p></div>",
+      "links": [
+        {
+          "text": "Install Security Patch",
+          "href": "https://sso-acmecorp-it.com/auth/login?redirect=/patch"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b7-10",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Fake email security gateway quarantine report aiming to steal credentials via a Release messages link.",
+    "email": {
+      "sender": {
+        "email": "quarantine@mail-protection-cloud.com",
+        "display_name": "Quarantine Postmaster"
+      },
+      "reply_to": "admin-support@mail-protection-cloud.com",
+      "subject": "3 Undelivered Messages in Quarantine",
+      "body_text": "Spam Quarantine Notification\n\nYou have 3 undelivered messages held in your server quarantine.\n\nSender: hr-updates@payroll-service.com\nSubject: Q4 Bonus Schedule\nDate: Oct 21, 10:14 AM\n\nThese messages will be deleted automatically after 3 days. To review or release these messages to your inbox, please access your quarantine portal:\nhttps://mail-protection-cloud.com/release/login?id=837492",
+      "body_html": "<div style='background-color: #f9f9f9; padding: 20px; font-family: Arial, sans-serif;'><div style='max-width: 500px; margin: 0 auto; background: #fff; border: 1px solid #ddd; padding: 20px;'><h3 style='color: #555;'>Spam Quarantine Notification</h3><p>You have <strong>3</strong> undelivered messages held in your server quarantine.</p><ul style='list-style-type: none; padding-left: 0;'><li><strong>Sender:</strong> hr-updates@payroll-service.com</li><li><strong>Subject:</strong> Q4 Bonus Schedule</li><li><strong>Date:</strong> Oct 21, 10:14 AM</li></ul><p>These messages will be deleted automatically after 3 days. To review or release these messages to your inbox, please access your quarantine portal:</p><br/><a href='https://mail-protection-cloud.com/release/login?id=837492' style='display: inline-block; background: #0055aa; color: white; padding: 8px 15px; text-decoration: none; border-radius: 3px;'>Review and Release Messages</a></div></div>",
+      "links": [
+        {
+          "text": "Review and Release Messages",
+          "href": "https://mail-protection-cloud.com/release/login?id=837492"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  }
+]

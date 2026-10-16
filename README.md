@@ -12,8 +12,9 @@ does the analysis with explainable, local heuristics: no email content is ever s
 - **24 detection rules** across sender identity, wording, payment requests (CEO / vendor fraud), links and
   attachments, plus a personal check against *your* trusted contacts.
 - **Least privilege.** The add-on can read only the message that is open, never the mailbox.
-- **Measured blind.** On 50 emails written by a separate model that knew nothing about the rules: 10 of 20
-  malicious emails caught, 0 of 30 legitimate emails flagged. The misses drove the next rules
+- **Measured blind, twice.** On a fresh 50-email holdout written by a separate model that never saw the
+  rules: 7 of 20 malicious emails caught, 1 of 30 legitimate emails flagged. Strong where rules exist
+  (malware delivery 3/4, known brands 3/4), weak where they don't (phishing without a brand 0/4)
   ([details](#evaluation)).
 - **Tested.** 153 backend tests, 59 add-on tests, 7 asset-generator tests.
 
@@ -213,18 +214,18 @@ trusted-contact list never leaves Google. Results are cached for 30 minutes in t
 
 ## Evaluation
 
-The engine was measured on **50 emails (30 legitimate, 20 malicious) written by a separate model (Gemini)
-that was told nothing about the rules**, so the set isn't shaped by them. Data in `backend/eval/raw/`;
-run `python eval/run_eval.py` from `backend/`. Full write-up (Hebrew):
+Two sets of **50 emails each (30 legitimate, 20 malicious), written by a separate model (Gemini) that was
+told nothing about the rules**. Each blind run happened once, before any change based on it. Run with
+`python eval/run_eval.py` (development set) or `python eval/run_eval.py --samples "eval/holdout/*.json"`
+(holdout) from `backend/`. Full write-up (Hebrew):
 [docs/Lighthouse_Evaluation_Report_HE.docx](docs/Lighthouse_Evaluation_Report_HE.docx).
 
-**The measurement (blind run):**
+| Blind run | Malicious caught (of 20) | Legitimate flagged (of 30) | Reached Malicious |
+|---|---|---|---|
+| 1. Development set (`eval/raw/`), first version of the rules | 10 (50%) | 0 (0%) | 3 |
+| 2. Holdout (`eval/holdout/`), current rules, never tuned on it | **7 (35%)** | **1 (3%)** | 3 |
 
-| Malicious caught (of 20) | Legitimate flagged (of 30) | Reached Malicious |
-|---|---|---|
-| 10 (50%) | 0 (0%) | 3 |
-
-What we learned, and what we did about it:
+### Run 1: what we learned, and what we did about it
 
 - **The misses were a coverage gap, not a threshold problem.** 6 of the 10 misses scored 0: no rule fired
   at all. Lowering the threshold to 15 would have caught 4 more at the cost of 7 false alarms. The fix was
@@ -234,8 +235,38 @@ What we learned, and what we did about it:
   It was used only as a regression check: the re-run changed no legitimate email's score.
   (`results_v1_before_bec.json` is the blind run, `results.json` the re-run.) Measuring the new rules
   needs a fresh set they were not designed on.
-- **Still missed:** phishing that imitates no known brand (a fake IT desk, a fake postal service) and
-  borderline cases.
+
+### Run 2: the holdout
+
+The holdout was **deliberately weighted toward the weak spots run 1 exposed**, and contains hard
+legitimate cases (a manager approving a transfer, an invoice whose replies go to Yahoo, friends talking about
+money). It is a stress test, not a sample of a normal inbox. By batch:
+
+| Batch | Malicious emails | Caught |
+|---|---|---|
+| Brand impersonation | look-alike Netflix, Amazon, DocuSign, Expedia | 3 of 4 |
+| Malware delivery | `.iso`, `.html`, `.zip` attachments, `.msi` link | 3 of 4 |
+| Invoice and payment fraud | CEO wire transfer, vendor bank change, fake invoices | 1 of 4 |
+| Phishing without a brand | "mail administrator", "system verification", fake internal IT | 0 of 4 |
+| Personal-mail scams | "client gifts" CEO request, phone-call refund scam, postal fee, fake quarantine login | 0 of 4 |
+
+- **What generalized:** the new rules caught attack types they had never seen in that form: the disk-image
+  and HTML-smuggling attachments, and a CEO wire-transfer request from a Gmail address (70, Malicious).
+  Known-brand impersonation held up. (The `.zip` invoice was caught by its pressure wording, not the file:
+  `.zip` is not on the risky list.)
+- **What didn't:** impersonation of brands outside the list of 12 (Expedia, Atlassian, Israel Post); generic
+  authority impersonation; rephrased payment fraud ("client gifts", "has updated our banking details");
+  phone-call scams with no link; a malicious installer behind a link rather than attached.
+- **The one false alarm** was a genuine PayPal email from `paypal.co.il`: the brand list knows only
+  `paypal.com` and `paypal.co.uk`, so the Israeli domain looked like a look-alike. It was *not* fixed after
+  the run, so the holdout stays a holdout; it is the first item in the Roadmap.
+- **`reply_to_mismatch` fired on 8 legitimate emails and 0 malicious ones** in the holdout: as a standalone
+  signal it is noise.
+- **The lesson:** rule-based detection is precise but narrow. It catches the patterns it was written for and
+  misses paraphrases and unlisted brands, which only a set the rules were never tuned on can show.
+
+### Real mail
+
 - **Zero false alarms is optimistic.** LLM-written mail is cleaner than real mail. One day of use on a real
   inbox flagged three legitimate emails: a Mailchimp newsletter (a Reply-To parsing bug and newsletter click
   trackers), a vendor welcome email (typographic HTML codes) and a Netflix email (a brand subdomain, and an
@@ -323,10 +354,17 @@ python -m unittest discover -s tools/tests
 
 ## Roadmap
 
-- **Measure on real mail.** Grow the test set with public phishing corpora and real legitimate mail, and
-  measure every rule change on a fresh set, not the one it was designed on.
-- **Phishing without a brand.** Detect generic authority impersonation ("IT Helpdesk", "Administrator")
-  from outside or free-mail domains.
+What the holdout points to, in order:
+
+- **Brands beyond a fixed list.** Every regional domain of a known brand (`paypal.co.il`), and brands outside
+  the list, via a maintained brand-domain list or domain-age / reputation data.
+- **Phishing without a brand.** Detect generic authority impersonation ("IT Helpdesk", "Mail Server
+  Administrator") from outside or free-mail domains.
+- **Payment fraud by meaning, not phrases.** A small classifier for BEC wording instead of regular
+  expressions, and phone-call (callback) scams with no link.
+- **Executables behind links.** Apply the risky-file check to link targets (`.msi`, `.exe`), not only attachments.
+- **Measure on real mail.** Public phishing corpora and real legitimate mail, and a fresh holdout for every
+  round of rule changes.
 - **QR codes.** Decode QR images on the backend and send the extracted link through the existing link rules.
 - **SPF/DKIM/DMARC** from message headers, if a broader scope is acceptable.
 - **A real feedback loop.** "Which of these is wrong?" lets the user mute only the wrong findings, only for

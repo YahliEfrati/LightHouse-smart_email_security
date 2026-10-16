@@ -1,0 +1,288 @@
+[
+  {
+    "id": "b8-1",
+    "label": "legit",
+    "category": "project-files",
+    "note": "Legitimate email from a design agency sending final brand assets via a ZIP attachment.",
+    "email": {
+      "sender": {
+        "email": "sarah.jenkins@lumina-designs.co",
+        "display_name": "Sarah Jenkins"
+      },
+      "reply_to": null,
+      "subject": "Final Brand Assets - Q4 Campaign (Attached)",
+      "body_text": "Hi Dana,\n\nHope you're having a good week!\n\nI've attached the final ZIP file containing the vector logos, typography guidelines, and the requested social media templates for the Q4 campaign. Let me know if you have any issues unzipping the folder or if you need the raw Illustrator files instead.\n\nBest regards,\nSarah\n\n--\nSarah Jenkins\nArt Director | Lumina Designs\nwww.lumina-designs.co",
+      "body_html": "<div style='font-family: Helvetica, Arial, sans-serif; font-size: 14px; color: #333;'>\n<p>Hi Dana,</p>\n<p>Hope you&#8217;re having a good week!</p>\n<p>I&#8217;ve attached the final ZIP file containing the vector logos, typography guidelines, and the requested social media templates for the Q4 campaign. Let me know if you have any issues unzipping the folder or if you need the raw Illustrator files instead.</p>\n<p>Best regards,<br>\nSarah</p>\n<br>\n<p style='color: #888; font-size: 12px;'>--<br>\n<strong>Sarah Jenkins</strong><br>\nArt Director | Lumina Designs<br>\n<a href='https://www.lumina-designs.co/?utm_source=email_sig&utm_medium=email' style='color: #0055cc;'>[www.lumina-designs.co](https://www.lumina-designs.co)</a></p>\n</div>",
+      "links": [
+        {
+          "text": "[www.lumina-designs.co](https://www.lumina-designs.co)",
+          "href": "https://www.lumina-designs.co/?utm_source=email_sig&utm_medium=email"
+        }
+      ],
+      "attachments": [
+        {
+          "filename": "Lumina_Brand_Assets_Q4.zip",
+          "content_type": "application/zip",
+          "size_bytes": 18450200
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b8-2",
+    "label": "malicious",
+    "category": "malware-delivery",
+    "note": "Fake eFax delivery notification containing a malicious ISO file commonly used to bypass Mark-of-the-Web (MotW).",
+    "email": {
+      "sender": {
+        "email": "delivery@efax-corporate-system.com",
+        "display_name": "eFax Corporate Delivery"
+      },
+      "reply_to": "no-reply@efax-corporate-system.com",
+      "subject": "Incoming Fax Received: Document 09881-22",
+      "body_text": "Corporate eFax Service\n\nYou have received a new secure fax document.\n\nDate: October 16, 2026\nPages: 4\nFrom: Unknown Sender\n\nPlease find the document attached to this email. Due to a recent upgrade in our security protocols, faxes are now delivered in an encrypted disc image format.\n\nDouble-click the attached file to mount and view your document.\n\nThank you,\neFax Corporate Support\n\n© 2026 eFax Services. All rights reserved.",
+      "body_html": "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ccc; padding: 20px;'>\n<h2 style='color: #003366; border-bottom: 2px solid #003366; padding-bottom: 10px;'>Corporate eFax Service</h2>\n<p>You have received a new secure fax document.</p>\n<table style='width: 100%; margin-bottom: 20px; background-color: #f9f9f9; padding: 10px;'>\n<tr><td><strong>Date:</strong></td><td>October 16, 2026</td></tr>\n<tr><td><strong>Pages:</strong></td><td>4</td></tr>\n<tr><td><strong>From:</strong></td><td>Unknown Sender</td></tr>\n</table>\n<p>Please find the document attached to this email. Due to a recent upgrade in our security protocols, faxes are now delivered in an encrypted disc image format.</p>\n<p style='color: red; font-weight: bold;'>Double-click the attached file to mount and view your document.</p>\n<br>\n<p>Thank you,<br>eFax Corporate Support</p>\n<hr style='border: none; border-top: 1px solid #eee; margin-top: 30px;'>\n<p style='font-size: 11px; color: #999; text-align: center;'>&#169; 2026 eFax Services. All rights reserved.</p>\n</div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Fax_Document_09881.iso",
+          "content_type": "application/x-iso9660-image",
+          "size_bytes": 1052300
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b8-3",
+    "label": "legit",
+    "category": "calendar-invite",
+    "note": "Standard automated Google Calendar ICS invite with typical HTML layout and tracking links.",
+    "email": {
+      "sender": {
+        "email": "calendar-notification@google.com",
+        "display_name": "Michael Chang"
+      },
+      "reply_to": "mchang@tech-innovators.com",
+      "subject": "Invitation: Quarterly Architecture Sync @ Thu Oct 22, 2026 2pm - 3pm (IST) (dana.levi@gmail.com)",
+      "body_text": "You have been invited to the following event.\n\nQuarterly Architecture Sync\nWhen: Thu Oct 22, 2026 2pm - 3pm Israel Standard Time\nWhere: Google Meet\n\nJoining info:\nVideo call link: https://meet.google.com/xyz-abcd-efg\n\nCalendar: dana.levi@gmail.com\nWho:\n- mchang@tech-innovators.com - organizer\n- dana.levi@gmail.com\n\nGoing? Yes - Maybe - No\nmore options »\n\nInvitation from Google Calendar.",
+      "body_html": "<div style='font-family: Roboto, Arial, sans-serif; background-color: #f1f3f4; padding: 20px;'>\n<div style='background-color: #ffffff; padding: 20px; border-radius: 8px;'>\n<p>You have been invited to the following event.</p>\n<h2 style='color: #3c4043; margin-top: 0;'>Quarterly Architecture Sync</h2>\n<p><strong>When:</strong> Thu Oct 22, 2026 2pm &#8211; 3pm Israel Standard Time</p>\n<p><strong>Where:</strong> Google Meet</p>\n<h3>Joining info</h3>\n<p>Video call link: <a href='https://meet.google.com/xyz-abcd-efg' style='color: #1a73e8;'>https://meet.google.com/xyz-abcd-efg</a></p>\n<hr style='border: 0; border-top: 1px solid #e8eaed; margin: 20px 0;'>\n<p><strong>Calendar:</strong> dana.levi@gmail.com</p>\n<p><strong>Who:</strong></p>\n<ul>\n<li>mchang@tech-innovators.com - organizer</li>\n<li>dana.levi@gmail.com</li>\n</ul>\n<div style='margin-top: 20px; text-align: center;'>\n<p>Going?</p>\n<a href='https://calendar.google.com/calendar/event?action=RESPOND&rst=1&uid=123456789' style='background-color: #1a73e8; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-right: 10px;'>Yes</a>\n<a href='https://calendar.google.com/calendar/event?action=RESPOND&rst=2&uid=123456789' style='background-color: #f1f3f4; color: #3c4043; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-right: 10px;'>Maybe</a>\n<a href='https://calendar.google.com/calendar/event?action=RESPOND&rst=3&uid=123456789' style='background-color: #f1f3f4; color: #3c4043; padding: 10px 20px; text-decoration: none; border-radius: 4px;'>No</a>\n</div>\n<p style='text-align: center; margin-top: 15px;'><a href='https://calendar.google.com/calendar/event?action=VIEW&uid=123456789' style='color: #1a73e8;'>more options &raquo;</a></p>\n</div>\n<p style='color: #5f6368; font-size: 12px; text-align: center; margin-top: 20px;'>Invitation from <a href='https://calendar.google.com/' style='color: #1a73e8;'>Google Calendar</a></p>\n</div>",
+      "links": [
+        {
+          "text": "https://meet.google.com/xyz-abcd-efg",
+          "href": "https://meet.google.com/xyz-abcd-efg"
+        },
+        {
+          "text": "Yes",
+          "href": "https://calendar.google.com/calendar/event?action=RESPOND&rst=1&uid=123456789"
+        },
+        {
+          "text": "Maybe",
+          "href": "https://calendar.google.com/calendar/event?action=RESPOND&rst=2&uid=123456789"
+        },
+        {
+          "text": "No",
+          "href": "https://calendar.google.com/calendar/event?action=RESPOND&rst=3&uid=123456789"
+        },
+        {
+          "text": "more options »",
+          "href": "https://calendar.google.com/calendar/event?action=VIEW&uid=123456789"
+        },
+        {
+          "text": "Google Calendar",
+          "href": "https://calendar.google.com/"
+        }
+      ],
+      "attachments": [
+        {
+          "filename": "invite.ics",
+          "content_type": "text/calendar",
+          "size_bytes": 2048
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b8-4",
+    "label": "legit",
+    "category": "invoice",
+    "note": "Automated receipt with rich HTML and an attached PDF invoice.",
+    "email": {
+      "sender": {
+        "email": "receipts@messaging.squareup.com",
+        "display_name": "Local Coffee Co"
+      },
+      "reply_to": "reply-to-18823@messaging.squareup.com",
+      "subject": "Receipt from Local Coffee Co",
+      "body_text": "Local Coffee Co\n\nYou paid $5.50\n\nThanks for stopping by!\n\nView your full receipt and detailed payment breakdown in the attached PDF.\n\nLocal Coffee Co\n123 Main St, Cityville\n\n© 2026 Square, Inc.\nManage preferences: https://squareup.com/receipts/manage",
+      "body_html": "<div style='background-color: #f7f7f7; padding: 40px 0;'>\n<div style='max-width: 400px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; text-align: center; font-family: Helvetica, sans-serif;'>\n<h1 style='color: #333333; font-size: 24px; margin-bottom: 10px;'>Local Coffee Co</h1>\n<p style='color: #888888; font-size: 16px; margin-bottom: 30px;'>You paid $5.50</p>\n<p style='color: #333333; font-size: 14px;'>Thanks for stopping by!</p>\n<p style='color: #666666; font-size: 14px; margin-bottom: 30px;'>View your full receipt and detailed payment breakdown in the attached PDF.</p>\n<hr style='border: none; border-bottom: 1px solid #eeeeee; margin-bottom: 30px;'>\n<p style='color: #999999; font-size: 12px; line-height: 1.5;'>Local Coffee Co<br>123 Main St, Cityville</p>\n</div>\n<p style='text-align: center; color: #aaaaaa; font-size: 11px; font-family: Helvetica, sans-serif; margin-top: 20px;'>&#169; 2026 Square, Inc.<br><br><a href='https://squareup.com/receipts/manage?token=a8B9c0D1' style='color: #aaaaaa; text-decoration: underline;'>Manage preferences</a></p>\n</div>",
+      "links": [
+        {
+          "text": "Manage preferences",
+          "href": "https://squareup.com/receipts/manage?token=a8B9c0D1"
+        }
+      ],
+      "attachments": [
+        {
+          "filename": "Receipt_Local_Coffee_Co_20261016.pdf",
+          "content_type": "application/pdf",
+          "size_bytes": 62450
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b8-5",
+    "label": "malicious",
+    "category": "malware-delivery",
+    "note": "A highly urgent fake IT update pushing a malicious MSI installer via a cloud storage lookalike link.",
+    "email": {
+      "sender": {
+        "email": "helpdesk@corporate-vpn-portal.com",
+        "display_name": "IT Service Desk"
+      },
+      "reply_to": null,
+      "subject": "CRITICAL: Mandatory VPN Client Update (Action Required Today)",
+      "body_text": "Security Alert: VPN Client Update Required\n\nDear employee,\n\nOur network monitoring systems indicate that your machine is running an outdated and vulnerable version of the corporate VPN client. Effective at midnight tonight, legacy versions will no longer be able to connect to the internal network.\n\nTo ensure uninterrupted remote access, please download and install the critical patch below:\n\nDownload Update: https://dl-cisco-vpn-update-2026.com/files/Win64_Update_Client.msi\n\nInstructions:\n1. Click the link above to download the installer.\n2. Run the .msi file and follow the prompts.\n3. Restart your computer.\n\nIf you experience any issues, please reply to this email to automatically create a support ticket.\n\nIT Security Operations",
+      "body_html": "<div style='font-family: Arial, sans-serif; padding: 20px; color: #333;'>\n<div style='background-color: #ffcccc; color: #cc0000; padding: 15px; border-radius: 5px; margin-bottom: 20px; font-weight: bold;'>\nSecurity Alert: VPN Client Update Required\n</div>\n<p>Dear employee,</p>\n<p>Our network monitoring systems indicate that your machine is running an outdated and vulnerable version of the corporate VPN client. Effective at midnight tonight, legacy versions will <strong>no longer be able to connect</strong> to the internal network.</p>\n<p>To ensure uninterrupted remote access, please download and install the critical patch below:</p>\n<p style='margin: 25px 0;'>\n<a href='https://dl-cisco-vpn-update-2026.com/files/Win64_Update_Client.msi' style='background-color: #0056b3; color: white; padding: 12px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;'>Download VPN Update</a>\n</p>\n<h3>Instructions:</h3>\n<ol>\n<li>Click the button above to download the installer.</li>\n<li>Run the <code>.msi</code> file and follow the prompts.</li>\n<li>Restart your computer.</li>\n</ol>\n<p style='color: #666; font-size: 12px; margin-top: 30px;'>If you experience any issues, please reply to this email to automatically create a support ticket.</p>\n<p style='font-size: 12px;'><em>IT Security Operations</em></p>\n</div>",
+      "links": [
+        {
+          "text": "Download VPN Update",
+          "href": "https://dl-cisco-vpn-update-2026.com/files/Win64_Update_Client.msi"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b8-6",
+    "label": "legit",
+    "category": "file-share",
+    "note": "Standard Dropbox file share notification with legitimate long tokenized links.",
+    "email": {
+      "sender": {
+        "email": "no-reply@em-s.dropbox.com",
+        "display_name": "David via Dropbox"
+      },
+      "reply_to": "david.r@example-partners.com",
+      "subject": "David shared \"Q3_Financial_Review_v3.xlsx\" with you",
+      "body_text": "Hi Dana,\n\nDavid shared a file with you on Dropbox.\n\n\"Here is the latest financial review. Please add your comments to sheet 2 before the meeting tomorrow.\"\n\nView file: https://www.dropbox.com/l/scl/AACxyz123abcDEF456ghi789jkl012mno\n\nEnjoy!\nThe Dropbox team",
+      "body_html": "<div style='font-family: \"Atlas Grotesk\", \"Open Sans\", sans-serif; max-width: 600px; margin: 0 auto;'>\n<div style='padding: 30px 20px; text-align: center; background-color: #F7F9FA;'>\n<img src='https://cfl.dropboxstatic.com/static/images/emails/logo_glyph_34_m1-vflk-sc2z.png' alt='Dropbox' width='34' style='margin-bottom: 20px;'>\n<h2 style='color: #1E3932; font-size: 24px; font-weight: 300; margin: 0 0 20px 0;'>David shared a file with you</h2>\n<p style='color: #47525D; font-size: 16px; margin-bottom: 20px; text-align: left;'>Hi Dana,</p>\n<p style='color: #47525D; font-size: 16px; margin-bottom: 30px; text-align: left; padding: 15px; border-left: 3px solid #0061FF; background-color: #fff;'>&#8220;Here is the latest financial review. Please add your comments to sheet 2 before the meeting tomorrow.&#8221;</p>\n<div style='text-align: center;'>\n<a href='https://www.dropbox.com/l/scl/AACxyz123abcDEF456ghi789jkl012mno?utm_source=email' style='display: inline-block; background-color: #0061FF; color: #ffffff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: 500; font-size: 16px;'>View file</a>\n</div>\n</div>\n<div style='padding: 20px; text-align: center; color: #8A96A0; font-size: 12px;'>\n<p>&#169; 2026 Dropbox</p>\n</div>\n</div>",
+      "links": [
+        {
+          "text": "View file",
+          "href": "https://www.dropbox.com/l/scl/AACxyz123abcDEF456ghi789jkl012mno?utm_source=email"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b8-7",
+    "label": "malicious",
+    "category": "malware-delivery",
+    "note": "HTML Smuggling attack disguised as a PayPal resolution center receipt.",
+    "email": {
+      "sender": {
+        "email": "service@paypal-resolution-center-update.com",
+        "display_name": "PayPal Service"
+      },
+      "reply_to": null,
+      "subject": "Receipt for your payment to Coinbase Inc.",
+      "body_text": "PayPal\n\nYou sent a payment of $899.99 USD to Coinbase Inc.\n\nIf you did not authorize this transaction, you have 24 hours to cancel it and receive a full refund.\n\nPlease open the attached secure receipt document (HTML) to view the transaction details and initiate the cancellation process.\n\nThank you for using PayPal.\n\nTransaction ID: 9V8381928J9921\nAttachment: Resolution_Center_Case_9981.html\n\nCopyright © 2026 PayPal. All rights reserved.",
+      "body_html": "<div style='font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;'>\n<div style='background-color: #ffffff; max-width: 500px; margin: 0 auto; padding: 30px; border-top: 5px solid #003087;'>\n<img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg' alt='PayPal' width='80' style='margin-bottom: 20px;'>\n<h2 style='color: #333333; font-size: 20px; font-weight: normal;'>You sent a payment of $899.99 USD to Coinbase Inc.</h2>\n<p style='color: #666666; line-height: 1.5;'>If you did not authorize this transaction, you have <strong>24 hours</strong> to cancel it and receive a full refund.</p>\n<p style='color: #666666; line-height: 1.5;'>Please open the <strong>attached secure receipt document (HTML)</strong> to view the transaction details and initiate the cancellation process.</p>\n<hr style='border: none; border-bottom: 1px solid #eeeeee; margin: 20px 0;'>\n<p style='color: #333333; font-size: 14px;'><strong>Transaction ID:</strong> 9V8381928J9921<br><strong>Attachment:</strong> Resolution_Center_Case_9981.html</p>\n</div>\n<p style='text-align: center; color: #999999; font-size: 11px; margin-top: 20px;'>Copyright &#169; 2026 PayPal. All rights reserved.</p>\n</div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Resolution_Center_Case_9981.html",
+          "content_type": "text/html",
+          "size_bytes": 14205
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b8-8",
+    "label": "legit",
+    "category": "internal-spreadsheet",
+    "note": "Internal company email sending an Excel spreadsheet for budget review.",
+    "email": {
+      "sender": {
+        "email": "finance.dept@corp-global.com",
+        "display_name": "Finance Department"
+      },
+      "reply_to": "todd.miller@corp-global.com",
+      "subject": "ACTION REQUIRED: Q4 Departmental Budget Review & Projections",
+      "body_text": "Hi Team,\n\nPlease find attached the finalized spreadsheet for the Q4 departmental budget projections.\n\nDana - please review row 45 (Marketing Spend) specifically, as we had to adjust the allocations based on last week's all-hands meeting.\n\nPlease add your approvals in Column G and send it back to me by EOD Thursday.\n\nThanks,\nTodd Miller\nVP of Finance",
+      "body_html": "<div style='font-family: Calibri, sans-serif; font-size: 11pt; color: #000000;'>\n<p>Hi Team,</p>\n<p>Please find attached the finalized spreadsheet for the Q4 departmental budget projections.</p>\n<p><strong>Dana</strong> - please review row 45 (Marketing Spend) specifically, as we had to adjust the allocations based on last week&#39;s all-hands meeting.</p>\n<p>Please add your approvals in Column G and send it back to me by EOD Thursday.</p>\n<p>Thanks,<br>\n<strong>Todd Miller</strong><br>\nVP of Finance</p>\n</div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Q4_Budget_Projections_vFinal.xlsx",
+          "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "size_bytes": 115200
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b8-9",
+    "label": "malicious",
+    "category": "malware-delivery",
+    "note": "Malicious ZIP file containing a disguised script or LNK file, masquerading as an overdue invoice.",
+    "email": {
+      "sender": {
+        "email": "invoicing@supplier-portal-ltd.com",
+        "display_name": "Accounts Payable"
+      },
+      "reply_to": null,
+      "subject": "Overdue Invoice: PO-8812 - Account Suspended",
+      "body_text": "Dear Customer,\n\nYour account has been temporarily suspended due to an unpaid invoice (PO-8812) from last month.\n\nWe have tried to contact you multiple times regarding this outstanding balance of $3,450.00.\n\nPlease review the attached invoice documents immediately and process the payment to restore your account services.\n\nAttachment: Overdue_Invoice_PO8812.zip\n\nRegards,\nAccounts Receivable Team\nSupplier Portal Ltd.",
+      "body_html": "<div style='font-family: Tahoma, sans-serif; font-size: 14px;'>\n<p>Dear Customer,</p>\n<p style='color: #cc0000;'><strong>Your account has been temporarily suspended due to an unpaid invoice (PO-8812) from last month.</strong></p>\n<p>We have tried to contact you multiple times regarding this outstanding balance of <strong>$3,450.00</strong>.</p>\n<p>Please review the attached invoice documents immediately and process the payment to restore your account services.</p>\n<p><em>Attachment: Overdue_Invoice_PO8812.zip</em></p>\n<br>\n<p>Regards,<br>Accounts Receivable Team<br>Supplier Portal Ltd.</p>\n</div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Overdue_Invoice_PO8812.zip",
+          "content_type": "application/zip",
+          "size_bytes": 18340
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b8-10",
+    "label": "legit",
+    "category": "newsletter",
+    "note": "Legitimate marketing newsletter containing multiple tracking links, HTML entities, and an unsubscribe footer.",
+    "email": {
+      "sender": {
+        "email": "news@mail.marketing.hubspot.com",
+        "display_name": "The Daily Marketer"
+      },
+      "reply_to": "reply-291884@mail.marketing.hubspot.com",
+      "subject": "5 SEO Trends You Can't Ignore in 2027 📈",
+      "body_text": "The Daily Marketer\n\nHi Dana,\n\nAre you ready for the algorithm shifts coming next year? We've compiled the top 5 SEO trends that are going to dominate 2027.\n\nRead the full guide: https://click.marketing.hubspot.com/ls/click?upn=xyz123\n\nWhat's inside:\n- AI Search Generative Experience\n- Zero-click search optimization\n- Core Web Vitals 2.0\n\nDon't let your competitors outrank you.\n\nCheers,\nThe Marketing Team\n\n--\nUnsubscribe from these emails: https://click.marketing.hubspot.com/unsubscribe?email=dana.levi%40gmail.com\n123 Marketing Way, Suite 100, Boston, MA 02111",
+      "body_html": "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;'>\n<div style='background-color: #ff5c35; padding: 20px; text-align: center;'>\n<h1 style='color: #ffffff; margin: 0; font-size: 24px;'>The Daily Marketer</h1>\n</div>\n<div style='padding: 20px; background-color: #ffffff; border-left: 1px solid #eee; border-right: 1px solid #eee;'>\n<p>Hi Dana,</p>\n<p>Are you ready for the algorithm shifts coming next year? We&#8217;ve compiled the top 5 SEO trends that are going to dominate 2027.</p>\n<p style='text-align: center; margin: 30px 0;'>\n<a href='https://click.marketing.hubspot.com/ls/click?upn=xyz123-abc-def%3D%3D' style='background-color: #2b3a4a; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 4px; font-weight: bold;'>Read the Full Guide</a>\n</p>\n<h3 style='color: #2b3a4a;'>What&#39;s inside:</h3>\n<ul>\n<li>AI Search Generative Experience</li>\n<li>Zero-click search optimization</li>\n<li>Core Web Vitals 2.0</li>\n</ul>\n<p>Don&#8217;t let your competitors outrank you.</p>\n<p>Cheers,<br>The Marketing Team</p>\n</div>\n<div style='background-color: #f4f4f4; padding: 20px; text-align: center; font-size: 11px; color: #777;'>\n<p>You received this email because you are subscribed to The Daily Marketer newsletter.</p>\n<p><a href='https://click.marketing.hubspot.com/unsubscribe?email=dana.levi%40gmail.com&token=8812ja' style='color: #777; text-decoration: underline;'>Unsubscribe from these emails</a></p>\n<p>123 Marketing Way, Suite 100, Boston, MA 02111</p>\n</div>\n</div>",
+      "links": [
+        {
+          "text": "Read the Full Guide",
+          "href": "https://click.marketing.hubspot.com/ls/click?upn=xyz123-abc-def%3D%3D"
+        },
+        {
+          "text": "Unsubscribe from these emails",
+          "href": "https://click.marketing.hubspot.com/unsubscribe?email=dana.levi%40gmail.com&token=8812ja"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  }
+]

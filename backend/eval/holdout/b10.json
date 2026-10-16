@@ -1,0 +1,241 @@
+[
+  {
+    "id": "b10-1",
+    "label": "legit",
+    "category": "personal",
+    "note": "Friend requesting money for a shared expense",
+    "email": {
+      "sender": {
+        "email": "tomer.avraham12@gmail.com",
+        "display_name": "Tomer Avraham"
+      },
+      "reply_to": null,
+      "subject": "Sushi last night 🍣",
+      "body_text": "Hey Dana,\n\nSo fun seeing you yesterday! \nCould you Bit or PayBox me your share for the dinner? It came out to 145 NIS including tip.\n\nTalk soon,\nTomer",
+      "body_html": "<div style='font-family: Arial, sans-serif; font-size: 14px;'>Hey Dana,<br><br>So fun seeing you yesterday!&#160;<br>Could you Bit or PayBox me your share for the dinner? It came out to 145 NIS including tip.<br><br>Talk soon,<br>Tomer</div>",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b10-2",
+    "label": "malicious",
+    "category": "bec",
+    "note": "CEO impersonation requesting a quick task/gift cards",
+    "email": {
+      "sender": {
+        "email": "ceo.desk.director99@yahoo.com",
+        "display_name": "David Schwartz"
+      },
+      "reply_to": "ceo.desk.director99@yahoo.com",
+      "subject": "Available?",
+      "body_text": "Dana,\n\nAre you available right now? I am tied up in a conference call and need you to handle a quick task for me regarding some client gifts.\n\nPlease reply as soon as you see this so I can give you the details.\n\nRegards,\nDavid",
+      "body_html": "<p style='font-family: Calibri, sans-serif; font-size: 11pt;'>Dana,</p><p style='font-family: Calibri, sans-serif; font-size: 11pt;'>Are you available right now? I am tied up in a conference call and need you to handle a quick task for me regarding some client gifts.</p><p style='font-family: Calibri, sans-serif; font-size: 11pt;'>Please reply as soon as you see this so I can give you the details.</p><p style='font-family: Calibri, sans-serif; font-size: 11pt;'>Regards,<br>David</p>",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b10-3",
+    "label": "legit",
+    "category": "newsletter",
+    "email": {
+      "sender": {
+        "email": "hello@mail.local-roasters.com",
+        "display_name": "Bean & Leaf Roasters"
+      },
+      "reply_to": null,
+      "subject": "Fresh beans have arrived! ☕",
+      "body_text": "Our new Ethiopian Yirgacheffe is finally here.\nOrder now and get 10% off with code FRESH10.\n\nShop Now: https://www.local-roasters.com/shop/ethiopian\n\nUnsubscribe: https://www.local-roasters.com/unsubscribe?user=dana.levi@gmail.com",
+      "body_html": "<div style='text-align: center; font-family: Helvetica, sans-serif;'><h1 style='color: #4a3b32;'>New Roast Alert!</h1><p>Our new Ethiopian Yirgacheffe is finally here. Notes of jasmine, blueberry, and honey.</p><p>Order now and get <strong>10% off</strong> with code FRESH10.</p><a href='https://track.local-roasters.com/click?id=88291a&url=https%3A%2F%2Fwww.local-roasters.com%2Fshop%2Fethiopian' style='display: inline-block; padding: 10px 20px; background-color: #d35400; color: #ffffff; text-decoration: none; border-radius: 5px;'>Shop Now</a><br><br><hr><p style='font-size: 10px; color: #7f8c8d;'>You are receiving this because you subscribed at our cafe. <a href='https://track.local-roasters.com/unsub?email=dana.levi@gmail.com&token=abc123xyz' style='color: #7f8c8d;'>Unsubscribe here</a>.</p></div>",
+      "links": [
+        {
+          "text": "Shop Now",
+          "href": "https://track.local-roasters.com/click?id=88291a&url=https%3A%2F%2Fwww.local-roasters.com%2Fshop%2Fethiopian"
+        },
+        {
+          "text": "Unsubscribe here",
+          "href": "https://track.local-roasters.com/unsub?email=dana.levi@gmail.com&token=abc123xyz"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    },
+    "note": "Small business marketing email with tracking links and unsubscribe footer"
+  },
+  {
+    "id": "b10-4",
+    "label": "malicious",
+    "category": "refund-scam",
+    "note": "Fake Geek Squad / Antivirus auto-renewal receipt designed to make the user call a phone number",
+    "email": {
+      "sender": {
+        "email": "billing-confirmation-alert-77291@gmail.com",
+        "display_name": "Geek-Squad Auto-Renew"
+      },
+      "reply_to": null,
+      "subject": "Invoice #89921: Your subscription has been successfully renewed",
+      "body_text": "Dear Customer,\n\nThank you for choosing us.\nYour annual subscription for PC Shield 360 has been renewed.\n\nInvoice ID: GS-88912\nAmount Charged: $399.99\nPayment Method: Auto-Debit\n\nIf you did not authorize this charge, or wish to cancel your subscription and claim a full refund, please contact our fraud protection team immediately at +1 (888) 555-0192.\n\nThank you,\nBilling Department",
+      "body_html": "<div style='background-color: #f4f4f4; padding: 20px; font-family: Arial, sans-serif;'><div style='background-color: #ffffff; padding: 20px; border: 1px solid #dddddd;'><h2 style='color: #333333;'>Subscription Renewed Successfully</h2><p>Dear Customer,</p><p>Thank you for choosing us. Your annual subscription for <strong>PC Shield 360</strong> has been renewed.</p><table style='width: 100%; border-collapse: collapse; margin-bottom: 20px;'><tr><td style='padding: 8px; border: 1px solid #dddddd;'><strong>Invoice ID:</strong></td><td style='padding: 8px; border: 1px solid #dddddd;'>GS-88912</td></tr><tr><td style='padding: 8px; border: 1px solid #dddddd;'><strong>Amount Charged:</strong></td><td style='padding: 8px; border: 1px solid #dddddd;'>$399.99</td></tr><tr><td style='padding: 8px; border: 1px solid #dddddd;'><strong>Payment Method:</strong></td><td style='padding: 8px; border: 1px solid #dddddd;'>Auto-Debit</td></tr></table><p style='color: #c0392b; font-weight: bold;'>If you did not authorize this charge, or wish to cancel your subscription and claim a full refund, please contact our fraud protection team immediately at +1 (888) 555-0192.</p><p>Thank you,<br>Billing Department</p></div></div>",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b10-5",
+    "label": "legit",
+    "category": "notification",
+    "email": {
+      "sender": {
+        "email": "no-reply@mail.asos.com",
+        "display_name": "ASOS Updates"
+      },
+      "reply_to": null,
+      "subject": "Your ASOS order is out for delivery! 🚚",
+      "body_text": "Hi Dana,\nGreat news! Your ASOS order #99281144 is out for delivery and will arrive today.\n\nTrack your order here: https://track.asos.com/tracking?id=99281144\n\nNeed help? Visit our Help Centre: https://www.asos.com/customer-care/\n\nASOS.com Ltd",
+      "body_html": "<div style='font-family: Arial, sans-serif; color: #333;'><h1 style='font-size: 24px;'>It&#8217;s out for delivery!</h1><p>Hi Dana,</p><p>Great news! Your ASOS order <strong>#99281144</strong> is out for delivery and will arrive today.</p><p><a href='https://t.mail.asos.com/c/x?u=https%3A%2F%2Ftrack.asos.com%2Ftracking%3Fid%3D99281144&id=992811' style='background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; font-weight: bold; display: inline-block;'>Track your order</a></p><p>Need help? Visit our <a href='https://t.mail.asos.com/c/x?u=https%3A%2F%2Fwww.asos.com%2Fcustomer-care%2F&id=992811' style='color: #000;'>Help Centre</a>.</p><p style='font-size: 12px; color: #999;'>ASOS.com Ltd</p></div>",
+      "links": [
+        {
+          "text": "Track your order",
+          "href": "https://t.mail.asos.com/c/x?u=https%3A%2F%2Ftrack.asos.com%2Ftracking%3Fid%3D99281144&id=992811"
+        },
+        {
+          "text": "Help Centre",
+          "href": "https://t.mail.asos.com/c/x?u=https%3A%2F%2Fwww.asos.com%2Fcustomer-care%2F&id=992811"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    },
+    "note": "Legitimate ecommerce delivery notification using subdomain tracking links"
+  },
+  {
+    "id": "b10-6",
+    "label": "malicious",
+    "category": "phishing",
+    "note": "Delivery scam attempting to collect credit card info for a fake unpaid fee",
+    "email": {
+      "sender": {
+        "email": "update@post-delivery-notices-il.com",
+        "display_name": "Israel Post Delivery"
+      },
+      "reply_to": null,
+      "subject": "Action Required: Your package is pending delivery",
+      "body_text": "Dear customer,\n\nWe attempted to deliver your package today, but there is an unpaid customs fee of 12.50 ILS.\nYour package is currently held at our distribution center.\n\nPlease pay the outstanding fee to schedule a new delivery date: https://pay-customs-il.com/tracking/8839102\n\nIf the fee is not paid within 48 hours, the package will be returned to the sender.\n\nIsrael Post",
+      "body_html": "<div style='font-family: Arial, sans-serif;'><div style='background-color: #ed1c24; padding: 15px;'><h2 style='color: #fff; margin: 0;'>Israel Post - Delivery Update</h2></div><div style='padding: 20px; border: 1px solid #ccc;'><p>Dear customer,</p><p>We attempted to deliver your package today, but there is an unpaid customs fee of <strong>12.50 ILS</strong>.</p><p>Your package is currently held at our distribution center.</p><p>Please pay the outstanding fee to schedule a new delivery date:</p><p><a href='https://pay-customs-il.com/tracking/8839102' style='background-color: #005eb8; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;'>Pay Customs Fee</a></p><p style='font-size: 12px; color: #666;'>If the fee is not paid within 48 hours, the package will be returned to the sender.</p></div></div>",
+      "links": [
+        {
+          "text": "Pay Customs Fee",
+          "href": "https://pay-customs-il.com/tracking/8839102"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b10-7",
+    "label": "legit",
+    "category": "payment",
+    "email": {
+      "sender": {
+        "email": "service@paypal.co.il",
+        "display_name": "PayPal"
+      },
+      "reply_to": null,
+      "subject": "You've got money from Maya Cohen",
+      "body_text": "Hello Dana Levi,\n\nMaya Cohen sent you 200.00 ILS.\n\nNote from Maya:\n\"For the concert tickets! Thanks for buying them :)\"\n\nView your transaction details here: https://www.paypal.com/il/myaccount/money\n\nThanks,\nPayPal",
+      "body_html": "<div style='font-family: Helvetica, Arial, sans-serif; color: #333;'><img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg' alt='PayPal Logo' width='80'><h2 style='color: #0070ba;'>You've got money!</h2><p>Hello Dana Levi,</p><p><strong>Maya Cohen</strong> sent you <strong>200.00 ILS</strong>.</p><div style='background-color: #f5f5f5; padding: 15px; border-left: 4px solid #0070ba;'><p style='margin: 0;'><em>\"For the concert tickets! Thanks for buying them :)\"</em></p></div><br><a href='https://www.paypal.com/il/myaccount/money' style='background-color: #0070ba; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 20px; font-weight: bold;'>Log In to PayPal</a><br><br><p style='font-size: 11px; color: #888;'>Please do not reply to this email. To get in touch with us, log in to your account and click \"Contact Us\".</p></div>",
+      "links": [
+        {
+          "text": "Log In to PayPal",
+          "href": "https://www.paypal.com/il/myaccount/money"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    },
+    "note": "Legitimate peer-to-peer payment notification"
+  },
+  {
+    "id": "b10-8",
+    "label": "legit",
+    "category": "booking",
+    "email": {
+      "sender": {
+        "email": "reservations@hostelworld.com",
+        "display_name": "Hostelworld"
+      },
+      "reply_to": "customerservice@hostelworld.com",
+      "subject": "Your booking is confirmed: Abraham Hostel Tel Aviv",
+      "body_text": "Hi Dana,\nYour booking is confirmed!\n\nAbraham Hostel Tel Aviv\nCheck-in: 15 Nov 2026\nCheck-out: 17 Nov 2026\nGuests: 2\n\nManage your booking: https://www.hostelworld.com/myaccount\n\nSafe travels,\nThe Hostelworld Team",
+      "body_html": "<div style='font-family: Arial, sans-serif;'><h2 style='color: #f36f21;'>Your booking is confirmed!</h2><p>Hi Dana,</p><p>We are thrilled to confirm your upcoming stay.</p><ul><li><strong>Property:</strong> Abraham Hostel Tel Aviv</li><li><strong>Check-in:</strong> 15 Nov 2026</li><li><strong>Check-out:</strong> 17 Nov 2026</li><li><strong>Guests:</strong> 2</li></ul><a href='https://track.hw.com/click?t=bkg&u=https%3A%2F%2Fwww.hostelworld.com%2Fmyaccount' style='display: inline-block; padding: 10px 15px; background-color: #f36f21; color: white; text-decoration: none; border-radius: 3px;'>Manage Booking</a><p>Safe travels,<br>The Hostelworld Team</p></div>",
+      "links": [
+        {
+          "text": "Manage Booking",
+          "href": "https://track.hw.com/click?t=bkg&u=https%3A%2F%2Fwww.hostelworld.com%2Fmyaccount"
+        }
+      ],
+      "attachments": [
+        {
+          "filename": "booking_confirmation_8812.pdf",
+          "content_type": "application/pdf",
+          "size_bytes": 145022
+        }
+      ],
+      "headers": {}
+    },
+    "note": "Legitimate booking confirmation with an attached PDF receipt"
+  },
+  {
+    "id": "b10-9",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Spoofed Microsoft 360 quarantine notification linking to a fake login portal",
+    "email": {
+      "sender": {
+        "email": "quarantine-alert@security-msg-portal.com",
+        "display_name": "IT Security Helpdesk"
+      },
+      "reply_to": null,
+      "subject": "3 Undelivered Messages in Quarantine",
+      "body_text": "Office 365 Security Alert\n\nUser: dana.levi@gmail.com\n\nYou have 3 incoming emails that were placed in quarantine because they failed our security checks.\n\nReview your quarantined messages here to release or delete them: https://portal-office365-auth-update.com/login?user=dana.levi@gmail.com\n\nMessages will be automatically deleted after 24 hours.\n\nIT Support",
+      "body_html": "<div style='font-family: Segoe UI, Tahoma, sans-serif; padding: 20px; border: 1px solid #eaeaea;'><h2 style='color: #d83b01; font-size: 20px;'>Message Quarantine Alert</h2><p><strong>User:</strong> dana.levi@gmail.com</p><p>You have <strong>3 incoming emails</strong> that were placed in quarantine because they failed our routine security checks.</p><p><a href='https://portal-office365-auth-update.com/login?user=dana.levi@gmail.com' style='background-color: #0078d4; color: #fff; padding: 8px 16px; text-decoration: none; border-radius: 2px;'>Review Quarantined Messages</a></p><p style='font-size: 12px; color: #666;'>Messages will be automatically deleted after 24 hours if no action is taken.</p><hr style='border: 0; border-top: 1px solid #eaeaea;'><p style='font-size: 10px; color: #999;'>Microsoft Corporation, One Microsoft Way, Redmond, WA 98052</p></div>",
+      "links": [
+        {
+          "text": "Review Quarantined Messages",
+          "href": "https://portal-office365-auth-update.com/login?user=dana.levi@gmail.com"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b10-10",
+    "label": "legit",
+    "category": "receipt",
+    "email": {
+      "sender": {
+        "email": "receipts@wolt.com",
+        "display_name": "Wolt Receipts"
+      },
+      "reply_to": null,
+      "subject": "Your Wolt receipt from Taqueria 🌮",
+      "body_text": "Hi Dana,\n\nThanks for ordering from Taqueria!\n\nTotal: 78.00 ILS\nCard: **** 4321\n\nYou can view and download your full receipt here: https://wolt.com/en/receipt/abc-123-xyz\n\nEnjoy your meal,\nThe Wolt Team",
+      "body_html": "<div style='font-family: system-ui, -apple-system, sans-serif;'><div style='background-color: #00c2e8; padding: 20px; text-align: center;'><h1 style='color: white; margin: 0;'>Wolt</h1></div><div style='padding: 20px;'><p>Hi Dana,</p><p>Thanks for ordering from <strong>Taqueria</strong>!</p><p>Total: <strong>78.00 ILS</strong><br>Paid with: Card ending in 4321</p><a href='https://wolt.com/en/receipt/abc-123-xyz' style='color: #00c2e8; text-decoration: none;'>View online receipt</a><br><br><p>Enjoy your meal,<br>The Wolt Team</p></div></div>",
+      "links": [
+        {
+          "text": "View online receipt",
+          "href": "https://wolt.com/en/receipt/abc-123-xyz"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    },
+    "note": "Legitimate food delivery receipt"
+  }
+]

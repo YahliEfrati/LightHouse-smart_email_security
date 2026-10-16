@@ -1,0 +1,542 @@
+{
+  "summary": [
+    {
+      "threshold": 35,
+      "tp": 7,
+      "fn": 13,
+      "fp": 1,
+      "tn": 29,
+      "detection_rate": 0.35,
+      "false_positive_rate": 0.03333333333333333,
+      "precision": 0.875,
+      "accuracy": 0.72
+    },
+    {
+      "threshold": 70,
+      "tp": 3,
+      "fn": 17,
+      "fp": 0,
+      "tn": 30,
+      "detection_rate": 0.15,
+      "false_positive_rate": 0.0,
+      "precision": 1.0,
+      "accuracy": 0.66
+    }
+  ],
+  "emails": [
+    {
+      "id": "b10-1",
+      "label": "legit",
+      "category": "personal",
+      "note": "Friend requesting money for a shared expense",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b10-2",
+      "label": "malicious",
+      "category": "bec",
+      "note": "CEO impersonation requesting a quick task/gift cards",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b10-3",
+      "label": "legit",
+      "category": "newsletter",
+      "note": "Small business marketing email with tracking links and unsubscribe footer",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b10-4",
+      "label": "malicious",
+      "category": "refund-scam",
+      "note": "Fake Geek Squad / Antivirus auto-renewal receipt designed to make the user call a phone number",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b10-5",
+      "label": "legit",
+      "category": "notification",
+      "note": "Legitimate ecommerce delivery notification using subdomain tracking links",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "excessive_url_encoding"
+      ]
+    },
+    {
+      "id": "b10-6",
+      "label": "malicious",
+      "category": "phishing",
+      "note": "Delivery scam attempting to collect credit card info for a fake unpaid fee",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b10-7",
+      "label": "legit",
+      "category": "payment",
+      "note": "Legitimate peer-to-peer payment notification",
+      "score": 40,
+      "verdict": "Suspicious",
+      "rules": [
+        "typosquat_domain"
+      ]
+    },
+    {
+      "id": "b10-8",
+      "label": "legit",
+      "category": "booking",
+      "note": "Legitimate booking confirmation with an attached PDF receipt",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b10-9",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Spoofed Microsoft 360 quarantine notification linking to a fake login portal",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "b10-10",
+      "label": "legit",
+      "category": "receipt",
+      "note": "Legitimate food delivery receipt",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b6-01",
+      "label": "legit",
+      "category": "payroll",
+      "note": "Standard automated payroll notification with tracking parameters and rich HTML.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b6-02",
+      "label": "legit",
+      "category": "vendor-invoice",
+      "note": "Real vendor invoice generated via Square with expected HTML and subdomains.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    },
+    {
+      "id": "b6-03",
+      "label": "malicious",
+      "category": "bec-wire",
+      "note": "CEO fraud attempt using a freemail address and urgent tone requesting a wire transfer.",
+      "score": 70,
+      "verdict": "Malicious",
+      "rules": [
+        "urgency_financial_proximity",
+        "payment_request_pressure",
+        "payment_request_unverified_sender"
+      ]
+    },
+    {
+      "id": "b6-04",
+      "label": "legit",
+      "category": "internal-approval",
+      "note": "Legitimate manager approving an invoice payment over a plain text email.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b6-05",
+      "label": "malicious",
+      "category": "bec-vendor-change",
+      "note": "Lookalike domain for AWS attempting to change ACH details via malicious PDF attachment.",
+      "score": 20,
+      "verdict": "Safe",
+      "rules": [
+        "urgency_financial_proximity"
+      ]
+    },
+    {
+      "id": "b6-06",
+      "label": "legit",
+      "category": "receipt",
+      "note": "Legitimate Stripe receipt for a SaaS subscription with standard formatting.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b6-07",
+      "label": "malicious",
+      "category": "fake-invoice",
+      "note": "Fake Geek Squad renewal invoice designed to trigger a phone call to a scam call center.",
+      "score": 20,
+      "verdict": "Safe",
+      "rules": [
+        "urgency_financial_proximity"
+      ]
+    },
+    {
+      "id": "b6-08",
+      "label": "legit",
+      "category": "expense-approval",
+      "note": "Automated email from Expensify regarding an approved report with HTML entities.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b6-09",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Lookalike domain for Atlassian attempting to steal credentials via a fake invoice page.",
+      "score": 20,
+      "verdict": "Safe",
+      "rules": [
+        "urgency_financial_proximity"
+      ]
+    },
+    {
+      "id": "b6-10",
+      "label": "legit",
+      "category": "payment-reminder",
+      "note": "Standard Intuit Quickbooks reminder from a small business with correct subdomain.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    },
+    {
+      "id": "b7-01",
+      "label": "legit",
+      "category": "internal-it",
+      "note": "Internal IT reminding employee about mandatory MFA setup with a link to the internal wiki.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b7-02",
+      "label": "legit",
+      "category": "security-notice",
+      "note": "Legitimate security notice from GitHub about a new device sign-in.",
+      "score": 20,
+      "verdict": "Safe",
+      "rules": [
+        "urgency_financial_proximity"
+      ]
+    },
+    {
+      "id": "b7-03",
+      "label": "legit",
+      "category": "internal-it",
+      "note": "Standard internal communication regarding Q3 password policy changes, delivering a PDF payload safely.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b7-04",
+      "label": "legit",
+      "category": "security-notice",
+      "note": "Legitimate notification from Slack regarding workspace authentication settings.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b7-05",
+      "label": "legit",
+      "category": "security-notice",
+      "note": "Dropbox notification about a new app linked to the account with tracking parameters.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b7-06",
+      "label": "legit",
+      "category": "internal-it",
+      "note": "Routine IT maintenance notice about VPN downtime, sent as plain text only.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b7-07",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Generic IT helpdesk phishing using a fake quota warning to steal webmail credentials.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b7-08",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Vague generic account verification phish that doesn't name a specific brand to evade brand-matching filters.",
+      "score": 30,
+      "verdict": "Safe",
+      "rules": [
+        "credential_request_language",
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "b7-09",
+      "label": "malicious",
+      "category": "bec",
+      "note": "Impersonates internal IT using a cousin domain linking to a fake SSO portal.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b7-10",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Fake email security gateway quarantine report aiming to steal credentials via a Release messages link.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "b8-1",
+      "label": "legit",
+      "category": "project-files",
+      "note": "Legitimate email from a design agency sending final brand assets via a ZIP attachment.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b8-2",
+      "label": "malicious",
+      "category": "malware-delivery",
+      "note": "Fake eFax delivery notification containing a malicious ISO file commonly used to bypass Mark-of-the-Web (MotW).",
+      "score": 35,
+      "verdict": "Suspicious",
+      "rules": [
+        "dangerous_extension"
+      ]
+    },
+    {
+      "id": "b8-3",
+      "label": "legit",
+      "category": "calendar-invite",
+      "note": "Standard automated Google Calendar ICS invite with typical HTML layout and tracking links.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    },
+    {
+      "id": "b8-4",
+      "label": "legit",
+      "category": "invoice",
+      "note": "Automated receipt with rich HTML and an attached PDF invoice.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b8-5",
+      "label": "malicious",
+      "category": "malware-delivery",
+      "note": "A highly urgent fake IT update pushing a malicious MSI installer via a cloud storage lookalike link.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "b8-6",
+      "label": "legit",
+      "category": "file-share",
+      "note": "Standard Dropbox file share notification with legitimate long tokenized links.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    },
+    {
+      "id": "b8-7",
+      "label": "malicious",
+      "category": "malware-delivery",
+      "note": "HTML Smuggling attack disguised as a PayPal resolution center receipt.",
+      "score": 70,
+      "verdict": "Malicious",
+      "rules": [
+        "display_name_domain_mismatch",
+        "dangerous_extension"
+      ]
+    },
+    {
+      "id": "b8-8",
+      "label": "legit",
+      "category": "internal-spreadsheet",
+      "note": "Internal company email sending an Excel spreadsheet for budget review.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "b8-9",
+      "label": "malicious",
+      "category": "malware-delivery",
+      "note": "Malicious ZIP file containing a disguised script or LNK file, masquerading as an overdue invoice.",
+      "score": 35,
+      "verdict": "Suspicious",
+      "rules": [
+        "urgency_financial_proximity",
+        "urgency_financial_proximity"
+      ]
+    },
+    {
+      "id": "b8-10",
+      "label": "legit",
+      "category": "newsletter",
+      "note": "Legitimate marketing newsletter containing multiple tracking links, HTML entities, and an unsubscribe footer.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "h1-01",
+      "label": "legit",
+      "category": "airline marketing",
+      "note": "Legitimate airline promotional newsletter with tracking parameters and rich HTML.",
+      "score": 30,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch",
+        "excessive_url_encoding"
+      ]
+    },
+    {
+      "id": "h1-02",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Impersonates Netflix billing issue using a look-alike domain to steal credit card details.",
+      "score": 70,
+      "verdict": "Malicious",
+      "rules": [
+        "display_name_domain_mismatch",
+        "urgency_financial_proximity",
+        "credential_request_language"
+      ]
+    },
+    {
+      "id": "h1-03",
+      "label": "legit",
+      "category": "retail marketing",
+      "note": "Standard e-commerce promo with messy marketing URLs, unsubscribe footers, and brand formatting.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    },
+    {
+      "id": "h1-04",
+      "label": "malicious",
+      "category": "bec / credential-phish",
+      "note": "Fake DocuSign document share attempting to steal Microsoft 365 credentials using a free hosting platform.",
+      "score": 50,
+      "verdict": "Suspicious",
+      "rules": [
+        "display_name_domain_mismatch",
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "h1-05",
+      "label": "legit",
+      "category": "saas marketing",
+      "note": "Legitimate SaaS product update newsletter from a sub-domain.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    },
+    {
+      "id": "h1-06",
+      "label": "malicious",
+      "category": "refund-scam",
+      "note": "Fake Amazon order confirmation designed to create panic and steal credentials/credit card info via a fake refund portal.",
+      "score": 50,
+      "verdict": "Suspicious",
+      "rules": [
+        "display_name_domain_mismatch",
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "h1-07",
+      "label": "legit",
+      "category": "streaming marketing",
+      "note": "Legitimate streaming service personalized digest with typical encoded tracking strings.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "excessive_url_encoding"
+      ]
+    },
+    {
+      "id": "h1-08",
+      "label": "malicious",
+      "category": "credential-phish",
+      "note": "Urgent Expedia impersonation claiming a flight was canceled, designed to harvest login credentials.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "high_entropy_domain"
+      ]
+    },
+    {
+      "id": "h1-09",
+      "label": "legit",
+      "category": "retail marketing",
+      "note": "Standard e-commerce promo with messy marketing URLs.",
+      "score": 0,
+      "verdict": "Safe",
+      "rules": []
+    },
+    {
+      "id": "h1-10",
+      "label": "legit",
+      "category": "saas digest",
+      "note": "Legitimate weekly analytics digest from a design SaaS platform.",
+      "score": 15,
+      "verdict": "Safe",
+      "rules": [
+        "reply_to_mismatch"
+      ]
+    }
+  ]
+}

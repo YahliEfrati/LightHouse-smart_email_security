@@ -1,0 +1,294 @@
+[
+  {
+    "id": "h1-01",
+    "label": "legit",
+    "category": "airline marketing",
+    "note": "Legitimate airline promotional newsletter with tracking parameters and rich HTML.",
+    "email": {
+      "sender": {
+        "email": "newsletter@email.skywardairlines.com",
+        "display_name": "Skyward Airlines"
+      },
+      "reply_to": "noreply@skywardairlines.com",
+      "subject": "Last Minute Getaways: Save up to 30% ✈️",
+      "body_text": "View in browser: https://click.email.skywardairlines.com/v/19283\n\nReady for a quick escape, Dana?\n\nTake advantage of our last-minute deals and save up to 30% on select flights to Europe and the Caribbean.\n\nBook Now: https://click.email.skywardairlines.com/track?id=a992k&url=https%3A%2F%2Fwww.skywardairlines.com%2Fdeals%3Futm_source%3Demail%26utm_campaign%3Dlast_minute_oct26\n\n---\nSkyward Airlines | 100 Aviation Way, NY\nUnsubscribe: https://click.email.skywardairlines.com/unsubscribe?user=dana.levi@gmail.com",
+      "body_html": "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'><p style='font-size: 11px; text-align: center;'><a href='https://click.email.skywardairlines.com/v/19283' style='color: #666;'>View in browser</a></p><h2 style='color: #003366;'>Ready for a quick escape, Dana?</h2><p>Take advantage of our last-minute deals and save up to 30% on select flights to Europe and the Caribbean.</p><p style='text-align: center; margin: 30px 0;'><a href='https://click.email.skywardairlines.com/track?id=a992k&url=https%3A%2F%2Fwww.skywardairlines.com%2Fdeals%3Futm_source%3Demail%26utm_campaign%3Dlast_minute_oct26' style='background-color: #ff6600; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;'>Book Now</a></p><hr style='border: none; border-top: 1px solid #eee; margin-top: 40px;'><p style='font-size: 10px; color: #999; text-align: center;'>Skyward Airlines &#124; 100 Aviation Way, NY<br>This email was sent to dana.levi@gmail.com. <a href='https://click.email.skywardairlines.com/unsubscribe?user=dana.levi@gmail.com' style='color: #999;'>Unsubscribe here</a>.</p></div>",
+      "links": [
+        {
+          "text": "View in browser",
+          "href": "https://click.email.skywardairlines.com/v/19283"
+        },
+        {
+          "text": "Book Now",
+          "href": "https://click.email.skywardairlines.com/track?id=a992k&url=https%3A%2F%2Fwww.skywardairlines.com%2Fdeals%3Futm_source%3Demail%26utm_campaign%3Dlast_minute_oct26"
+        },
+        {
+          "text": "Unsubscribe here",
+          "href": "https://click.email.skywardairlines.com/unsubscribe?user=dana.levi@gmail.com"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "h1-02",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Impersonates Netflix billing issue using a look-alike domain to steal credit card details.",
+    "email": {
+      "sender": {
+        "email": "support@netfllx-billing-update.com",
+        "display_name": "Netflix Support"
+      },
+      "reply_to": null,
+      "subject": "Action Required: Your subscription has been suspended",
+      "body_text": "Hi dana.levi,\n\nWe were unable to authorize the payment method for your next billing cycle. As a result, your subscription has been temporarily suspended.\n\nTo restore your access and continue enjoying your favorite TV shows and movies, please update your payment details immediately.\n\nUpdate Payment Method: https://login.netflix.cc-update-auth.com/login?token=abc123xyz\n\nIf you do not update your payment within 48 hours, your account will be permanently canceled.\n\nThe Netflix Team",
+      "body_html": "<div style='font-family: Helvetica, Arial, sans-serif; color: #333;'><img src='https://assets.nflxext.com/us/email/logo/newDesign/logo_v2.png' alt='Netflix' width='110' style='margin-bottom: 20px;'><h2 style='font-weight: normal;'>Please update your payment details</h2><p>Hi dana.levi,</p><p>We were unable to authorize the payment method for your next billing cycle. As a result, your subscription has been temporarily suspended.</p><p>To restore your access and continue enjoying your favorite TV shows and movies, please update your payment details immediately.</p><p style='margin: 30px 0;'><a href='https://login.netflix.cc-update-auth.com/login?token=abc123xyz' style='background-color: #e50914; color: white; padding: 14px 2em; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px;'>Update Payment Method</a></p><p>If you do not update your payment within 48 hours, your account will be permanently canceled.</p><p>The Netflix Team</p></div>",
+      "links": [
+        {
+          "text": "Update Payment Method",
+          "href": "https://login.netflix.cc-update-auth.com/login?token=abc123xyz"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "h1-03",
+    "label": "legit",
+    "category": "retail marketing",
+    "note": "Standard e-commerce promo with messy marketing URLs, unsubscribe footers, and brand formatting.",
+    "email": {
+      "sender": {
+        "email": "news@hello.urbanthreads.com",
+        "display_name": "Urban Threads"
+      },
+      "reply_to": "support@urbanthreads.com",
+      "subject": "Fall Collection is Here + Your 15% Off Code!",
+      "body_text": "URBAN THREADS\n\nThe Leaves Are Falling, And So Are Our Prices!\nGet 15% off your entire order with code: FALL15\n\nShop the Fall Collection: https://click.hello.urbanthreads.com/ls/click?upn=xyz987\n\nShop Sweaters: https://click.hello.urbanthreads.com/ls/click?upn=sweaters123\nShop Denim: https://click.hello.urbanthreads.com/ls/click?upn=denim456\n\nFree shipping on all orders over $75.\n\nPrivacy Policy: https://www.urbanthreads.com/privacy\nUnsubscribe: https://click.hello.urbanthreads.com/unsubscribe?e=dana.levi%40gmail.com",
+      "body_html": "<div style='font-family: \"Century Gothic\", sans-serif; text-align: center; color: #222;'><h1 style='letter-spacing: 2px;'>URBAN THREADS</h1><div style='background-color: #f8efe6; padding: 40px 20px;'><h2 style='font-size: 24px; margin-bottom: 10px;'>The Leaves Are Falling, And So Are Our Prices!</h2><p style='font-size: 16px;'>Get 15% off your entire order with code: <strong>FALL15</strong></p><a href='https://click.hello.urbanthreads.com/ls/click?upn=xyz987' style='display: inline-block; margin-top: 20px; padding: 15px 30px; background-color: #222; color: #fff; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;'>Shop the Fall Collection</a></div><div style='margin-top: 30px;'><a href='https://click.hello.urbanthreads.com/ls/click?upn=sweaters123' style='color: #555; margin: 0 15px; text-decoration: none;'>Shop Sweaters</a> &#124; <a href='https://click.hello.urbanthreads.com/ls/click?upn=denim456' style='color: #555; margin: 0 15px; text-decoration: none;'>Shop Denim</a></div><p style='margin-top: 40px; font-size: 12px; color: #888;'>Free shipping on all orders over $75.</p><hr style='border: 0; border-top: 1px solid #ddd; margin: 30px 0;'><p style='font-size: 10px; color: #aaa;'><a href='https://www.urbanthreads.com/privacy' style='color: #aaa;'>Privacy Policy</a> &#160;&bull;&#160; <a href='https://click.hello.urbanthreads.com/unsubscribe?e=dana.levi%40gmail.com' style='color: #aaa;'>Unsubscribe</a><br>Urban Threads LLC, 500 Fashion Blvd, Los Angeles, CA 90014</p></div>",
+      "links": [
+        {
+          "text": "Shop the Fall Collection",
+          "href": "https://click.hello.urbanthreads.com/ls/click?upn=xyz987"
+        },
+        {
+          "text": "Shop Sweaters",
+          "href": "https://click.hello.urbanthreads.com/ls/click?upn=sweaters123"
+        },
+        {
+          "text": "Shop Denim",
+          "href": "https://click.hello.urbanthreads.com/ls/click?upn=denim456"
+        },
+        {
+          "text": "Privacy Policy",
+          "href": "https://www.urbanthreads.com/privacy"
+        },
+        {
+          "text": "Unsubscribe",
+          "href": "https://click.hello.urbanthreads.com/unsubscribe?e=dana.levi%40gmail.com"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "h1-04",
+    "label": "malicious",
+    "category": "bec / credential-phish",
+    "note": "Fake DocuSign document share attempting to steal Microsoft 365 credentials using a free hosting platform.",
+    "email": {
+      "sender": {
+        "email": "e-signature-alerts@docuslgn.web.app",
+        "display_name": "DocuSign via Contoso"
+      },
+      "reply_to": null,
+      "subject": "Please review and sign: \"Q4_Contract_Levi.pdf\"",
+      "body_text": "DocuSign\n\nHR Department sent you a document to review and sign.\n\nREVIEW DOCUMENT: https://docusign-auth-review.web.app/doc?id=a8f93j2&email=dana.levi@gmail.com\n\nPlease complete this signature request by end of day to process your Q4 benefits adjustment.\n\nPowered by DocuSign",
+      "body_html": "<div style='font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4; padding: 20px;'><div style='background-color: #ffffff; max-width: 500px; margin: 0 auto; border-top: 4px solid #1f3bb3; padding: 30px;'><h2 style='color: #1f3bb3; margin-top: 0;'>DocuSign</h2><p style='font-size: 16px; color: #333;'><strong>HR Department</strong> sent you a document to review and sign.</p><p style='font-size: 14px; color: #666;'>Please complete this signature request by end of day to process your Q4 benefits adjustment.</p><div style='text-align: center; margin: 30px 0;'><a href='https://docusign-auth-review.web.app/doc?id=a8f93j2&email=dana.levi@gmail.com' style='background-color: #ffc820; color: #333; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 2px; display: inline-block;'>REVIEW DOCUMENT</a></div><p style='font-size: 11px; color: #999;'>Powered by DocuSign<br>Do not share this email. This link is uniquely tied to dana.levi@gmail.com.</p></div></div>",
+      "links": [
+        {
+          "text": "REVIEW DOCUMENT",
+          "href": "https://docusign-auth-review.web.app/doc?id=a8f93j2&email=dana.levi@gmail.com"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "h1-05",
+    "label": "legit",
+    "category": "saas marketing",
+    "note": "Legitimate SaaS product update newsletter from a sub-domain.",
+    "email": {
+      "sender": {
+        "email": "updates@mail.work-flow.com",
+        "display_name": "Workflow Team"
+      },
+      "reply_to": "support@work-flow.com",
+      "subject": "What’s new in Workflow: September 2026",
+      "body_text": "Workflow Updates\n\nHi Dana,\n\nHere is a quick look at what we shipped in Workflow this month.\n\n- Dark Mode is officially here: You asked, we delivered. Toggle dark mode in your account settings.\n- Improved Calendar Sync: Connect your Google Calendar with fewer clicks.\n- New API Endpoints: Build deeper integrations with our expanded v3 API.\n\nRead the release notes: https://www.work-flow.com/blog/september-2026-updates?utm_source=newsletter&utm_medium=email\n\nThanks for building with Workflow!\n\n--\nManage your email preferences: https://mail.work-flow.com/preferences/update/dl12345",
+      "body_html": "<div style='font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif; color: #1a1a1a;'><h1 style='color: #4a154b; font-size: 24px;'>Workflow Updates</h1><p>Hi Dana,</p><p>Here is a quick look at what we shipped in Workflow this month.</p><ul><li style='margin-bottom: 10px;'><strong>Dark Mode is officially here:</strong> You asked, we delivered. Toggle dark mode in your account settings.</li><li style='margin-bottom: 10px;'><strong>Improved Calendar Sync:</strong> Connect your Google Calendar with fewer clicks.</li><li style='margin-bottom: 10px;'><strong>New API Endpoints:</strong> Build deeper integrations with our expanded v3 API.</li></ul><p style='margin-top: 25px;'><a href='https://www.work-flow.com/blog/september-2026-updates?utm_source=newsletter&utm_medium=email' style='background-color: #4a154b; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;'>Read the release notes</a></p><p style='margin-top: 30px;'>Thanks for building with Workflow!</p><hr style='border: 0; border-bottom: 1px solid #eaeaea; margin: 40px 0 20px;'><p style='font-size: 12px; color: #717274;'><a href='https://mail.work-flow.com/preferences/update/dl12345' style='color: #717274; text-decoration: underline;'>Manage your email preferences</a> | Workflow Inc, 123 Tech Park, SF, CA</p></div>",
+      "links": [
+        {
+          "text": "Read the release notes",
+          "href": "https://www.work-flow.com/blog/september-2026-updates?utm_source=newsletter&utm_medium=email"
+        },
+        {
+          "text": "Manage your email preferences",
+          "href": "https://mail.work-flow.com/preferences/update/dl12345"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "h1-06",
+    "label": "malicious",
+    "category": "refund-scam",
+    "note": "Fake Amazon order confirmation designed to create panic and steal credentials/credit card info via a fake refund portal.",
+    "email": {
+      "sender": {
+        "email": "auto-receipt@amzn-orders-alert.com",
+        "display_name": "Amazon.com Order Confirmation"
+      },
+      "reply_to": "no-reply@amzn-orders-alert.com",
+      "subject": "Your Amazon.com order #114-8927492-111000 has shipped",
+      "body_text": "Order Confirmation\n\nHello dana.levi@gmail.com,\n\nYour order has been successfully placed and shipped. Your card has been charged $1,299.00.\n\nOrder Details:\nItem: Apple iPhone 15 Pro, 256GB\nTotal: $1,299.00\nShipping Address: 4500 Fake St, Columbus, OH 43215\n\nIf you did not authorize this purchase, please visit our fraud prevention center immediately to cancel the order and process a full refund.\n\nCancel Order & Claim Refund: https://amzn-refund-portal.com/auth/dispute/114-8927492\n\nThank you for shopping with us,\nAmazon.com",
+      "body_html": "<div style='font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #ccc; padding: 20px;'><img src='https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg' width='100' alt='Amazon'><h2 style='color: #e47911;'>Order Confirmation</h2><p>Hello dana.levi@gmail.com,</p><p>Your order has been successfully placed and shipped. Your card has been charged <strong>$1,299.00</strong>.</p><div style='background-color: #f6f6f6; padding: 15px; margin: 20px 0;'><strong>Order Details:</strong><br>Item: Apple iPhone 15 Pro, 256GB<br>Total: $1,299.00<br>Shipping Address: 4500 Fake St, Columbus, OH 43215</div><p style='color: #c40000; font-weight: bold;'>If you did not authorize this purchase, please visit our fraud prevention center immediately to cancel the order and process a full refund.</p><p><a href='https://amzn-refund-portal.com/auth/dispute/114-8927492' style='background-color: #f0c14b; border: 1px solid #a88734; color: #111; padding: 10px 15px; text-decoration: none; border-radius: 3px; display: inline-block;'>Cancel Order &amp; Claim Refund</a></p><p style='font-size: 12px; color: #555; margin-top: 30px;'>Thank you for shopping with us,<br>Amazon.com</p></div>",
+      "links": [
+        {
+          "text": "Cancel Order & Claim Refund",
+          "href": "https://amzn-refund-portal.com/auth/dispute/114-8927492"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "h1-07",
+    "label": "legit",
+    "category": "streaming marketing",
+    "note": "Legitimate streaming service personalized digest with typical encoded tracking strings.",
+    "email": {
+      "sender": {
+        "email": "no-reply@e.musicstream.com",
+        "display_name": "MusicStream"
+      },
+      "reply_to": "no-reply@e.musicstream.com",
+      "subject": "Discover your personalized Friday mixes",
+      "body_text": "Ready for the weekend, Dana?\n\nWe put together some fresh playlists just for you, based on what you've been listening to lately.\n\nListen Now: https://link.e.musicstream.com/click/v1/a98x8sd98f7a?dest=spotify%3A%2F%2Fplaylist%2Fdiscover\n\nKeep the vibes going.\n\nGet the App: https://link.e.musicstream.com/download\n\n---\nUnsubscribe: https://link.e.musicstream.com/unsub?id=dana.levi%40gmail.com\nMusicStream AB | 100 Audio Lane, Stockholm",
+      "body_html": "<div style='background-color: #121212; color: #ffffff; font-family: \"Circular\", Helvetica, Arial, sans-serif; padding: 40px 20px; text-align: center;'><h1 style='font-size: 28px; margin-bottom: 20px;'>Ready for the weekend, Dana?</h1><p style='font-size: 16px; color: #b3b3b3; max-width: 400px; margin: 0 auto 30px;'>We put together some fresh playlists just for you, based on what you&#8217;ve been listening to lately.</p><a href='https://link.e.musicstream.com/click/v1/a98x8sd98f7a?dest=spotify%3A%2F%2Fplaylist%2Fdiscover' style='background-color: #1db954; color: #ffffff; padding: 14px 32px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;'>Listen Now</a><div style='margin-top: 50px;'><a href='https://link.e.musicstream.com/download' style='color: #b3b3b3; text-decoration: none; font-size: 12px;'>Get the App</a></div><hr style='border: none; border-top: 1px solid #282828; margin: 40px 0 20px;'><p style='font-size: 10px; color: #888888;'><a href='https://link.e.musicstream.com/unsub?id=dana.levi%40gmail.com' style='color: #888888;'>Unsubscribe</a> &#124; MusicStream AB, 100 Audio Lane, Stockholm</p></div>",
+      "links": [
+        {
+          "text": "Listen Now",
+          "href": "https://link.e.musicstream.com/click/v1/a98x8sd98f7a?dest=spotify%3A%2F%2Fplaylist%2Fdiscover"
+        },
+        {
+          "text": "Get the App",
+          "href": "https://link.e.musicstream.com/download"
+        },
+        {
+          "text": "Unsubscribe",
+          "href": "https://link.e.musicstream.com/unsub?id=dana.levi%40gmail.com"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "h1-08",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Urgent Expedia impersonation claiming a flight was canceled, designed to harvest login credentials.",
+    "email": {
+      "sender": {
+        "email": "admin@booking-expedia-alerts.info",
+        "display_name": "Expedia Itinerary"
+      },
+      "reply_to": null,
+      "subject": "Flight Cancellation Notice - Action Required",
+      "body_text": "Expedia\n\nURGENT TRAVEL UPDATE\n\nDear Traveler,\n\nWe regret to inform you that an upcoming flight on your itinerary has been unexpectedly canceled by the airline.\n\nTo view your alternative flight options or claim an immediate travel voucher, please log into your Expedia account to manage your booking.\n\nManage Booking: https://expedia-rebook-voucher.com/login?session=exp8172947\n\nPlease act quickly, as available rebooking slots are filling up fast.\n\nExpedia Customer Care",
+      "body_html": "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'><h2 style='color: #000066; margin-bottom: 5px;'>Expedia</h2><div style='background-color: #ffcccc; color: #cc0000; padding: 10px; font-weight: bold; text-align: center; border-radius: 4px;'>URGENT TRAVEL UPDATE</div><p>Dear Traveler,</p><p>We regret to inform you that an upcoming flight on your itinerary has been unexpectedly canceled by the airline.</p><p>To view your alternative flight options or claim an immediate travel voucher, please log into your Expedia account to manage your booking.</p><p style='text-align: center; margin: 30px 0;'><a href='https://expedia-rebook-voucher.com/login?session=exp8172947' style='background-color: #ffcc00; color: #000066; padding: 15px 25px; text-decoration: none; font-weight: bold; border-radius: 5px;'>Manage Booking</a></p><p>Please act quickly, as available rebooking slots are filling up fast.</p><p style='font-size: 12px; color: #666;'>Expedia Customer Care</p></div>",
+      "links": [
+        {
+          "text": "Manage Booking",
+          "href": "https://expedia-rebook-voucher.com/login?session=exp8172947"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "h1-09",
+    "label": "legit",
+    "category": "retail marketing",
+    "note": "Standard e-commerce promo with messy marketing URLs.",
+    "email": {
+      "sender": {
+        "email": "hello@marketing.homedecor.com",
+        "display_name": "Home Decor Co."
+      },
+      "reply_to": "hello@marketing.homedecor.com",
+      "subject": "Transform your living room for under $100",
+      "body_text": "HOME DECOR CO.\n\nRefresh your space without breaking the bank.\nDiscover our new collection of throw pillows, wall art, and ambient lighting.\n\nShop the Sale: https://www.homedecor.com/sale?utm_campaign=livingroom2026&utm_medium=email&utm_term=dana.levi%40gmail.com\n\nFollow us on Instagram: https://instagram.com/homedecorco\nUnsubscribe: https://marketing.homedecor.com/u/1029384",
+      "body_html": "<div style='font-family: Georgia, serif; text-align: center; color: #333; max-width: 600px; margin: auto;'><h1 style='font-weight: normal; letter-spacing: 3px;'>HOME DECOR CO.</h1><h2 style='font-size: 22px; margin-top: 30px;'>Refresh your space without breaking the bank.</h2><p style='font-size: 16px; line-height: 1.5; color: #555;'>Discover our new collection of throw pillows, wall art, and ambient lighting.</p><a href='https://www.homedecor.com/sale?utm_campaign=livingroom2026&utm_medium=email&utm_term=dana.levi%40gmail.com' style='display: inline-block; margin: 30px 0; padding: 12px 30px; border: 1px solid #333; color: #333; text-decoration: none; text-transform: uppercase;'>Shop the Sale</a><div style='margin-top: 40px; font-size: 12px;'><a href='https://instagram.com/homedecorco' style='color: #888;'>Follow us on Instagram</a></div><p style='margin-top: 20px; font-size: 10px; color: #aaa;'>Home Decor Co. 123 Main St, Anytown USA<br><a href='https://marketing.homedecor.com/u/1029384' style='color: #aaa;'>Unsubscribe</a></p></div>",
+      "links": [
+        {
+          "text": "Shop the Sale",
+          "href": "https://www.homedecor.com/sale?utm_campaign=livingroom2026&utm_medium=email&utm_term=dana.levi%40gmail.com"
+        },
+        {
+          "text": "Follow us on Instagram",
+          "href": "https://instagram.com/homedecorco"
+        },
+        {
+          "text": "Unsubscribe",
+          "href": "https://marketing.homedecor.com/u/1029384"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "h1-10",
+    "label": "legit",
+    "category": "saas digest",
+    "note": "Legitimate weekly analytics digest from a design SaaS platform.",
+    "email": {
+      "sender": {
+        "email": "insights@mailer.designstudio.com",
+        "display_name": "DesignStudio"
+      },
+      "reply_to": "noreply@designstudio.com",
+      "subject": "Your weekly design stats are here!",
+      "body_text": "Your Weekly Recap\n\nHi Dana,\nYou've had a busy week! Here is a summary of your activity on DesignStudio:\n\n- 5 New designs created\n- 12 Asset downloads\n- 3 Shared links generated\n\nReady to do more? Upgrade to Pro for unlimited brand assets and premium templates.\n\nUpgrade to Pro: https://app.designstudio.com/upgrade?promo=WEEKLY20\n\nLog in: https://app.designstudio.com/login\nUnsubscribe from weekly digests: https://mailer.designstudio.com/prefs/weekly",
+      "body_html": "<div style='font-family: Arial, sans-serif; background-color: #fafafa; padding: 30px;'><div style='background-color: #fff; max-width: 500px; margin: 0 auto; padding: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);'><h1 style='color: #333; font-size: 24px;'>Your Weekly Recap</h1><p style='color: #666; font-size: 16px;'>Hi Dana,<br>You&#8217;ve had a busy week! Here is a summary of your activity on DesignStudio:</p><ul style='color: #444; font-size: 16px; line-height: 1.8;'><li><strong>5</strong> New designs created</li><li><strong>12</strong> Asset downloads</li><li><strong>3</strong> Shared links generated</li></ul><div style='background-color: #f0f7ff; padding: 20px; border-radius: 6px; margin-top: 30px;'><h3 style='margin-top: 0; color: #0055cc;'>Ready to do more?</h3><p style='color: #333; font-size: 14px;'>Upgrade to Pro for unlimited brand assets and premium templates.</p><a href='https://app.designstudio.com/upgrade?promo=WEEKLY20' style='display: inline-block; background-color: #0055cc; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;'>Upgrade to Pro</a></div><p style='margin-top: 30px; text-align: center;'><a href='https://app.designstudio.com/login' style='color: #0055cc; font-size: 14px; text-decoration: none;'>Log in to your account</a></p></div><p style='text-align: center; color: #aaa; font-size: 12px; margin-top: 20px;'><a href='https://mailer.designstudio.com/prefs/weekly' style='color: #aaa;'>Unsubscribe from weekly digests</a></p></div>",
+      "links": [
+        {
+          "text": "Upgrade to Pro",
+          "href": "https://app.designstudio.com/upgrade?promo=WEEKLY20"
+        },
+        {
+          "text": "Log in to your account",
+          "href": "https://app.designstudio.com/login"
+        },
+        {
+          "text": "Unsubscribe from weekly digests",
+          "href": "https://mailer.designstudio.com/prefs/weekly"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  }
+]

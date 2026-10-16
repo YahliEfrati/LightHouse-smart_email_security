@@ -1,0 +1,234 @@
+[
+  {
+    "id": "b6-01",
+    "label": "legit",
+    "category": "payroll",
+    "note": "Standard automated payroll notification with tracking parameters and rich HTML.",
+    "email": {
+      "sender": {
+        "email": "notifications@workday.com",
+        "display_name": "Workday Payroll"
+      },
+      "reply_to": null,
+      "subject": "Your latest pay slip is available",
+      "body_text": "Hi Dana,\n\nYour pay slip for the period ending Oct 15 is now available.\n\nView Paystub: https://app.workday.com/login?redirect=%2Fpay%2Fstub%3Fid%3D99182\n\nThank you,\nHR & Payroll Team",
+      "body_html": "<div style='font-family: Arial, sans-serif;'><p>Hi Dana,</p><p>Your pay slip for the period ending Oct 15 is now available.</p><p><a href='https://app.workday.com/login?redirect=%2Fpay%2Fstub%3Fid%3D99182' style='background-color: #005A9C; color: white; padding: 10px 20px; text-decoration: none; display: inline-block;'>View Paystub</a></p><hr/><p style='font-size: 11px; color: #666;'>This is an automated message sent to dana.levi@gmail.com. &#160; Please do not reply directly to this email.</p></div>",
+      "links": [
+        {
+          "text": "View Paystub",
+          "href": "https://app.workday.com/login?redirect=%2Fpay%2Fstub%3Fid%3D99182"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b6-02",
+    "label": "legit",
+    "category": "vendor-invoice",
+    "note": "Real vendor invoice generated via Square with expected HTML and subdomains.",
+    "email": {
+      "sender": {
+        "email": "invoicing@messaging.squareup.com",
+        "display_name": "Square Invoices"
+      },
+      "reply_to": "horizon-design-llc@yahoo.com",
+      "subject": "New Invoice #1044 from Horizon Design LLC",
+      "body_text": "Horizon Design LLC sent you an invoice for $1,250.00.\n\nDue Date: Oct 30, 2026\n\nPay Invoice: https://squareup.com/pay/invoice/INV-998811\n\nPowered by Square.",
+      "body_html": "<div style='background-color:#f7f7f7;padding:20px;font-family:sans-serif;'><div style='background-color:#ffffff;padding:30px;border-radius:4px;'><h2>New Invoice</h2><p>Horizon Design LLC sent you an invoice for <strong>$1,250.00</strong>.</p><p>Due Date: Oct 30, 2026</p><br/><a href='https://squareup.com/pay/invoice/INV-998811' style='display:inline-block;background-color:#006aff;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:4px;'>Pay Invoice</a><hr style='margin-top:30px;border:none;border-top:1px solid #e0e0e0;'/><p style='font-size:12px;color:#777777;'>Powered by Square.</p></div></div>",
+      "links": [
+        {
+          "text": "Pay Invoice",
+          "href": "https://squareup.com/pay/invoice/INV-998811"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b6-03",
+    "label": "malicious",
+    "category": "bec-wire",
+    "note": "CEO fraud attempt using a freemail address and urgent tone requesting a wire transfer.",
+    "email": {
+      "sender": {
+        "email": "alex.ceo.executive@gmail.com",
+        "display_name": "Alex Mercer"
+      },
+      "reply_to": "alex.ceo.executive@gmail.com",
+      "subject": "Urgent Request: Wire Transfer",
+      "body_text": "Dana,\n\nAre you available? I'm currently tied up in meetings and need you to process a wire transfer of $14,500 to a new logistics vendor today to avoid project delays.\n\nLet me know if you can handle this right now and I will send over the W-9 and banking details.\n\nThanks,\nAlex",
+      "body_html": "",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b6-04",
+    "label": "legit",
+    "category": "internal-approval",
+    "note": "Legitimate manager approving an invoice payment over a plain text email.",
+    "email": {
+      "sender": {
+        "email": "david.chen@acme-corp.com",
+        "display_name": "David Chen"
+      },
+      "reply_to": "david.chen@acme-corp.com",
+      "subject": "RE: Q3 DataDog Invoice - Ready for payment?",
+      "body_text": "Hi Dana,\n\nYes, I reviewed the attached invoice. The overage charges look correct based on our usage spike last month. It's approved for payment.\n\nPlease go ahead and process the transfer via SVB today if possible.\n\nThanks,\nDavid",
+      "body_html": "",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "DataDog_Q3_INV_8811.pdf",
+          "content_type": "application/pdf",
+          "size_bytes": 45102
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b6-05",
+    "label": "malicious",
+    "category": "bec-vendor-change",
+    "note": "Lookalike domain for AWS attempting to change ACH details via malicious PDF attachment.",
+    "email": {
+      "sender": {
+        "email": "accounts@aws-billing-support.com",
+        "display_name": "AWS Billing"
+      },
+      "reply_to": null,
+      "subject": "IMPORTANT: Amazon Web Services ACH Payment Instructions Updated",
+      "body_text": "Dear Customer,\n\nPlease be advised that Amazon Web Services has updated our banking details for ACH transfers, effective immediately.\n\nPlease download the attached PDF for the new routing and account numbers to use for your next invoice. Payments sent to the old account will be rejected and may result in service interruption.\n\nRegards,\nAWS Accounts Receivable",
+      "body_html": "<div style='font-family: Arial, sans-serif;'><p>Dear Customer,</p><p>Please be advised that Amazon Web Services has updated our banking details for ACH transfers, effective immediately.</p><p>Please download the attached PDF for the new routing and account numbers to use for your next invoice. Payments sent to the old account will be rejected and may result in service interruption.</p><p>Regards,<br>AWS Accounts Receivable</p></div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "AWS_New_ACH_Instructions.pdf",
+          "content_type": "application/pdf",
+          "size_bytes": 102450
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b6-06",
+    "label": "legit",
+    "category": "receipt",
+    "note": "Legitimate Stripe receipt for a SaaS subscription with standard formatting.",
+    "email": {
+      "sender": {
+        "email": "receipts@stripe.com",
+        "display_name": "OpenAI"
+      },
+      "reply_to": null,
+      "subject": "Your receipt from OpenAI",
+      "body_text": "Receipt from OpenAI\n\nAmount paid: $20.00\nDate paid: Oct 16, 2026\n\nView Receipt Online: https://pay.stripe.com/receipts/acct_123/rcpt_456\n\nIf you have any questions, contact us at support@openai.com.",
+      "body_html": "<div style='background:#f6f9fc; padding:20px; font-family: Helvetica, sans-serif;'><div style='background:#fff; padding:20px; border-radius:5px;'><h2>Receipt from OpenAI</h2><p>Amount paid: <strong>$20.00</strong></p><p>Date paid: Oct 16, 2026</p><a href='https://pay.stripe.com/receipts/acct_123/rcpt_456' style='color:#6772e5; text-decoration:none;'>View Receipt Online</a></div></div>",
+      "links": [
+        {
+          "text": "View Receipt Online",
+          "href": "https://pay.stripe.com/receipts/acct_123/rcpt_456"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b6-07",
+    "label": "malicious",
+    "category": "fake-invoice",
+    "note": "Fake Geek Squad renewal invoice designed to trigger a phone call to a scam call center.",
+    "email": {
+      "sender": {
+        "email": "billing-update-9912@gmail.com",
+        "display_name": "Geek Squad Billing"
+      },
+      "reply_to": null,
+      "subject": "Invoice Payment Confirmation #88219-GEEK",
+      "body_text": "Dear Subscriber,\n\nThank you for your renewal of Geek Squad Advanced Protection.\n\nAn amount of $499.99 will be charged to your card on file within 24 hours.\n\nIf you did not authorize this charge or wish to cancel your subscription, please call our fraud prevention team immediately at 1-800-555-0199.\n\nInvoice ID: 88219-GEEK\nDate: Oct 16, 2026\n\nThank you,\nGeek Squad Support",
+      "body_html": "<div style='font-family: sans-serif;'><p>Dear Subscriber,</p><p>Thank you for your renewal of <strong>Geek Squad Advanced Protection</strong>.</p><p>An amount of <strong>$499.99</strong> will be charged to your card on file within 24 hours.</p><p style='color: red;'>If you did not authorize this charge or wish to cancel your subscription, please call our fraud prevention team immediately at <strong>1-800-555-0199</strong>.</p><hr/><p>Invoice ID: 88219-GEEK<br/>Date: Oct 16, 2026</p><p>Thank you,<br/>Geek Squad Support</p></div>",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b6-08",
+    "label": "legit",
+    "category": "expense-approval",
+    "note": "Automated email from Expensify regarding an approved report with HTML entities.",
+    "email": {
+      "sender": {
+        "email": "concierge@expensify.com",
+        "display_name": "Expensify"
+      },
+      "reply_to": null,
+      "subject": "Expense Report Approved: September Client Dinners",
+      "body_text": "Good news!\n\nYour expense report \"September Client Dinners\" ($345.20) has been approved by your manager and is queued for reimbursement.\n\nView Report: https://www.expensify.com/report?id=88192\n\nCheers,\nThe Expensify Team",
+      "body_html": "<div style='font-family: Arial, sans-serif;'><h2 style='color: #002d40;'>Good news!</h2><p>Your expense report <em>&#8220;September Client Dinners&#8221;</em> ($345.20) has been approved by your manager and is queued for reimbursement.</p><p><a href='https://www.expensify.com/report?id=88192' style='display: inline-block; padding: 10px 15px; background: #28a745; color: #fff; text-decoration: none; border-radius: 4px;'>View Report</a></p><p>Cheers,<br/>The Expensify Team</p></div>",
+      "links": [
+        {
+          "text": "View Report",
+          "href": "https://www.expensify.com/report?id=88192"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b6-09",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Lookalike domain for Atlassian attempting to steal credentials via a fake invoice page.",
+    "email": {
+      "sender": {
+        "email": "ar@atlassian-corp.net",
+        "display_name": "Atlassian Accounts Receivable"
+      },
+      "reply_to": null,
+      "subject": "OVERDUE: Invoice INV-2026-992",
+      "body_text": "Hello,\n\nYour Atlassian Cloud subscription account is past due.\n\nInvoice: INV-2026-992\nAmount Due: $2,450.00\n\nPlease click the link below to review your invoice and submit payment immediately to avoid service suspension.\n\nPay Now: https://atlassian-corp.net/billing/pay?token=xyz123\n\nAtlassian Billing",
+      "body_html": "<div style='font-family: Helvetica, sans-serif;'><p>Hello,</p><p>Your Atlassian Cloud subscription account is <strong style='color:red;'>past due</strong>.</p><p>Invoice: INV-2026-992<br/>Amount Due: $2,450.00</p><p>Please click the link below to review your invoice and submit payment immediately to avoid service suspension.</p><p><a href='https://atlassian-corp.net/billing/pay?token=xyz123' style='background: #0052cc; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 3px; display: inline-block;'>Pay Now</a></p><p>Atlassian Billing</p></div>",
+      "links": [
+        {
+          "text": "Pay Now",
+          "href": "https://atlassian-corp.net/billing/pay?token=xyz123"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b6-10",
+    "label": "legit",
+    "category": "payment-reminder",
+    "note": "Standard Intuit Quickbooks reminder from a small business with correct subdomain.",
+    "email": {
+      "sender": {
+        "email": "quickbooks@notification.intuit.com",
+        "display_name": "QuickBooks Notification"
+      },
+      "reply_to": "admin@catercorp.com",
+      "subject": "Reminder: Invoice 1090 from CaterCorp LLC",
+      "body_text": "Dear Dana Levi,\n\nThis is a friendly reminder that invoice 1090 for $850.00 is due on Oct 20, 2026.\n\nReview and pay: https://connect.intuit.com/pay/CaterCorpLLC/1090\n\nThank you for your business!\nCaterCorp LLC",
+      "body_html": "<div style='padding: 20px; font-family: Arial, sans-serif;'><p>Dear Dana Levi,</p><p>This is a friendly reminder that invoice 1090 for $850.00 is due on Oct 20, 2026.</p><br/><p><a href='https://connect.intuit.com/pay/CaterCorpLLC/1090' style='color: #2ca01c; font-weight: bold; text-decoration: none;'>Review and pay</a></p><br/><p>Thank you for your business!<br/>CaterCorp LLC</p></div>",
+      "links": [
+        {
+          "text": "Review and pay",
+          "href": "https://connect.intuit.com/pay/CaterCorpLLC/1090"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  }
+]
