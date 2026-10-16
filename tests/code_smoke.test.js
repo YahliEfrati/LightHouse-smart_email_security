@@ -38,9 +38,9 @@ test('result card builds for edge-case results', () => {
   assert.ok(!strings(calls).some((s) => s.includes('<script>')), 'attacker HTML must be escaped');
   const urls = calls.filter(([p]) => p === 'setImageUrl').map(([, a]) => a[0]);
   const base = vm.runInContext('ASSET_BASE_URL', ctx);
-  assert.ok(urls.includes(base + 'hero_100.png'), 'score 150 is clamped to 100');
-  assert.ok(urls.includes(base + 'hero_0.png'), 'score -3 is clamped to 0');
-  assert.ok(urls.includes(base + 'hero_73.png'));
+  assert.ok(urls.includes(base + 'hero_100.gif'), 'score 150 is clamped to 100');
+  assert.ok(urls.includes(base + 'hero_0.gif'), 'score -3 is clamped to 0');
+  assert.ok(urls.includes(base + 'hero_73.gif'));
   assert.ok(urls.includes(base + 'hero_unscanned.png'));
 });
 
@@ -105,7 +105,7 @@ test('trusted sender + malicious scan -> warning result card, no trust button', 
   const { ctx, calls } = load(s.globals);
   open(ctx);
   const texts = strings(calls);
-  assert.ok(urlsOf(calls).some((u) => u.endsWith('hero_85.png')));
+  assert.ok(urlsOf(calls).some((u) => u.endsWith('hero_85.gif')));
   assert.ok(texts.some((t) => t.includes('trusted list, but this email looks dangerous')));
   assert.ok(!texts.includes('Trust sender'));
 });

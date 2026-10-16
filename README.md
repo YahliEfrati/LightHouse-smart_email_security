@@ -46,7 +46,7 @@ blast radius is a single opened email, not the user's whole mailbox.
 ├── appsscript.json         Manifest: oauth scopes, contextual trigger, homepage trigger
 ├── Code.gs                 Add-on logic (CardService UI + backend client)
 ├── Presentation.gs         Pure helpers: state -> hero image/copy, top finding, escaping, link inspector (unit-tested in Node)
-├── assets/                 Generated PNGs: 4 icons + one color-band image per score 0-100 (served via GitHub raw)
+├── assets/                 Generated: 4 icons + one color-band image per score 0-100, animated GIF (served via GitHub raw)
 ├── tools/generate_assets.py  Regenerates /assets  (python tools/generate_assets.py)
 ├── tests/                  Node tests for Presentation.gs and a CardService smoke test
 └── docs/                   Design spec, implementation plan, demo script

@@ -186,11 +186,34 @@ def render_hero(score: Optional[int], trusted: bool = False, beam_angle: Optiona
     return img.resize((w, h), Image.LANCZOS)
 
 
-def save_hero_animation(path: Path, score: Optional[int], trusted: bool = False, turns: int = 2, frames_per_turn: int = 24) -> None:
-    """GIF that plays ONCE: the light makes `turns` full turns, then rests on the exact static hero."""
+#: The beam and lamp flare stay above this row; the gauge pill (the only part that depends on the score)
+#: starts at y=88. So beam frames can be rendered once per state and reused for every score.
+BEAM_ROWS = 86
+TURNS, FRAMES_PER_TURN, FRAME_MS = 2, 18, 60  # ~2 s in total
+
+
+def beam_angles(turns: int = TURNS, frames_per_turn: int = FRAMES_PER_TURN) -> list:
     frames = turns * frames_per_turn
-    angles = [-math.pi / 2 + 2 * math.pi * turns * i / frames for i in range(1, frames)]
-    images = [render_hero(score, trusted, beam_angle=a) for a in angles] + [render_hero(score, trusted)]
+    return [-math.pi / 2 + 2 * math.pi * turns * i / frames for i in range(1, frames)]
+
+
+def beam_tops(score: Optional[int], trusted: bool = False, angles: Optional[list] = None) -> list:
+    """Top band (above the gauge) of every beam frame; identical for all scores of one state."""
+    return [render_hero(score, trusted, beam_angle=a).crop((0, 0, 600, BEAM_ROWS)) for a in (angles or beam_angles())]
+
+
+def save_hero_animation(path: Path, score: Optional[int], trusted: bool = False, tops: Optional[list] = None) -> None:
+    """GIF that plays ONCE: the light makes TURNS full turns, then rests on the exact static hero.
+
+    tops: precomputed beam_tops() for this score's state (same frames, much faster for many scores).
+    """
+    static = render_hero(score, trusted)
+    images = []
+    for top in tops if tops is not None else beam_tops(score, trusted):
+        frame = static.copy()
+        frame.paste(top, (0, 0))
+        images.append(frame)
+    images.append(static)
     # One shared palette built from every frame: no colour shifts between frames, no banding in the beam.
     sheet = Image.new("RGB", (images[0].width, images[0].height * len(images)))
     for i, im in enumerate(images):
@@ -198,7 +221,14 @@ def save_hero_animation(path: Path, score: Optional[int], trusted: bool = False,
     palette = sheet.quantize(colors=255, method=Image.Quantize.MEDIANCUT)
     gif = [im.quantize(palette=palette, dither=Image.Dither.NONE) for im in images]
     # No `loop` argument: no NETSCAPE loop block, so viewers play the animation once and stop.
-    gif[0].save(path, save_all=True, append_images=gif[1:], duration=[45] * (len(gif) - 1) + [60000], optimize=False)
+    gif[0].save(path, save_all=True, append_images=gif[1:], duration=[FRAME_MS] * (len(gif) - 1) + [60000], optimize=False)
+
+
+def generate_hero_gifs(out_dir: Path) -> None:
+    """hero_0.gif .. hero_100.gif. The beam is rendered once per verdict color, then reused."""
+    tops = {state: beam_tops(rep) for state, rep in (("safe", 0), ("suspicious", 35), ("malicious", 70))}
+    for score in range(0, 101):
+        save_hero_animation(out_dir / f"hero_{score}.gif", score, tops=tops[state_for_score(score)])
 
 
 def main(out_dir: Path) -> None:
@@ -207,6 +237,7 @@ def main(out_dir: Path) -> None:
         render_icon(state).save(out_dir / f"icon_{state}.png")
     for score in range(0, 101):
         render_hero(score).save(out_dir / f"hero_{score}.png")
+    generate_hero_gifs(out_dir)
     render_hero(None).save(out_dir / "hero_unscanned.png")
     render_hero(0, trusted=True).save(out_dir / "hero_trusted.png")
 

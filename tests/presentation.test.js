@@ -5,18 +5,18 @@ globalThis.ASSET_BASE_URL = 'https://example.test/assets/';
 const p = require('../Presentation.gs');
 
 test('heroFile is one image per integer score, clamped to 0-100', () => {
-  const cases = [[0, 'hero_0.png'], [34, 'hero_34.png'], [72, 'hero_72.png'], [91, 'hero_91.png'],
-    [100, 'hero_100.png'], [150, 'hero_100.png'], [-3, 'hero_0.png'], [72.6, 'hero_73.png'], [NaN, 'hero_0.png']];
+  const cases = [[0, 'hero_0.gif'], [34, 'hero_34.gif'], [72, 'hero_72.gif'], [91, 'hero_91.gif'],
+    [100, 'hero_100.gif'], [150, 'hero_100.gif'], [-3, 'hero_0.gif'], [72.6, 'hero_73.gif'], [NaN, 'hero_0.gif']];
   cases.forEach(([score, file]) => assert.strictEqual(p.heroFile(score), file, 'score ' + score));
   assert.strictEqual(p.HERO_UNSCANNED_FILE, 'hero_unscanned.png');
 });
 
-test('animated hero: listed scores use the GIF, and every hero file exists in assets', () => {
+test('every score uses its animated GIF, and every hero file exists in assets', () => {
   const fs = require('fs');
   const path = require('path');
   assert.strictEqual(p.heroFile(10), 'hero_10.gif');
   assert.strictEqual(p.heroFile(9.6), 'hero_10.gif');
-  assert.strictEqual(p.heroFile(11), 'hero_11.png');
+  assert.strictEqual(p.heroFile(11), 'hero_11.gif');
   for (let s = 0; s <= 100; s++) {
     assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', p.heroFile(s))), p.heroFile(s) + ' missing');
   }

@@ -56,15 +56,9 @@ function normalizeScore(score) {
  * thresholds (35 suspicious, 70 malicious) - see tools/generate_assets.py.
  */
 function heroFile(score) {
-  const n = normalizeScore(score);
-  return 'hero_' + n + (ANIMATED_HERO_SCORES.indexOf(n) !== -1 ? '.gif' : '.png');
+  // Animated: the lighthouse beam sweeps twice, then the GIF rests on the static image (plays once).
+  return 'hero_' + normalizeScore(score) + '.gif';
 }
-
-/**
- * Scores whose hero is an animated GIF (the beam sweeps twice, then rests on the static image).
- * Trial: score 10 only (e.g. one shortened link) - see save_hero_animation in tools/generate_assets.py.
- */
-const ANIMATED_HERO_SCORES = [10];
 
 const HERO_UNSCANNED_FILE = 'hero_unscanned.png';
 const HERO_TRUSTED_FILE = 'hero_trusted.png';
