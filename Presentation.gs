@@ -20,8 +20,8 @@ const STATE_PRESENTATION = {
   },
   malicious: {
     icon: 'icon_malicious.png', banner: 'banner_malicious.png',
-    headline: 'DANGER — LIKELY PHISHING', subtitle: 'Steer clear of this one',
-    todo: 'Do not click links or open attachments. Report it as phishing.',
+    headline: 'DANGER — LIKELY MALICIOUS', subtitle: 'Steer clear of this one',
+    todo: 'Do not click links or open attachments. Report this email.',
   },
   unscanned: {
     icon: 'icon_unscanned.png', banner: 'banner_unscanned.png',

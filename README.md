@@ -76,7 +76,7 @@ Run the tests with `node --test tests/presentation.test.js tests/code_smoke.test
    top finding with its evidence, a gradient risk-gauge image plus the exact score
    (labelled an estimate), a "What to do" line, and actions: **View details**,
    **Trust this sender**, **I think this is a mistake**, and for malicious email a
-   red **Report as phishing** (opens Google's reporting instructions — reporting
+   red **Report this email** (opens Google's reporting instructions — reporting
    in place would need `gmail.modify`, which we deliberately do not request).
 4. **Details card** — "View details" uses
    `CardService.newNavigation().pushCard()`, which triggers Gmail's native

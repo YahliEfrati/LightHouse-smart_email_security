@@ -44,7 +44,7 @@ test('result card builds for edge-case results', () => {
 
 test('malicious card has the report button; safe card does not', () => {
   const a = load(); a.ctx.buildResultCard(email, { verdict: 'Malicious', score: 95, reasoning: [] }, 'id', false);
-  assert.ok(strings(a.calls).includes('Report as phishing'));
+  assert.ok(strings(a.calls).includes('Report this email'));
   const b = load(); b.ctx.buildResultCard(email, { verdict: 'Safe', score: 3, reasoning: [] }, 'id', false);
-  assert.ok(!strings(b.calls).includes('Report as phishing'));
+  assert.ok(!strings(b.calls).includes('Report this email'));
 });

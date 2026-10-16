@@ -24,7 +24,7 @@ STATE_COLORS = {
 BANNER_TEXT = {
     "safe": "ALL CLEAR",
     "suspicious": "CHECK BEFORE YOU ACT",
-    "malicious": "DANGER — LIKELY PHISHING",
+    "malicious": "DANGER — LIKELY MALICIOUS",
     "unscanned": "NOT SCANNED",
 }
 NAVY, YELLOW, WHITE, TOWER_RED, STEEL = (11, 61, 89), (253, 184, 19), (255, 255, 255), (211, 47, 47), (55, 71, 79)

@@ -18,7 +18,7 @@ Hybrid: headlines and findings are plain and direct; the lighthouse personality 
 ## Identity & assets
 All static, committed to the repo, generated reproducibly by `tools/generate_assets.py`, and loaded from `raw.githubusercontent.com` (no third-party dependency; `logoUrl` in `appsscript.json` points to the same icon).
 - **Icon (option A: lighthouse on a dark-blue tile)**, 4 states by beam color: safe `#2E7D6B`, suspicious `#C98A2C`, malicious `#D32F2F`, unscanned `#8A949B`.
-- **Banners (full width)**: 4 states. The malicious banner is large, red, with a warning sign and "DANGER — LIKELY PHISHING".
+- **Banners (full width)**: 4 states. The malicious banner is large, red, with a warning sign and "DANGER — LIKELY MALICIOUS".
 - **Risk gauge (horizontal)**: 20 images: steps of 5 from 0 to 90, plus one solid-red "alert" image for scores above 90 (rounding 91 to 90 would otherwise break the rule).
 
 ## Intensity ladder
@@ -26,7 +26,7 @@ All static, committed to the repo, generated reproducibly by `tools/generate_ass
 |---|---|
 | Safe | Short, quiet card; thin green banner; one line |
 | Suspicious | Amber banner; the single most important finding highlighted; "check before you act" |
-| Malicious | Large red banner first; red filled primary button ("Report as phishing"); bold red "What to do" line; header in caps |
+| Malicious | Large red banner first; red filled primary button ("Report this email"); bold red "What to do" line; header in caps |
 | Not scanned | Grey icon; "This email wasn't scanned — use your usual caution." (never implies safety) |
 
 ## Risk gauge
@@ -40,7 +40,7 @@ All static, committed to the repo, generated reproducibly by `tools/generate_ass
 2. Top finding in one sentence, with the evidence ("link says paypal.com but goes to paypa1-support.com") — the highest-weight reasoning item.
 3. Gauge + exact score.
 4. "What to do" line.
-5. Buttons: View details, Trust this sender, "I think this is a mistake" (+ Report as phishing when malicious).
+5. Buttons: View details, Trust this sender, "I think this is a mistake" (+ Report this email when malicious).
 
 Details card: findings grouped by category, human wording first, technical evidence in small text below; final "What we checked" section listing checks that ran and passed, so a safe email is not an empty screen.
 

@@ -101,7 +101,7 @@ function buildHomepageCard() {
       CardService.newCardSection().addWidget(
         CardService.newTextParagraph().setText(
           'Open any email and Lighthouse will quietly keep watch, scanning it for ' +
-            'phishing and malicious-content indicators. Nothing is scanned until you ' +
+            'phishing and other malicious-content indicators. Nothing is scanned until you ' +
             'open a message.'
         )
       )
@@ -493,10 +493,10 @@ function buildResultCard(email, result, messageId, isTrusted) {
   if (isDanger) {
     actionsSection.addWidget(
       CardService.newTextButton()
-        .setText('Report as phishing')
+        .setText('Report this email')
         .setTextButtonStyle(CardService.TextButtonStyle.FILLED)
         .setBackgroundColor(STATE_COLORS.malicious)
-        .setOnClickAction(CardService.newAction().setFunctionName('onReportPhishing'))
+        .setOnClickAction(CardService.newAction().setFunctionName('onReportEmail'))
     );
   }
   actionsSection
@@ -521,11 +521,11 @@ function buildResultCard(email, result, messageId, isTrusted) {
 }
 
 /**
- * Action handler for "Report as phishing". Reporting from inside the add-on would need
+ * Action handler for "Report this email". Reporting from inside the add-on would need
  * the gmail.modify scope, which we deliberately do not request (least privilege), so we
  * open Google's own instructions instead.
  */
-function onReportPhishing(e) {
+function onReportEmail(e) {
   return CardService.newActionResponseBuilder()
     .setOpenLink(CardService.newOpenLink().setUrl('https://support.google.com/mail/answer/8253'))
     .build();
