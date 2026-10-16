@@ -19,7 +19,7 @@ reputation lookup or LLM (the demo's tunnel is the one third party in the path; 
   ([details](#evaluation)).
 - **English and Hebrew.** Wording rules understand both; Hebrew links and Hebrew domains are not treated as
   suspicious.
-- **Tested.** 177 backend tests, 61 add-on tests, 7 asset-generator tests.
+- **Tested.** 184 backend tests, 61 add-on tests, 7 asset-generator tests.
 
 ## Contents
 
@@ -154,7 +154,7 @@ Weights in parentheses. "Once" means the rule counts at most once per email.
 
 | Rule | Fires when |
 |---|---|
-| `payment_request_pressure` (35) | A request for money or new payment details (gift cards, wire transfer, changed bank or payroll details) comes with pressure or secrecy ("urgent", "I'm in a meeting", "keep this confidential"). |
+| `payment_request_pressure` (35) | A request for money or new payment details (gift cards, wire transfer, "send me ₪3,000", changed bank or payroll details) comes with pressure or secrecy ("urgent", "I'm in a meeting", "keep this confidential"). |
 | `credential_request_language` (15, once) | The email asks the reader to verify, confirm or enter login or payment details. |
 | `urgency_financial_proximity` (20, max 2) | An urgency phrase appears within ~120 characters of a money or credential term. |
 | `base64_obfuscation` (25) | The body contains a long encoded block. |
@@ -350,7 +350,7 @@ ngrok http 8000                        # or, with a reserved domain: ngrok http 
 **Tests**
 
 ```powershell
-# backend: 177 tests (from backend/, with the virtual environment active)
+# backend: 184 tests (from backend/, with the virtual environment active)
 pip install -r requirements-dev.txt
 pytest
 python eval/run_eval.py          # evaluation on the 50-email set

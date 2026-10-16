@@ -792,3 +792,29 @@ def test_hebrew_only_domains_are_not_lookalikes(href):
 
 def test_latin_mixed_with_hebrew_is_still_a_lookalike():
     assert len(_lookalike_findings("https://paypalי.com/")) == 1
+
+
+# A direct "transfer / send me <amount>" request (found testing a real Hebrew CEO-fraud email).
+@pytest.mark.parametrize(
+    "body",
+    [
+        "אחי אני בישיבה לא זמין כרגע צריך שתעביר לי 3000 שקל לעסקה",
+        "דחוף: תעבירי לי ₪2,500 עד סוף היום",
+        "I'm in a meeting, please send me $3,000 for the deal asap.",
+        "Urgent: transfer 5,000 USD to the supplier before end of day.",
+    ],
+)
+def test_amount_transfer_request_under_pressure(body):
+    assert _bec_rules(body) == {"payment_request_pressure": "content"}
+
+
+@pytest.mark.parametrize(
+    "body,sender",
+    [
+        ("העברתי לך 145 שקל בביט על הארוחה, תודה!", "friend@gmail.com"),
+        ("Can you send me 3 files before end of day? Urgent for the review.", "colleague@company.example"),
+        ("Thanks, I paid 40 dollars for the tickets last week.", "friend@gmail.com"),
+    ],
+)
+def test_amount_mentions_without_a_request_do_not_fire(body, sender):
+    assert _bec_rules(body, sender) == {}

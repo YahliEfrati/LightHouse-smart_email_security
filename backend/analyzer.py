@@ -680,7 +680,16 @@ class PaymentRequestAnalyzer(Analyzer):
         re.compile(r"\b(?:bank|banking|account|payment|remittance) (?:details|information|info) (?:have|has) (?:been )?(?:changed|updated)\b"),
         re.compile(r"\b(?:update|change)\b[^.\n]{0,40}\b(?:direct deposit|bank details|bank account|account details|banking details|payroll)\b"),
         re.compile(r"\bremit (?:the )?payment\b[^.\n]{0,40}\bnew account\b"),
+        # "send / transfer me <amount>": the currency is required, so "send me 3 files" does not count.
+        re.compile(
+            r"\b(?:send|transfer|wire|pay)\s+(?:me|us|him|her)?\s*"
+            r"(?:(?:\$|€|£|usd|eur)\s?\d[\d,.]*|\d[\d,.]*\s?(?:\$|€|£|usd|eur|dollars?|euros?|pounds?)\b)"
+        ),
         # Hebrew
+        re.compile(
+            r"(?:תעביר|תעבירי|שתעביר|שתעבירי|להעביר|העבר|תשלח|תשלחי|שתשלח|שתשלחי|לשלוח|תפקיד|להפקיד)"
+            r"\s+(?:לי|לנו|לו|לה)?\s*(?:₪\s?\d[\d,.]*|\d[\d,.]*\s?(?:₪|ש\"ח|שקלים|שקל|דולר|יורו))"
+        ),
         re.compile(r"(?:לקנות|תקנה|תקני|קנה|קני|לרכוש|תרכוש|תרכשי)[^.\n]{0,40}כרטיס(?:י)? (?:מתנה|גיפט)"),
         re.compile(r"העברה בנקאית|העברת כספים"),
         re.compile(r"פרטי (?:ה)?(?:בנק|חשבון)(?: (?:ה)?בנק)?(?: (?:שלנו|שלי))? (?:השתנו|עודכנו|שונו|התעדכנו)"),
