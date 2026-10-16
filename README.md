@@ -21,16 +21,46 @@ reputation lookup or LLM (the demo's tunnel is the one third party in the path; 
 
 ## Contents
 
-1. [Architecture](#architecture)
-2. [What the user sees](#what-the-user-sees)
-3. [How detection works](#how-detection-works)
-4. [Security](#security)
-5. [Key decisions and trade-offs](#key-decisions-and-trade-offs)
-6. [Evaluation](#evaluation)
-7. [Run it yourself](#run-it-yourself)
-8. [Repository layout](#repository-layout)
-9. [Known limitations](#known-limitations)
-10. [Roadmap](#roadmap)
+1. [Product thinking](#product-thinking)
+2. [Architecture](#architecture)
+3. [What the user sees](#what-the-user-sees)
+4. [How detection works](#how-detection-works)
+5. [Security](#security)
+6. [Key decisions and trade-offs](#key-decisions-and-trade-offs)
+7. [Evaluation](#evaluation)
+8. [Run it yourself](#run-it-yourself)
+9. [Repository layout](#repository-layout)
+10. [Known limitations](#known-limitations)
+11. [Roadmap](#roadmap)
+
+## Product thinking
+
+**Who it's for.** Everyday Gmail users with no security background: people reading their own mail who
+need a clear answer to "is it safe to act on this?", not an analyst triaging alerts.
+
+**The problem we designed against.** Email warnings tend to fail in two ways:
+
+- **A verdict without a reason** ("Suspicious, 62"). The user can't judge it, so they either ignore it or panic.
+- **An alarm that rings too often.** After a few false alarms people stop reading warnings, including the real one.
+
+**The name and the voice.** A lighthouse doesn't shout at every ship. It is a steady light that becomes a
+warning only near real rocks. That sets the tone: calm and plain-spoken by default, loud only when the risk
+is real.
+
+**Principles, and the decisions they led to**
+
+| Principle | What it led to |
+|---|---|
+| **Explain, don't just score** | Every point comes from a named rule. Findings are one-line labels in plain language ("Link goes somewhere else"), with the evidence one tap away in View details. |
+| **Loudness matches risk** | Safe email gets a quiet green card with no findings listed; amber shows at most three; only Malicious turns red, with one clear instruction. |
+| **The red alarm must be trusted** | Rules favour precision over coverage. When the first evaluation showed misses, the fix was new signals, not a lower threshold (see [Evaluation](#evaluation)). |
+| **Respect a non-expert's attention** | Rule names never reach the user; repeated findings are merged ("×2"); "Check the links" shows where every link really goes on one screen. |
+| **Never make things worse** | Links are never visited; "Not scanned" never looks safe; a trusted sender is still scanned; no button that pretends to do something. |
+| **Privacy is part of trust** | The narrowest Gmail scope, no email content sent to analysis services, and the trusted list never leaves Google. |
+
+**Deliberately left out:** acting on the mailbox (moving to spam, deleting), which would need full mailbox
+access; blocking or hiding mail, which takes the decision away from the user; and an "AI says" verdict
+that can't explain itself.
 
 ## Architecture
 
