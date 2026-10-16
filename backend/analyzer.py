@@ -45,6 +45,7 @@ import base64
 import binascii
 import math
 import re
+import unicodedata
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from difflib import get_close_matches
@@ -268,11 +269,20 @@ class ContentAnalyzer(Analyzer):
         "will be suspended", "expires today", "expire within", "action required",
         "within 24 hours", "limited time", "final notice", "failure to comply",
         "your account has been locked", "confirm your identity",
+        # Hebrew (substring match: Hebrew attaches prefixes such as ה/ו/ל to words)
+        "דחוף", "באופן מיידי", "מיידית", "בהקדם", "תוך 24 שעות", "עד סוף היום", "הודעה אחרונה",
+        "פעולה נדרשת", "החשבון שלך הושעה", "החשבון שלך נחסם", "ייחסם", "ייסגר", "יושעה",
     )
     FINANCIAL_TERMS: Tuple[str, ...] = (
         "bank account", "credit card", "wire transfer", "payment details", "invoice",
         "social security", "ssn", "password", "login credentials", "gift card",
         "bitcoin", "crypto wallet", "tax refund", "routing number", "pin code",
+        # Hebrew
+        # (definite forms too: Hebrew puts the article inside the phrase, "כרטיס האשראי")
+        "חשבון בנק", "חשבון הבנק", "כרטיס אשראי", "כרטיס האשראי", "פרטי אשראי", "פרטי האשראי",
+        "פרטי החשבון", "העברה בנקאית", "פרטי תשלום",
+        "פרטי התשלום", "סיסמה", "סיסמא", "פרטי התחברות", "כרטיס מתנה", "כרטיסי מתנה", "ביטקוין",
+        "החזר מס", "מספר חשבון", "קוד סודי",
     )
 
     #: Character window within which an urgency term and a financial term
@@ -283,7 +293,9 @@ class ContentAnalyzer(Analyzer):
     #: incidental and is flagged as potential payload/obfuscation.
     BASE64_MIN_LENGTH = 60
     BASE64_RE = re.compile(r"(?:[A-Za-z0-9+/]{%d,}={0,2})" % BASE64_MIN_LENGTH)
-    URL_ENCODED_RE = re.compile(r"%[0-9A-Fa-f]{2}")
+    #: Only encoded ASCII counts (%00-%7F): hiding "/", "=" or letters is the trick. Encoded UTF-8 bytes
+    #: (%80-%FF) are how every Hebrew or accented URL is written, so they are not counted.
+    URL_ENCODED_RE = re.compile(r"%[0-7][0-9A-Fa-f]")
     HTML_ENTITY_RE = re.compile(r"&#x[0-9A-Fa-f]+;|&#[0-9]+;")
 
     #: Requests to hand over login/payment details. Each pattern needs an
@@ -302,6 +314,12 @@ class ContentAnalyzer(Analyzer):
         re.compile(
             r"\b(?:sign|log)[- ]?in\s+(?:(?:now|again|immediately)\s+)?to\s+"
             r"(?:continue|avoid|keep|restore|unlock|verify|confirm|prevent|reactivate)\b"
+        ),
+        # Hebrew: "לאמת / להזין / לאשר / לעדכן / להתחבר ... סיסמה / פרטי החשבון / פרטי האשראי".
+        # Bare "אשר" and "אמת" are left out: they also mean "that/which" and "truth".
+        re.compile(
+            r"(?:לאמת|אמתו|אמת את|להזין|הזינו|הזן|לאשר|אשרו|לעדכן|עדכנו|עדכן את|להתחבר|התחברו)[^.\n]{0,30}"
+            r"(?:סיסמ[הא]|פרטי (?:ה)?(?:חשבון|התחברות|אשראי|תשלום|כרטיס)|שם (?:ה)?משתמש|זהות)"
         ),
     )
 
@@ -529,8 +547,9 @@ class LinkAnalyzer(Analyzer):
                         rule="punycode_lookalike_domain",
                         weight=20,
                         description=(
-                            f"Link host '{href_domain}' uses non-Latin or punycode (xn--) characters, which can "
-                            "make a fake domain look identical to a real one (homograph attack)."
+                            f"Link host '{href_domain}' uses letters that can pass for Latin ones (e.g. Cyrillic) "
+                            "or mixes alphabets, which can make a fake domain look identical to a real one "
+                            "(homograph attack)."
                         ),
                     )
                 )
@@ -556,10 +575,29 @@ class LinkAnalyzer(Analyzer):
 
         return findings
 
-    @staticmethod
-    def _is_lookalike_host(host: str) -> bool:
-        """Punycode label (xn--) or raw non-ASCII characters in the host."""
-        return any(label.startswith("xn--") for label in host.split(".")) or not host.isascii()
+    #: Scripts whose letters can pass for Latin ones (Cyrillic "а" vs Latin "a"). A label written in one
+    #: of these, or mixing Latin with any other script, is a homograph risk. A label written entirely in
+    #: e.g. Hebrew or Arabic cannot imitate a Latin brand name, so it is not flagged.
+    LATIN_CONFUSABLE_SCRIPTS: Set[str] = {"CYRILLIC", "GREEK", "ARMENIAN", "CHEROKEE", "COPTIC"}
+
+    @classmethod
+    def _is_lookalike_host(cls, host: str) -> bool:
+        """True if any label (punycode decoded) uses Latin-confusable letters or mixes Latin with
+        another script. An undecodable xn-- label also counts."""
+        for label in host.split("."):
+            if label.startswith("xn--"):
+                try:
+                    label = label.encode("ascii").decode("idna")
+                except (UnicodeError, ValueError):
+                    return True
+            if label.isascii():
+                continue
+            scripts = {unicodedata.name(ch, "UNKNOWN").split(" ")[0] for ch in label if ch.isalpha()}
+            if scripts & cls.LATIN_CONFUSABLE_SCRIPTS or "UNKNOWN" in scripts:
+                return True
+            if "LATIN" in scripts and len(scripts) > 1:
+                return True
+        return False
 
     def _is_click_tracker(self, host: str) -> bool:
         return any(host == d or host.endswith("." + d) for d in self.ESP_CLICK_TRACKERS)
@@ -642,6 +680,14 @@ class PaymentRequestAnalyzer(Analyzer):
         re.compile(r"\b(?:bank|banking|account|payment|remittance) (?:details|information|info) (?:have|has) (?:been )?(?:changed|updated)\b"),
         re.compile(r"\b(?:update|change)\b[^.\n]{0,40}\b(?:direct deposit|bank details|bank account|account details|banking details|payroll)\b"),
         re.compile(r"\bremit (?:the )?payment\b[^.\n]{0,40}\bnew account\b"),
+        # Hebrew
+        re.compile(r"(?:לקנות|תקנה|תקני|קנה|קני|לרכוש|תרכוש|תרכשי)[^.\n]{0,40}כרטיס(?:י)? (?:מתנה|גיפט)"),
+        re.compile(r"העברה בנקאית|העברת כספים"),
+        re.compile(r"פרטי (?:ה)?(?:בנק|חשבון)(?: (?:ה)?בנק)?(?: (?:שלנו|שלי))? (?:השתנו|עודכנו|שונו|התעדכנו)"),
+        re.compile(
+            r"(?:לעדכן|לשנות|תעדכן|תעדכני|תשנה|תשני|עדכנו|שנו)[^.\n]{0,40}"
+            r"(?:פרטי (?:ה)?(?:בנק|חשבון)|חשבון (?:ה)?בנק|הפקדת (?:ה)?משכורת|המשכורת)"
+        ),
     )
     #: BEC-style pressure. Deliberately not marketing words ("today only", "limited time"), so a store
     #: promoting gift cards does not look like a CEO asking for them.
@@ -650,6 +696,10 @@ class PaymentRequestAnalyzer(Analyzer):
         re.compile(r"\b(?:before |by )?(?:end of (?:the )?day|eod|close of business)\b"),
         re.compile(r"\b(?:confidential|discreet(?:ly)?|do not (?:discuss|tell|share)|don't (?:tell|mention)|between us)\b"),
         re.compile(r"\b(?:in a meeting|can(?:no|')t (?:talk|take calls)|are you (?:at your desk|available))\b"),
+        # Hebrew. "עכשיו" ("now") is left out on purpose: it is everywhere in marketing.
+        re.compile(r"דחוף|מיידי|בהקדם|כמה שיותר מהר|עד סוף היום"),
+        re.compile(r"סודי|בדיסקרטיות|בינינו|אל תספר|אל תספרי|אל תשתף|אל תשתפי"),
+        re.compile(r"אני בישיבה|אני בפגישה|לא יכול(?:ה)? לדבר|אתה זמין|את זמינה|ליד המחשב"),
     )
 
     def analyze(self, email: EmailAnalysisRequest) -> List[Finding]:

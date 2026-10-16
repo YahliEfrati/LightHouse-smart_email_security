@@ -717,3 +717,78 @@ def test_official_regional_brand_domains_are_legitimate(address, name):
 )
 def test_regional_look_alikes_are_still_flagged(address):
     assert _header_rules(address, "PayPal") & {"typosquat_domain", "display_name_domain_mismatch"}
+
+
+# --------------------------------------------------------------------------- #
+# Hebrew support (wording rules, encoded Hebrew URLs, Hebrew domains)
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "שלום, יש לאמת את פרטי החשבון שלך בקישור המצורף.",
+        "אנא הזינו את הסיסמה שלכם כדי להמשיך.",
+        "עליך להזין את הסיסמה שלך עכשיו, אחרת תיבת הדואר תיחסם.",
+        "נא לעדכן את פרטי האשראי לצורך המשך השירות.",
+    ],
+)
+def test_hebrew_credential_request_detected(body):
+    assert len(_credential_findings(body)) == 1
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "שינית את הסיסמה שלך ביום שני. אם זה היית את/ה, אין צורך לעשות דבר.",
+        "לעולם אל תמסור את הסיסמה שלך לאף אחד, גם לא לנו.",
+        "המסמך אשר נשלח אליך אתמול כולל את סיכום הפגישה.",
+    ],
+)
+def test_hebrew_bare_password_mention_not_flagged(body):
+    assert _credential_findings(body) == []
+
+
+def test_hebrew_urgency_next_to_money_detected():
+    rules = {f.rule for f in ContentAnalyzer().analyze(make_email(body_text="דחוף: יש לעדכן את כרטיס האשראי שלך תוך 24 שעות"))}
+    assert "urgency_financial_proximity" in rules
+
+
+def test_hebrew_ceo_gift_card_fraud_reaches_malicious():
+    email = make_email(
+        sender=SenderInfo(email="ceo.office11@gmail.com", display_name="דני כהן"),
+        subject="בקשה דחופה",
+        body_text="אני בישיבה ולא יכול לדבר. תקנה בבקשה כרטיסי מתנה ללקוח, זה דחוף ותשמור את זה בינינו.",
+    )
+    score, verdict, findings = EmailRiskAnalyzer().analyze(email)
+    assert {"payment_request_pressure", "payment_request_unverified_sender"} <= {f.rule for f in findings}
+    assert verdict == "Malicious", score
+
+
+@pytest.mark.parametrize(
+    "body,sender",
+    [
+        ("קנו עכשיו כרטיס מתנה לחג! משלוח חינם לכל הארץ.", "news@shop.example"),
+        ("העברתי לך את הכסף בביט על הארוחה, תודה!", "friend@gmail.com"),
+        ("אישרתי את החשבונית של הספק, אפשר להעביר לתשלום בתנאים הרגילים.", "manager@company.example"),
+    ],
+)
+def test_hebrew_legitimate_money_talk_is_not_bec(body, sender):
+    assert _bec_rules(body, sender) == {}
+
+
+def test_encoded_hebrew_url_is_not_obfuscation():
+    from urllib.parse import quote
+
+    url = "https://www.shop.co.il/" + quote("מבצעים/נעליים-לגברים?קטגוריה=ספורט")
+    email = make_email(body_html=f"<a href='{url}'>לכל המבצעים</a>", links=[LinkInfo(text="לכל המבצעים", href=url)])
+    assert "excessive_url_encoding" not in {f.rule for f in ContentAnalyzer().analyze(email)}
+
+
+@pytest.mark.parametrize("href", ["https://www.עירייה.ישראל/", "https://xn--4dbrk0ce.xn--4dbrk0ce/", "https://שופ.co.il/"])
+def test_hebrew_only_domains_are_not_lookalikes(href):
+    assert _lookalike_findings(href) == []
+
+
+def test_latin_mixed_with_hebrew_is_still_a_lookalike():
+    assert len(_lookalike_findings("https://paypalי.com/")) == 1

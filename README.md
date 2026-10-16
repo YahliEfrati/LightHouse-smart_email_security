@@ -17,7 +17,9 @@ reputation lookup or LLM (the demo's tunnel is the one third party in the path; 
   rules: 7 of 20 malicious emails caught, 1 of 30 legitimate emails flagged. Strong where rules exist
   (malware delivery 3/4, known brands 3/4), weak where they don't (phishing without a brand 0/4)
   ([details](#evaluation)).
-- **Tested.** 160 backend tests, 59 add-on tests, 7 asset-generator tests.
+- **English and Hebrew.** Wording rules understand both; Hebrew links and Hebrew domains are not treated as
+  suspicious.
+- **Tested.** 177 backend tests, 61 add-on tests, 7 asset-generator tests.
 
 ## Contents
 
@@ -157,7 +159,7 @@ Weights in parentheses. "Once" means the rule counts at most once per email.
 | `urgency_financial_proximity` (20, max 2) | An urgency phrase appears within ~120 characters of a money or credential term. |
 | `base64_obfuscation` (25) | The body contains a long encoded block. |
 | `html_entity_obfuscation` (20) | Ordinary letters are spelled as HTML codes (`&#112;&#97;&#121;` = "pay") to slip past keyword filters. |
-| `excessive_url_encoding` (15) | The body contains 10+ `%XX` encoded sequences. |
+| `excessive_url_encoding` (15) | The body contains 10+ `%XX` sequences that encode ordinary (ASCII) characters. |
 
 **Links** (cap 40)
 
@@ -165,7 +167,7 @@ Weights in parentheses. "Once" means the rule counts at most once per email.
 |---|---|
 | `link_text_href_mismatch` (25, max 2) | The link text shows one site, but the link opens another. |
 | `ip_literal_host` (20) | A link points to a numeric address instead of a site name. |
-| `punycode_lookalike_domain` (20, once) | A link uses letters from another alphabet that can look like a familiar name (`раураl.com`). |
+| `punycode_lookalike_domain` (20, once) | A link's domain uses letters that can pass for Latin ones (Cyrillic `раураl.com`) or mixes alphabets. |
 | `high_entropy_domain` (15) | A link's domain looks randomly generated. |
 | `url_shortener` (10) | A link hides its destination behind a shortener. |
 | `suspicious_tld` (10, once) | A link's domain ends in a suffix commonly abused for phishing (`.top`, `.xyz`, `.zip`, …). |
@@ -191,6 +193,9 @@ Each of these came from a real false positive or a test case, and each has a reg
   link in legitimate newsletters.
 - **An email address in link text is not a site.** "Mailed to you@gmail.com" linking to netflix.com is normal.
 - **Typographic HTML codes don't count as obfuscation.** Spaces, quotes and dashes are in every rich email.
+- **Non-English text is not obfuscation.** Hebrew in a link is percent-encoded by design, so only encoded ASCII
+  counts; a domain written entirely in Hebrew can't imitate a Latin brand, so only Latin-confusable alphabets
+  (Cyrillic, Greek, …) or mixed alphabets are flagged.
 - **Payment-fraud pressure words are not marketing words.** "Buy a gift card today!" from a store does not fire.
 - **A bare mention of "password" is not a request.** "You changed your password" does not fire.
 
@@ -345,12 +350,12 @@ ngrok http 8000                        # or, with a reserved domain: ngrok http 
 **Tests**
 
 ```powershell
-# backend: 160 tests (from backend/, with the virtual environment active)
+# backend: 177 tests (from backend/, with the virtual environment active)
 pip install -r requirements-dev.txt
 pytest
 python eval/run_eval.py          # evaluation on the 50-email set
 
-# add-on: 59 tests (from the repository root)
+# add-on: 61 tests (from the repository root)
 node --test tests/presentation.test.js tests/code_smoke.test.js
 
 # asset generator: 7 tests (from the repository root)
@@ -382,6 +387,8 @@ python -m unittest discover -s tools/tests
 
 - **No SPF/DKIM/DMARC.** The add-on's scope can't read raw headers, so these rules exist but can't fire.
 - **No URL reputation.** A deliberate privacy choice: nothing leaves the backend.
+- **Languages: English and Hebrew only**, and the card itself is in English. The Hebrew wording rules are unit-tested
+  but have no evaluation set yet (both 50-email sets are in English).
 - **Known brands are a fixed list of 12.** Impersonation of an unlisted brand is caught only by other signals.
 - **"Same site" uses a small built-in suffix list**, not the full Public Suffix List.
 - **QR codes (quishing) are not decoded.** Images are never sent to the backend, by design.

@@ -365,6 +365,63 @@ function hostOf(url) {
   return match ? match[1].toLowerCase().replace(/\.$/, '') : '';
 }
 
+/** Decodes the part after "xn--" of a punycode label (RFC 3492); null if it is malformed. */
+function punycodeDecode(input) {
+  const base = 36, tMin = 1, tMax = 26, skew = 38, damp = 700;
+  const digitOf = (c) => (c >= 48 && c <= 57 ? c - 22 : c >= 65 && c <= 90 ? c - 65 : c >= 97 && c <= 122 ? c - 97 : base);
+  const output = [];
+  let n = 128, bias = 72, i = 0;
+  const basic = Math.max(input.lastIndexOf('-'), 0);
+  for (let j = 0; j < basic; j++) {
+    if (input.charCodeAt(j) >= 0x80) return null;
+    output.push(input.charCodeAt(j));
+  }
+  for (let index = basic > 0 ? basic + 1 : 0; index < input.length;) {
+    const oldi = i;
+    let w = 1;
+    for (let k = base; ; k += base) {
+      if (index >= input.length) return null;
+      const digit = digitOf(input.charCodeAt(index++));
+      if (digit >= base) return null;
+      i += digit * w;
+      const t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
+      if (digit < t) break;
+      w *= base - t;
+    }
+    const length = output.length + 1;
+    let delta = oldi === 0 ? Math.floor((i - oldi) / damp) : Math.floor((i - oldi) / 2);
+    delta += Math.floor(delta / length);
+    let k = 0;
+    while (delta > ((base - tMin) * tMax) >> 1) { delta = Math.floor(delta / (base - tMin)); k += base; }
+    bias = k + Math.floor(((base - tMin + 1) * delta) / (delta + skew));
+    n += Math.floor(i / length);
+    i %= length;
+    output.splice(i++, 0, n);
+  }
+  return String.fromCodePoint.apply(null, output);
+}
+
+/** Scripts whose letters can pass for Latin ones; same idea as LATIN_CONFUSABLE_SCRIPTS in analyzer.py. */
+const LATIN_CONFUSABLE_RE = /[\p{Script=Cyrillic}\p{Script=Greek}\p{Script=Armenian}\p{Script=Cherokee}\p{Script=Coptic}]/u;
+
+/**
+ * Homograph check, matching LinkAnalyzer._is_lookalike_host: a label (punycode decoded) that uses
+ * Latin-confusable letters, or mixes Latin with another script. A label entirely in e.g. Hebrew cannot
+ * imitate a Latin brand name, so it is fine.
+ */
+function isLookalikeHost(host) {
+  return String(host || '').split('.').some((raw) => {
+    let label = raw;
+    if (label.indexOf('xn--') === 0) {
+      label = punycodeDecode(label.slice(4));
+      if (label === null) return true;
+    }
+    if (!/[^\x00-\x7f]/.test(label)) return false;
+    if (LATIN_CONFUSABLE_RE.test(label)) return true;
+    return /\p{Script=Latin}/u.test(label) && /(?=\p{L})\P{Script=Latin}/u.test(label);
+  });
+}
+
 function isIpHost(host) {
   return /^\d{1,3}(\.\d{1,3}){3}$/.test(host) || host.charAt(0) === '[';
 }
@@ -406,7 +463,7 @@ function inspectLink(link) {
   if (isEmailTrackerHost(host)) status = 'tracker';
   else if (shownDomain && registrableDomain(shownDomain) !== real) status = 'mismatch';
   else if (isIpHost(host)) status = 'ip';
-  else if (host.split('.').some((label) => label.indexOf('xn--') === 0) || /[^\x00-\x7f]/.test(host)) status = 'lookalike';
+  else if (isLookalikeHost(host)) status = 'lookalike';
   else if (SHORTENER_DOMAINS.indexOf(real) !== -1) status = 'shortener';
   return { status: status, host: host, shownDomain: shownDomain, shown: safeText(String(text == null ? '' : text).trim(), 60) };
 }
@@ -495,5 +552,6 @@ if (typeof module !== 'undefined') {
     hostOf, registrableDomain, domainInText, inspectLink, inspectLinks, linkSummaryText, linkRowText, linkHeadline, groupedFindings,
     trustedListView, MAX_TRUSTED_SENDERS, TRUSTED_VISIBLE_ROWS, findingsByRule, isEmailTrackerHost,
     verdictForScore, editDistance, trustedLookalike, applyTrustedLookalike, VERDICT_THRESHOLDS,
+    punycodeDecode, isLookalikeHost,
   };
 }

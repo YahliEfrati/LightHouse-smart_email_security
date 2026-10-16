@@ -317,3 +317,19 @@ test('domainInText ignores email addresses but still finds a site named next to 
   assert.strictEqual(p.domainInText('Write to me@gmail.com or visit paypal.com'), 'paypal.com');
   assert.strictEqual(p.inspectLink(L('yahli7@gmail.com', 'https://www.netflix.com/account')).status, 'ok');
 });
+
+test('punycodeDecode matches the standard (Cyrillic, mixed and Hebrew labels)', () => {
+  assert.strictEqual(p.punycodeDecode('80ak6aa92e'), 'аррӏе');
+  assert.strictEqual(p.punycodeDecode('pypal-4ve'), 'pаypal');
+  assert.strictEqual(p.punycodeDecode('4dbrk0ce'), 'ישראל');
+  assert.strictEqual(p.punycodeDecode('!!'), null);
+});
+
+test('look-alike hosts: Latin-confusable scripts or mixed alphabets, but not a Hebrew-only domain', () => {
+  assert.strictEqual(p.isLookalikeHost('xn--80ak6aa92e.com'), true);
+  assert.strictEqual(p.isLookalikeHost('раypal.com'), true);
+  assert.strictEqual(p.isLookalikeHost('paypalי.com'), true);
+  assert.strictEqual(p.isLookalikeHost('www.עירייה.xn--4dbrk0ce'), false);
+  assert.strictEqual(p.isLookalikeHost('paypal.com'), false);
+  assert.strictEqual(p.inspectLink(L('לאתר', 'https://www.עירייה.xn--4dbrk0ce/')).status, 'ok');
+});
