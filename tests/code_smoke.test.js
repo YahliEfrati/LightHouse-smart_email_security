@@ -216,3 +216,45 @@ test('credential_request_language and suspicious_tld render with labels on both 
   assert.ok(detailTexts.some((t) => t.includes(wisdom.credential_request_language)));
   assert.ok(detailTexts.some((t) => t.includes(wisdom.suspicious_tld)));
 });
+
+// ---- trusted list ----
+test('homepage has no form (avoids Gmail "Cancel / View") and opens the trusted list via a button', () => {
+  const s = services({ trusted: ['a@x.example'], backend: { body: {} } });
+  const { ctx, calls } = load(s.globals);
+  assert.doesNotThrow(() => ctx.onHomepage({}));
+  assert.ok(!calls.some(([m]) => m === 'newTextInput'), 'no text input on the homepage');
+  assert.ok(strings(calls).includes('Manage trusted senders'));
+  assert.ok(!strings(calls).includes('a@x.example'), 'list lives on its own card');
+});
+
+test('trusted list card: count, newest first, wraps long addresses, collapses a long list', () => {
+  const list = Array.from({ length: 12 }, (_, i) => 'person' + i + '@a-very-long-company-domain.example');
+  const s = services({ trusted: list, backend: { body: {} } });
+  const { ctx, calls } = load(s.globals);
+  assert.doesNotThrow(() => ctx.buildManageTrustedSendersCard());
+  const texts = strings(calls);
+  assert.ok(texts.includes('12 trusted senders'));
+  const rows = calls.filter(([m, a]) => m === 'setText' && /^person\d+@/.test(a[0])).map(([, a]) => a[0]);
+  assert.strictEqual(rows[0], 'person11@a-very-long-company-domain.example', 'newest first');
+  assert.strictEqual(rows.length, 12);
+  assert.ok(calls.some(([m, a]) => m === 'setCollapsible' && a[0] === true));
+  assert.ok(calls.some(([m, a]) => m === 'setNumUncollapsibleWidgets' && a[0] === 5));
+  assert.strictEqual(calls.filter(([m, a]) => m === 'setWrapText' && a[0] === true).length >= 12, true);
+  const empty = load(services({ trusted: [], backend: { body: {} } }).globals);
+  assert.doesNotThrow(() => empty.ctx.buildManageTrustedSendersCard());
+  assert.ok(strings(empty.calls).includes('No trusted senders yet'));
+});
+
+test('a full trusted list refuses new entries from both the card and the result-card button', () => {
+  const full = Array.from({ length: 100 }, (_, i) => i + '@x.example');
+  const s = services({ trusted: full, backend: { body: {} } });
+  const { ctx, calls } = load(s.globals);
+  ctx.buildManageTrustedSendersCard();
+  assert.ok(!calls.some(([m]) => m === 'newTextInput'), 'no add field when full');
+  ctx.onAddTrustedSender({ formInput: { newTrustedEntry: 'new@x.example' } });
+  ctx.onTrustThisSender({ parameters: { senderEmail: 'other@x.example', senderDisplayName: 'O' } });
+  assert.strictEqual(JSON.parse(s.store.trustedSenders).length, 100);
+  assert.ok(strings(calls).some((t) => /list is full/.test(t)));
+  ctx.onAddTrustedSender({ formInput: { newTrustedEntry: '5@x.example' } }); // already there: not "full"
+  assert.ok(strings(calls).includes('"5@x.example" is already trusted.'));
+});

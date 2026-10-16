@@ -112,7 +112,15 @@ function buildHomepageCard() {
         )
       )
     )
-    .addSection(buildManageTrustedSendersSection())
+    // Only a button here, no text input: a form on the homepage makes Gmail ask "Cancel / View" before
+    // switching to an opened email (it guards unsaved input), and a long list would bury the intro.
+    .addSection(
+      CardService.newCardSection().addWidget(
+        CardService.newTextButton()
+          .setText('Manage trusted senders')
+          .setOnClickAction(CardService.newAction().setFunctionName('onOpenManageTrustedSenders'))
+      )
+    )
     .build();
 }
 
@@ -339,7 +347,9 @@ function onAddTrustedSender(e) {
     notificationText = 'Trusting all of ' + entry + ' would trust millions of strangers. Add specific addresses instead.';
   } else {
     const trusted = getTrustedSenders();
-    if (trusted.indexOf(entry) === -1) {
+    if (trusted.indexOf(entry) === -1 && trusted.length >= MAX_TRUSTED_SENDERS) {
+      notificationText = 'Your trusted list is full (' + MAX_TRUSTED_SENDERS + '). Remove someone first.';
+    } else if (trusted.indexOf(entry) === -1) {
       trusted.push(entry);
       saveTrustedSenders(trusted);
       notificationText = '"' + entry + '" was added to your trusted senders.';
@@ -374,6 +384,14 @@ function onTrustThisSender(e) {
   const senderEmail = (e.parameters.senderEmail || '').toLowerCase().trim();
   if (senderEmail) {
     const trusted = getTrustedSenders();
+    if (trusted.indexOf(senderEmail) === -1 && trusted.length >= MAX_TRUSTED_SENDERS) {
+      // Stay on the result card; just explain.
+      return CardService.newActionResponseBuilder()
+        .setNotification(
+          CardService.newNotification().setText('Your trusted list is full (' + MAX_TRUSTED_SENDERS + '). Remove someone from ⋮ > Trusted senders.')
+        )
+        .build();
+    }
     if (trusted.indexOf(senderEmail) === -1) {
       trusted.push(senderEmail);
       saveTrustedSenders(trusted);
@@ -779,56 +797,65 @@ function buildSimpleMessageCard(title, message) {
 // UI: manage trusted senders
 // --------------------------------------------------------------------------
 
-/** Standalone card (pushed from the homepage) for managing the whitelist. */
+/**
+ * The one place the whitelist is managed (opened from the homepage and the ⋮ menu): an "add" section,
+ * then the list newest first under a count, collapsing behind "Show more" when it is long.
+ */
 function buildManageTrustedSendersCard() {
-  return CardService.newCardBuilder()
-    .setHeader(
-      CardService.newCardHeader()
-        .setTitle('Trusted senders')
-        .setSubtitle(APP_NAME)
-        .setImageUrl(assetUrl('icon_safe.png'))
-        .setImageStyle(CardService.ImageStyle.SQUARE)
-    )
-    .addSection(buildManageTrustedSendersSection())
-    .build();
-}
+  const view = trustedListView(getTrustedSenders());
 
-/** The reusable section (input + list) embedded in both the homepage and the standalone card. */
-function buildManageTrustedSendersSection() {
-  const section = CardService.newCardSection().setHeader('Trusted senders');
-
-  section.addWidget(
-    CardService.newTextInput()
-      .setFieldName('newTrustedEntry')
-      .setTitle('Add email or domain')
-      .setHint('e.g. alice@example.com or example.com')
-  );
-  section.addWidget(
-    CardService.newTextButton()
-      .setText('Add to Trusted List')
-      .setOnClickAction(CardService.newAction().setFunctionName('onAddTrustedSender'))
-  );
-
-  const trusted = getTrustedSenders();
-  if (trusted.length === 0) {
-    section.addWidget(CardService.newTextParagraph().setText('No trusted senders yet.'));
+  const addSection = CardService.newCardSection();
+  if (view.full) {
+    addSection.addWidget(
+      CardService.newTextParagraph().setText(
+        'Your list is full (' + MAX_TRUSTED_SENDERS + ' senders). Remove someone to add another.'
+      )
+    );
   } else {
-    trusted.forEach((entry) => {
-      section.addWidget(
-        CardService.newDecoratedText()
-          .setText(escapeHtml(entry))
-          .setButton(
-            CardService.newTextButton()
-              .setText('Remove')
-              .setOnClickAction(
-                CardService.newAction().setFunctionName('onRemoveTrustedSender').setParameters({ entry: entry })
-              )
-          )
-      );
-    });
+    addSection.addWidget(
+      CardService.newTextInput()
+        .setFieldName('newTrustedEntry')
+        .setTitle('Add email or domain')
+        .setHint('e.g. alice@example.com or example.com')
+    );
+    addSection.addWidget(
+      CardService.newTextButton()
+        .setText('Add to trusted')
+        .setOnClickAction(CardService.newAction().setFunctionName('onAddTrustedSender'))
+    );
   }
 
-  return section;
+  const listSection = CardService.newCardSection().setHeader(view.heading);
+  if (view.collapsible) {
+    listSection.setCollapsible(true).setNumUncollapsibleWidgets(TRUSTED_VISIBLE_ROWS);
+  }
+  view.entries.forEach((entry) => {
+    listSection.addWidget(
+      CardService.newDecoratedText()
+        .setText(escapeHtml(entry))
+        .setWrapText(true)
+        .setButton(
+          CardService.newTextButton()
+            .setText('Remove')
+            .setOnClickAction(
+              CardService.newAction().setFunctionName('onRemoveTrustedSender').setParameters({ entry: entry })
+            )
+        )
+    );
+  });
+  if (view.entries.length === 0) {
+    // A section needs at least one widget.
+    listSection.addWidget(
+      CardService.newTextParagraph().setText('<font color="#6B6B6B">Emails from trusted senders get a calm card, unless they look dangerous.</font>')
+    );
+  }
+
+  return CardService.newCardBuilder()
+    .setName('trusted')
+    .setHeader(CardService.newCardHeader().setTitle('Trusted senders').setSubtitle(APP_NAME))
+    .addSection(addSection)
+    .addSection(listSection)
+    .build();
 }
 
 /** Opens the "Manage Trusted Senders" card via navigation (e.g. from a menu). */

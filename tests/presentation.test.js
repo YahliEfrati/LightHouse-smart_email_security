@@ -226,3 +226,19 @@ test('new rules get plain-English short labels, not the raw rule id', () => {
   ]);
   assert.deepStrictEqual(g.map((x) => x.label), ['Asks for your login details', 'Link to a risky web ending']);
 });
+
+test('trustedListView: newest first, count heading, collapses past 5, full at the cap', () => {
+  const input = ['a@x.example', 'b@x.example', 'c@x.example'];
+  const v = p.trustedListView(input);
+  assert.deepStrictEqual(v.entries, ['c@x.example', 'b@x.example', 'a@x.example']);
+  assert.deepStrictEqual(input, ['a@x.example', 'b@x.example', 'c@x.example'], 'input not mutated');
+  assert.strictEqual(v.heading, '3 trusted senders');
+  assert.strictEqual(v.collapsible, false);
+  assert.strictEqual(p.trustedListView(['a@x.example']).heading, '1 trusted sender');
+  assert.strictEqual(p.trustedListView(null).heading, 'No trusted senders yet');
+  const many = Array.from({ length: p.TRUSTED_VISIBLE_ROWS + 1 }, (_, i) => i + '@x.example');
+  assert.strictEqual(p.trustedListView(many).collapsible, true);
+  const full = Array.from({ length: p.MAX_TRUSTED_SENDERS }, (_, i) => i + '@x.example');
+  assert.strictEqual(p.trustedListView(full).full, true);
+  assert.strictEqual(p.trustedListView(full.slice(1)).full, false);
+});

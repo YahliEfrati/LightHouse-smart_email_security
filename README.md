@@ -189,6 +189,11 @@ lets users add and remove addresses they know. The list lives in `PropertiesServ
 - The button adds the **full address** only. A bare domain can be added by hand, but **free-mail
   providers (gmail.com, outlook.com, …) are refused**, and are ignored even if stored.
 - The point of the feature is reducing false-positive fatigue, not skipping analysis.
+- The list lives on its own card (homepage button or ⋮ menu): newest first under a count, long addresses
+  wrap, and past 5 entries it collapses behind Gmail's "Show more". It is capped at 100 entries, which keeps
+  the card scannable and the stored JSON well under `PropertiesService`'s ~9 KB per-value limit.
+- The homepage deliberately has no text field: a form there makes Gmail show a "Cancel / View" prompt
+  before switching to an opened email.
 
 ## Known limitations
 

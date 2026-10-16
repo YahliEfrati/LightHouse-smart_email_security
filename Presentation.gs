@@ -171,6 +171,26 @@ function isTrustedBy(senderEmail, trustedList) {
   });
 }
 
+/**
+ * Upper bound on the trusted list. Keeps the card short enough to scan and the stored JSON far below
+ * the ~9 KB per-value limit of PropertiesService.
+ */
+const MAX_TRUSTED_SENDERS = 100;
+/** Rows shown before the list collapses behind Gmail's "Show more". */
+const TRUSTED_VISIBLE_ROWS = 5;
+
+/** View model for the trusted list card: newest first, plus a count heading. Never mutates the input. */
+function trustedListView(list) {
+  const entries = (Array.isArray(list) ? list : []).slice().reverse();
+  const n = entries.length;
+  return {
+    entries: entries,
+    heading: n === 0 ? 'No trusted senders yet' : n === 1 ? '1 trusted sender' : n + ' trusted senders',
+    collapsible: n > TRUSTED_VISIBLE_ROWS,
+    full: n >= MAX_TRUSTED_SENDERS,
+  };
+}
+
 /** One-line labels for the first screen; the full, friendlier sentences live in the details card. */
 const RULE_SHORT_LABELS = {
   typosquat_domain: 'Look-alike sender address',
@@ -351,5 +371,6 @@ if (typeof module !== 'undefined') {
     normalizeScore, heroFile, HERO_UNSCANNED_FILE, HERO_TRUSTED_FILE, isPublicMailDomain, isTrustedBy, assetUrl, stateForResult, presentationFor,
     topFinding, topFindings, sortFindings, checkStatuses, checkStripText, shortLabelForRule, RULE_SHORT_LABELS, safeText, checksPassed, CHECKS_PERFORMED, SCORE_LEGEND,
     hostOf, registrableDomain, domainInText, inspectLink, inspectLinks, linkSummaryText, linkRowText, linkHeadline, groupedFindings,
+    trustedListView, MAX_TRUSTED_SENDERS, TRUSTED_VISIBLE_ROWS,
   };
 }
