@@ -63,10 +63,10 @@ def main() -> None:
             "score": score, "verdict": verdict, "rules": [f.rule for f in findings],
         })
 
-    print(f"{'id':<7} {'label':<9} {'score':>5}  {'verdict':<10} {'ok':<3} rules")
+    print(f"{'id':<7} {'label':<9} {'score':>5}  {'verdict':<10} {'ok?':<3} rules")
     for r in rows:
         ok = (r["score"] >= FLAG_AT) == (r["label"] == "malicious")
-        print(f"{r['id']:<7} {r['label']:<9} {r['score']:>5}  {r['verdict']:<10} {'✓' if ok else '✗':<3} {', '.join(r['rules']) or '-'}")
+        print(f"{r['id']:<7} {r['label']:<9} {r['score']:>5}  {r['verdict']:<10} {'yes' if ok else 'NO':<3} {', '.join(r['rules']) or '-'}")
 
     summary = [rates(rows, FLAG_AT), rates(rows, MALICIOUS_AT)]
     for s in summary:

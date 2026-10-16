@@ -32,8 +32,8 @@ const APP_NAME = 'Lighthouse - Smart Email Security';
 const APP_SHORT_NAME = '🗼 Lighthouse';
 
 /**
- * Public base URL of the static image assets (icons and per-score hero images).
- * Gmail card images must be loaded from a public HTTPS URL, so the PNGs generated
+ * Public base URL of the static image assets (icons and the animated per-score hero GIFs).
+ * Gmail card images must be loaded from a public HTTPS URL, so the images generated
  * by tools/generate_assets.py are committed to the repo's /assets folder and served
  * from raw.githubusercontent.com (the repository must be public).
  */

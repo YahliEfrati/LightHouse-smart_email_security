@@ -79,12 +79,6 @@ function presentationFor(state) {
   return STATE_PRESENTATION[state] || STATE_PRESENTATION.suspicious;
 }
 
-/** Highest-weight finding (first wins ties), or null when there are none. */
-function topFinding(reasoning) {
-  if (!Array.isArray(reasoning) || reasoning.length === 0) return null;
-  return reasoning.reduce((best, item) => (item.weight > best.weight ? item : best), reasoning[0]);
-}
-
 /** Truncates attacker-controlled text, then HTML-escapes it for CardService widgets. */
 function safeText(value, maxLen) {
   let text = String(value == null ? '' : value);
@@ -134,11 +128,6 @@ function checkStripText(statuses) {
   return statuses
     .map((s) => '<font color="' + STATUS_COLORS[s.status] + '">' + STATUS_SYMBOLS[s.status] + ' ' + s.label + '</font>')
     .join(' &nbsp;\u00B7&nbsp; ');
-}
-
-/** The n heaviest findings (see sortFindings). */
-function topFindings(reasoning, n) {
-  return sortFindings(reasoning).slice(0, n);
 }
 
 /** Free-mail providers: trusting a whole provider domain would trust millions of strangers. */
@@ -502,7 +491,7 @@ function linkRowText(row) {
 if (typeof module !== 'undefined') {
   module.exports = {
     normalizeScore, heroFile, HERO_UNSCANNED_FILE, HERO_TRUSTED_FILE, isPublicMailDomain, isTrustedBy, assetUrl, stateForResult, presentationFor,
-    topFinding, topFindings, sortFindings, checkStatuses, checkStripText, shortLabelForRule, RULE_SHORT_LABELS, safeText, checksPassed, CHECKS_PERFORMED, SCORE_LEGEND,
+    sortFindings, checkStatuses, checkStripText, shortLabelForRule, RULE_SHORT_LABELS, safeText, checksPassed, CHECKS_PERFORMED, SCORE_LEGEND,
     hostOf, registrableDomain, domainInText, inspectLink, inspectLinks, linkSummaryText, linkRowText, linkHeadline, groupedFindings,
     trustedListView, MAX_TRUSTED_SENDERS, TRUSTED_VISIBLE_ROWS, findingsByRule, isEmailTrackerHost,
     verdictForScore, editDistance, trustedLookalike, applyTrustedLookalike, VERDICT_THRESHOLDS,

@@ -20,14 +20,24 @@ Design goals
 Architecture
 ------------
 ``Analyzer`` is an abstract base class. Each concrete subclass inspects
-one "vector" of the email (headers/identity, content, links,
-attachments) and returns a list of ``Finding`` objects. The
-``EmailRiskAnalyzer`` orchestrator runs the full pipeline and aggregates
+one "vector" of the email and returns a list of ``Finding`` objects:
+
+* ``HeaderAnalyzer``         - sender identity: brand impersonation, typosquats, Reply-To, SPF/DKIM/DMARC
+* ``ContentAnalyzer``        - wording: credential requests, urgency + money, obfuscation tricks
+* ``PaymentRequestAnalyzer`` - CEO / vendor fraud: a money request plus pressure or a personal mailbox
+* ``LinkAnalyzer``           - links: text vs. real site, IP hosts, shorteners, look-alike domains
+* ``AttachmentAnalyzer``     - attachments (metadata only): double extensions, risky file types, macros
+
+The ``EmailRiskAnalyzer`` orchestrator runs the full pipeline and aggregates
 the findings into a single 0-100 score using a weighted matrix with a
 per-category cap, so that a single hyperactive category can't alone
 dominate the verdict while multiple independent weak signals across
 categories still add up (defense-in-depth scoring, mirroring how a
 human triager reasons about an email).
+
+Shared domain helpers (``registrable_domain`` and the suffix lists) sit at the
+top of the module; lists that the add-on also uses are kept in sync with
+``Presentation.gs`` by ``tests/test_shared_lists.py``.
 """
 from __future__ import annotations
 

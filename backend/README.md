@@ -44,7 +44,9 @@ the user.
 backend/
 ├── main.py        FastAPI app: POST /api/v1/analyze, GET /health
 ├── models.py      Pydantic request/response schemas (the untrusted-input boundary)
-├── analyzer.py     OOP heuristic pipeline + scoring engine
+├── analyzer.py    OOP heuristic pipeline + scoring engine
+├── config.py      API key creation/loading (backend/.env, git-ignored)
+├── eval/          independent 50-email test set + run_eval.py
 ├── tests/
 │   ├── test_analyzer.py   unit tests per analyzer/rule
 │   └── test_api.py        HTTP-level tests via FastAPI's TestClient
@@ -63,9 +65,10 @@ one vector of the email and returns a list of `Finding`s:
 | `HeaderAnalyzer` | Sender identity | In-memory whitelist of heavily-targeted brand domains; `difflib`-based typosquat detection (e.g. `paypa1.com` vs `paypal.com`); display-name/domain mismatch; Reply-To mismatch; SPF/DKIM/DMARC `=fail` in `Authentication-Results` |
 | `ContentAnalyzer` | Body/subject text | Proximity of urgency phrases to financial/credential terms; long base64 blobs; excessive `%XX` URL-encoding; HTML numeric/hex entity obfuscation (`&#x...;`); requests to enter/confirm login or payment details (verb + credential noun) |
 | `LinkAnalyzer` | Hyperlinks | Visible-text-vs-`href` domain mismatch; IP-literal hosts; known URL shorteners; Shannon-entropy check for randomly-generated-looking domains; hosts on phishing-abused TLDs (`SUSPICIOUS_TLDS`) |
-| `AttachmentAnalyzer` | Attachments | Double extensions (`invoice.pdf.exe`); directly dangerous extensions (`.exe`, `.scr`, `.js`, ...); macro-enabled Office files (`.docm`, `.xlsm`, ...), severity escalated when the email also has urgency/financial language |
+| `PaymentRequestAnalyzer` | CEO / vendor fraud (BEC) | A request for money or new payment details (gift cards, wire transfer, changed bank / payroll details) plus pressure or secrecy (content finding) or a free-mail sender / Reply-To (header finding). Both together reach Malicious |
+| `AttachmentAnalyzer` | Attachments | Double extensions (`invoice.pdf.exe`); risky file types (`.exe`, `.js`, `.html`, `.iso`, `.lnk`, ...); macro-enabled Office files (`.docm`, `.xlsm`, ...), severity escalated when the email also has urgency/financial language |
 
-`EmailRiskAnalyzer` is the orchestrator: it runs all four analyzers,
+`EmailRiskAnalyzer` is the orchestrator: it runs all five analyzers,
 then aggregates findings into a score using a **weighted matrix with a
 per-category cap**. Each category (`header`, `content`, `link`,
 `attachment`) can contribute at most N points to the raw total (see

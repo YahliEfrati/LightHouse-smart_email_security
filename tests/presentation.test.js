@@ -29,13 +29,6 @@ test('stateForResult maps verdicts and falls back to suspicious', () => {
   assert.strictEqual(p.stateForResult({ verdict: 'Weird' }), 'suspicious');
 });
 
-test('topFinding picks highest weight, first on ties, null when empty', () => {
-  const a = { weight: 10, rule: 'a' }; const b = { weight: 30, rule: 'b' }; const c = { weight: 30, rule: 'c' };
-  assert.strictEqual(p.topFinding([a, b, c]), b);
-  assert.strictEqual(p.topFinding([]), null);
-  assert.strictEqual(p.topFinding(undefined), null);
-});
-
 test('safeText escapes HTML and truncates', () => {
   assert.ok(!p.safeText('<b>x</b>', 100).includes('<'));
   const long = p.safeText('a'.repeat(5000), 80);
@@ -77,12 +70,6 @@ test('checkStripText shows a colored symbol and label per check', () => {
   const text = p.checkStripText(p.checkStatuses([{ category: 'link', weight: 10 }]));
   assert.ok(text.includes('\u2713 Sender') && text.includes('\u26A0 Links'));
   assert.ok(text.includes('#C98A2C') && text.includes('#2E7D6B'));
-});
-
-test('topFindings returns at most n heaviest', () => {
-  const r = [{ weight: 1 }, { weight: 9 }, { weight: 5 }, { weight: 7 }];
-  assert.deepStrictEqual(p.topFindings(r, 3).map((i) => i.weight), [9, 7, 5]);
-  assert.deepStrictEqual(p.topFindings([], 3), []);
 });
 
 test('isTrustedBy: exact address or bare domain, case-insensitive, no subdomains', () => {
