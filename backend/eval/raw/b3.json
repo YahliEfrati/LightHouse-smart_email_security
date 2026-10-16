@@ -1,0 +1,279 @@
+[
+  {
+    "id": "b3-1",
+    "label": "legit",
+    "category": "work-file-macro",
+    "note": "Legitimate colleague sending an internal excel file with macros",
+    "email": {
+      "sender": {
+        "email": "j.cohen@acme-corp-internal.com",
+        "display_name": "Jordan Cohen"
+      },
+      "reply_to": null,
+      "subject": "Updated Q3 Financial Model v2.xlsm",
+      "body_text": "Hey Dana,\n\nHere is the updated model with the new macros for the revenue projections we discussed. Let me know if you get the #REF error again on the summary tab.\n\nBest,\nJordan",
+      "body_html": "<div style='font-family: Arial, sans-serif; font-size: 14px;'><p>Hey Dana,</p><p>Here is the updated model with the new macros for the revenue projections we discussed. Let me know if you get the #REF error again on the summary tab.</p><p>Best,<br>Jordan</p></div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Q3_Financial_Model_v2.xlsm",
+          "content_type": "application/vnd.ms-excel.sheet.macroEnabled.12",
+          "size_bytes": 145200
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b3-2",
+    "label": "malicious",
+    "category": "malware-delivery",
+    "note": "Fake Quickbooks invoice dropping a ZIP file that likely contains malware.",
+    "email": {
+      "sender": {
+        "email": "billing@quickbooks-intuit-mailer.com",
+        "display_name": "QuickBooks Invoicing"
+      },
+      "reply_to": null,
+      "subject": "Invoice INV-9042 from Global Supply Corp",
+      "body_text": "Dear Customer,\n\nPlease find attached your invoice from Global Supply Corp for the amount of $4,120.00.\n\nDue Date: Oct 20, 2026\n\nFor a detailed breakdown, please download the attached ZIP archive or View Invoice Online.\n\nThank you,\nGlobal Supply Corp",
+      "body_html": "<div style='font-family: Helvetica, Arial, sans-serif; background-color: #f4f5f8; padding: 20px;'><div style='background-color: white; padding: 20px; border-radius: 5px;'><h2>Invoice INV-9042</h2><p>Dear Customer,</p><p>Please find attached your invoice from Global Supply Corp for the amount of <strong>$4,120.00</strong>.</p><p>Due Date: Oct 20, 2026</p><p>For a detailed breakdown, please download the attached ZIP archive or <a href='http://quickbook.intuit-invoice-view.com/v/9042'>View Invoice Online</a>.</p><p>Thank you,<br>Global Supply Corp</p></div></div>",
+      "links": [
+        {
+          "text": "View Invoice Online",
+          "href": "http://quickbook.intuit-invoice-view.com/v/9042"
+        }
+      ],
+      "attachments": [
+        {
+          "filename": "INV-9042_Global_Supply.zip",
+          "content_type": "application/zip",
+          "size_bytes": 45200
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b3-3",
+    "label": "legit",
+    "category": "shared-document",
+    "note": "Legitimate Google Drive sharing notification.",
+    "email": {
+      "sender": {
+        "email": "drive-shares-noreply@google.com",
+        "display_name": "Alex Mercer (via Google Drive)"
+      },
+      "reply_to": "a.mercer@acme-corp.com",
+      "subject": "Item shared with you: \"2024 Product Roadmap\"",
+      "body_text": "Alex Mercer shared a document with you.\n\nOpen: https://docs.google.com/document/d/1aB2c3D4e5F6g7H8i9J0/edit?usp=sharing\n\nGoogle LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA",
+      "body_html": "<div style='font-family: Roboto, Arial, sans-serif; text-align: center; padding: 40px;'><table width='100%' style='max-width: 600px; margin: 0 auto; border: 1px solid #dadce0; border-radius: 8px;'><tr><td style='padding: 24px;'><p style='font-size: 16px; color: #3c4043;'><strong>Alex Mercer</strong> shared a document with you.</p><div style='margin: 24px 0;'><a href='https://docs.google.com/document/d/1aB2c3D4e5F6g7H8i9J0/edit?usp=sharing' style='background-color: #1a73e8; color: white; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-weight: 500;'>Open</a></div></td></tr></table><p style='font-size: 12px; color: #5f6368; margin-top: 24px;'>Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA</p></div>",
+      "links": [
+        {
+          "text": "Open",
+          "href": "https://docs.google.com/document/d/1aB2c3D4e5F6g7H8i9J0/edit?usp=sharing"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b3-4",
+    "label": "malicious",
+    "category": "malware-delivery",
+    "note": "HTML attachment smuggling masquerading as a benefits enrollment form.",
+    "email": {
+      "sender": {
+        "email": "hr-benefits@portal-update-hr.com",
+        "display_name": "HR Department"
+      },
+      "reply_to": null,
+      "subject": "ACTION REQUIRED: 2024 Benefits Enrollment Document",
+      "body_text": "Dear Dana Levi,\n\nYour 2024 annual benefits enrollment period is ending soon. To review your current elections and finalize your coverage, please open the secure HTML document attached to this email.\n\nThis file is encrypted for your privacy. Once downloaded, open it in any web browser to authenticate and view your personalized summary.\n\nRegards,\nHuman Resources",
+      "body_html": "<div style='font-family: Tahoma, sans-serif; color: #333;'><h3 style='color: #d32f2f;'>ACTION REQUIRED: 2024 Benefits Enrollment</h3><p>Dear Dana Levi,</p><p>Your 2024 annual benefits enrollment period is ending soon. To review your current elections and finalize your coverage, please open the secure HTML document attached to this email.</p><p><i>This file is encrypted for your privacy. Once downloaded, open it in any web browser to authenticate and view your personalized summary.</i></p><p>Regards,<br>Human Resources</p></div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Dana_Levi_Benefits_2024.html",
+          "content_type": "text/html",
+          "size_bytes": 102450
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b3-5",
+    "label": "legit",
+    "category": "receipt",
+    "note": "Legitimate SaaS receipt sent via Stripe.",
+    "email": {
+      "sender": {
+        "email": "receipts@stripe.com",
+        "display_name": "Stripe"
+      },
+      "reply_to": "support@acmesoftware.com",
+      "subject": "Your receipt from Acme Software",
+      "body_text": "Acme Software\nReceipt for $49.00\nPaid Oct 16, 2026\n\nDownload PDF: https://receipts.stripe.com/receipt/acct_1234/rcpt_5678/pdf\nView Receipt Online: https://receipts.stripe.com/receipt/acct_1234/rcpt_5678\n\n(c) 2026 Stripe Inc.",
+      "body_html": "<div style='font-family: sans-serif; color: #4F566B;'><h2 style='color: #32325D;'>Acme Software</h2><p>Receipt for <strong>$49.00</strong></p><p>Paid Oct 16, 2026</p><p>We&#8217;ve attached a PDF copy of your receipt to this email.</p><p><a href='https://receipts.stripe.com/receipt/acct_1234/rcpt_5678/pdf' style='color: #6772E5; text-decoration: none;'>Download PDF</a> | <a href='https://receipts.stripe.com/receipt/acct_1234/rcpt_5678' style='color: #6772E5; text-decoration: none;'>View Receipt Online</a></p><hr style='border: none; border-top: 1px solid #E3E8EE; margin: 20px 0;'><p style='font-size: 11px; color: #8792A2;'>&copy; 2026 Stripe&#160;Inc.</p></div>",
+      "links": [
+        {
+          "text": "Download PDF",
+          "href": "https://receipts.stripe.com/receipt/acct_1234/rcpt_5678/pdf"
+        },
+        {
+          "text": "View Receipt Online",
+          "href": "https://receipts.stripe.com/receipt/acct_1234/rcpt_5678"
+        }
+      ],
+      "attachments": [
+        {
+          "filename": "Receipt_AcmeSoftware.pdf",
+          "content_type": "application/pdf",
+          "size_bytes": 56000
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b3-6",
+    "label": "malicious",
+    "category": "malware-delivery",
+    "note": "Fake DocuSign lure with a double extension executable (.pdf.exe).",
+    "email": {
+      "sender": {
+        "email": "legal@docusign-esig.net",
+        "display_name": "DocuSign Legal"
+      },
+      "reply_to": null,
+      "subject": "Completed: Mutual NDA - Signatures Required",
+      "body_text": "Your document has been completed.\n\nReview Document: http://docusign-esig.net/auth/login?doc=nda\n\nOr download the attached final PDF for your records.",
+      "body_html": "<div style='font-family: Arial, sans-serif;'><div style='background-color: #ffc820; padding: 15px; text-align: center;'><h1 style='margin: 0; font-size: 24px; color: #333;'>DocuSign</h1></div><div style='padding: 20px;'><p>Your document has been completed.</p><p><a href='http://docusign-esig.net/auth/login?doc=nda' style='background-color: #005cb9; color: #fff; padding: 12px 20px; text-decoration: none; font-weight: bold; border-radius: 2px; display: inline-block;'>Review Document</a></p><p>Or download the attached final PDF for your records.</p></div></div>",
+      "links": [
+        {
+          "text": "Review Document",
+          "href": "http://docusign-esig.net/auth/login?doc=nda"
+        }
+      ],
+      "attachments": [
+        {
+          "filename": "Mutual_NDA_Countersigned_final.pdf.exe",
+          "content_type": "application/x-msdownload",
+          "size_bytes": 214500
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b3-7",
+    "label": "legit",
+    "category": "automated-report",
+    "note": "Legitimate automated Salesforce CSV report delivery.",
+    "email": {
+      "sender": {
+        "email": "reports@salesforce.com",
+        "display_name": "Salesforce Reports"
+      },
+      "reply_to": null,
+      "subject": "Weekly Pipeline Summary - Oct 16",
+      "body_text": "Attached is the scheduled report: Weekly Pipeline Summary.\n\nView in Salesforce: https://na1.salesforce.com/00O/scheduled/report\n\nSalesforce's automated reporting service.",
+      "body_html": "<div style='font-family: Arial, sans-serif; color: #16325c;'><p>Attached is the scheduled report: <strong>Weekly Pipeline Summary</strong>.</p><p><a href='https://na1.salesforce.com/00O/scheduled/report' style='color: #0070d2;'>View in Salesforce</a></p><p style='font-size: 10px; color: #706e6b;'>Salesforce&#8217;s automated reporting service. Please do not reply to this message.</p></div>",
+      "links": [
+        {
+          "text": "View in Salesforce",
+          "href": "https://na1.salesforce.com/00O/scheduled/report"
+        }
+      ],
+      "attachments": [
+        {
+          "filename": "Weekly_Pipeline_Summary_1610.csv",
+          "content_type": "text/csv",
+          "size_bytes": 12048
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b3-8",
+    "label": "malicious",
+    "category": "malware-delivery",
+    "note": "ISO attachment bypassing MOTW, masquerading as an urgent KPMG audit request.",
+    "email": {
+      "sender": {
+        "email": "audits@kpmg-advisory-services.com",
+        "display_name": "Sarah Jenkins - KPMG"
+      },
+      "reply_to": "sjenkins@kpmg-advisory-services.com",
+      "subject": "URGENT: 2024 Q3 Audit Request Items",
+      "body_text": "Dana,\n\nAs part of the ongoing Q3 compliance audit, we require immediate review of the flagged transactions. Due to the sensitive nature of the data, the request list has been bundled in the attached disk image (ISO) archive.\n\nPlease mount the ISO and run the enclosed viewer to see the required documentation list by close of business today.\n\nSarah Jenkins\nSenior Auditor | KPMG Advisory",
+      "body_html": "<div style='font-family: Calibri, sans-serif; font-size: 15px;'><p>Dana,</p><p>As part of the ongoing Q3 compliance audit, we require immediate review of the flagged transactions. Due to the sensitive nature of the data, the request list has been bundled in the attached disk image (ISO) archive.</p><p>Please mount the ISO and run the enclosed viewer to see the required documentation list by close of business today.</p><p><strong>Sarah Jenkins</strong><br>Senior Auditor | KPMG Advisory</p></div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Audit_Request_Documents_Q3.iso",
+          "content_type": "application/x-iso9660-image",
+          "size_bytes": 3145728
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b3-9",
+    "label": "legit",
+    "category": "work-file-consultant",
+    "note": "Legitimate email from a consultant delivering PPT and Excel files.",
+    "email": {
+      "sender": {
+        "email": "m.steele@steeleconsulting.com",
+        "display_name": "Marcus Steele"
+      },
+      "reply_to": null,
+      "subject": "Final Deliverables: Q4 Marketing Strategy",
+      "body_text": "Hi Dana,\n\nAttaching the final presentation and the raw data export we discussed on yesterday's call. Let me know if you need any adjustments before the steering committee review on Thursday.\n\nBest regards,\nMarcus Steele\nSteering & Strategy Co.",
+      "body_html": "<div style='font-family: Garamond, serif; font-size: 16px; color: #222;'><p>Hi Dana,</p><p>Attaching the final presentation and the raw data export we discussed on yesterday&#8217;s call. Let me know if you need any adjustments before the steering committee review on Thursday.</p><p>Best regards,<br><strong>Marcus Steele</strong><br>Steering & Strategy Co.</p></div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Q4_Strategy_Final.pptx",
+          "content_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          "size_bytes": 4520000
+        },
+        {
+          "filename": "Customer_Segments.xlsx",
+          "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "size_bytes": 845000
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b3-10",
+    "label": "legit",
+    "category": "file-share",
+    "note": "Legitimate WeTransfer notification for design assets.",
+    "email": {
+      "sender": {
+        "email": "noreply@wetransfer.com",
+        "display_name": "WeTransfer"
+      },
+      "reply_to": null,
+      "subject": "David sent you \"Q4 Ad Campaign Assets\"",
+      "body_text": "David sent you some files\n\n1 item, 45.2 MB in total • Will be deleted on 23 October, 2026\n\nGet your files: https://we.tl/t-aBcDeFgHiJ\n\nTo make sure our emails arrive, please add noreply@wetransfer.com to your contacts.",
+      "body_html": "<div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; text-align: center;'><img src='https://assets.wetransfer.net/logo.png' alt='WeTransfer' style='width: 100px; margin-bottom: 20px;'><h1 style='font-size: 20px; font-weight: normal;'>David sent you some files</h1><p style='color: #737373; font-size: 14px;'>1 item, 45.2 MB in total &bull; Will be deleted on 23 October, 2026</p><a href='https://we.tl/t-aBcDeFgHiJ' style='display: inline-block; background-color: #409FFF; color: #ffffff; text-decoration: none; padding: 15px 30px; border-radius: 25px; margin: 20px 0;'>Get your files</a><hr style='border: 0; border-bottom: 1px solid #e0e0e0; margin: 30px 0;'><p style='font-size: 11px; color: #b3b3b3;'>To make sure our emails arrive, please add noreply@wetransfer.com to your contacts.</p></div>",
+      "links": [
+        {
+          "text": "Get your files",
+          "href": "https://we.tl/t-aBcDeFgHiJ"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  }
+]

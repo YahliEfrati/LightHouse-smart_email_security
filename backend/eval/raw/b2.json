@@ -1,0 +1,246 @@
+[
+  {
+    "id": "b2-1",
+    "label": "legit",
+    "category": "new-login",
+    "note": "Standard Google new device login alert",
+    "email": {
+      "sender": {
+        "email": "no-reply@accounts.google.com",
+        "display_name": "Google"
+      },
+      "reply_to": null,
+      "subject": "Security alert",
+      "body_text": "Your Google Account dana.levi@gmail.com was just signed in to from a new Windows device. You're getting this email to make sure it was you. \n\nCheck activity: https://myaccount.google.com/notifications?hl=en&authuser=0 \n\nIf you don't recognize this activity, someone might have your password. \n\nYou can also go directly to: https://myaccount.google.com",
+      "body_html": "<div style='font-family: Arial, sans-serif;'><p>Your Google Account <b>dana.levi@gmail.com</b> was just signed in to from a new Windows device.</p><p>You&#8217;re getting this email to make sure it was you.</p><p><a href='https://myaccount.google.com/notifications?hl=en&amp;authuser=0' style='display:inline-block; padding: 10px 20px; background-color: #1a73e8; color: #fff; text-decoration: none; border-radius: 4px;'>Check activity</a></p><p>If you don&#8217;t recognize this activity, someone might have your password.</p></div>",
+      "links": [
+        {
+          "text": "Check activity",
+          "href": "https://myaccount.google.com/notifications?hl=en&amp;authuser=0"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b2-2",
+    "label": "legit",
+    "category": "2fa-code",
+    "note": "Standard GitHub 2FA code email",
+    "email": {
+      "sender": {
+        "email": "noreply@github.com",
+        "display_name": "GitHub"
+      },
+      "reply_to": null,
+      "subject": "[GitHub] Please verify your device",
+      "body_text": "Hey dana.levi!\n\nA sign in attempt requires further verification because we did not recognize your device. To complete the sign in, enter the verification code on the unrecognized device.\n\nVerification code: 849201\n\nIf you did not attempt to sign in to your account, your password may be compromised. Please review your account security settings.\n\nThanks,\nThe GitHub Team",
+      "body_html": "<div style='font-family:Helvetica,Arial,sans-serif;'><p>Hey <strong>dana.levi</strong>!</p><p>A sign in attempt requires further verification because we did not recognize your device. To complete the sign in, enter the verification code on the unrecognized device.</p><p>Verification code: <b>849201</b></p><p>If you did not attempt to sign in to your account, your password may be compromised. Please <a href='https://github.com/settings/security'>review your account security settings</a>.</p><p>Thanks,<br>The GitHub Team</p></div>",
+      "links": [
+        {
+          "text": "review your account security settings",
+          "href": "https://github.com/settings/security"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b2-3",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Fake Microsoft 365 password expiry notice leading to lookalike domain",
+    "email": {
+      "sender": {
+        "email": "admin@m365-secure-update.com",
+        "display_name": "Microsoft 365 Support"
+      },
+      "reply_to": "no-reply@m365-secure-update.com",
+      "subject": "Action Required: Password Expires in 24 Hours",
+      "body_text": "Dear user,\n\nYour Office 365 password for dana.levi@gmail.com is set to expire in 24 hours. \n\nIf you wish to keep your current password, please click the link below to verify your credentials:\n\nKeep Current Password: https://login.microsoftonline.com.secure-update.com/verify?uid=dana.levi\n\nFailure to verify may result in a temporary lock on your account.\n\nThank you,\nIT Security Desk",
+      "body_html": "<div style='font-family: Segoe UI, Tahoma, sans-serif; color: #333;'><h2 style='color: #d83b01;'>Action Required: Password Expiry Notification</h2><p>Dear user,</p><p>Your Office 365 password for <b>dana.levi@gmail.com</b> is set to expire in 24 hours.</p><p>If you wish to keep your current password, please click the link below to verify your credentials:</p><p><a href='https://login.microsoftonline.com.secure-update.com/verify?uid=dana.levi' style='background-color: #0078d4; color: white; padding: 10px 15px; text-decoration: none;'>Keep Current Password</a></p><p>Failure to verify may result in a temporary lock on your account.</p><p>Thank you,<br>IT Security Desk</p></div>",
+      "links": [
+        {
+          "text": "Keep Current Password",
+          "href": "https://login.microsoftonline.com.secure-update.com/verify?uid=dana.levi"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b2-4",
+    "label": "legit",
+    "category": "new-login",
+    "note": "Netflix new sign-in alert with marketing footer",
+    "email": {
+      "sender": {
+        "email": "info@mailer.netflix.com",
+        "display_name": "Netflix"
+      },
+      "reply_to": null,
+      "subject": "New sign-in to your account",
+      "body_text": "A new device is using your account.\n\nHi Dana,\nWe noticed a new sign-in to your Netflix account.\n\nDevice: Smart TV\nLocation: Tel Aviv, Israel\nTime: Oct 16, 2026\n\nIf this was you, you can ignore this email. If this wasn't you, you should change your password immediately to protect your account.\n\nChange Password: https://www.netflix.com/password?lnktrk=EMP&g=983274\n\nNeed help? Contact us: https://help.netflix.com/contactus\n\nThis message was mailed to [dana.levi@gmail.com] by Netflix.",
+      "body_html": "<div style='background-color: #141414; color: #ffffff; font-family: Helvetica, Arial, sans-serif; padding: 20px;'><h1 style='color: #e50914;'>NETFLIX</h1><h2>A new device is using your account.</h2><p>Hi Dana,</p><p>We noticed a new sign-in to your Netflix account.</p><ul><li><b>Device:</b> Smart TV</li><li><b>Location:</b> Tel Aviv, Israel</li></ul><p>If this was you, you can ignore this email. If this wasn&#8217;t you, you should change your password immediately to protect your account.</p><p><a href='https://www.netflix.com/password?lnktrk=EMP&amp;g=983274' style='background-color: #e50914; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 2px; font-weight: bold;'>Change Password</a></p><hr style='border-color: #333;'><p style='font-size: 11px; color: #8c8c8c;'>Need help? <a href='https://help.netflix.com/contactus' style='color: #8c8c8c;'>Contact us</a>.</p><p style='font-size: 11px; color: #8c8c8c;'>This message was mailed to [dana.levi@gmail.com] by Netflix.</p></div>",
+      "links": [
+        {
+          "text": "Change Password",
+          "href": "https://www.netflix.com/password?lnktrk=EMP&amp;g=983274"
+        },
+        {
+          "text": "Contact us",
+          "href": "https://help.netflix.com/contactus"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b2-5",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Fake PayPal security hold",
+    "email": {
+      "sender": {
+        "email": "service@pay-pal-resolution.com",
+        "display_name": "PayPal Service"
+      },
+      "reply_to": null,
+      "subject": "Account Access Limited - Unusual Activity",
+      "body_text": "Hello dana.levi@gmail.com,\n\nWe noticed unusual activity on your PayPal account. As a security measure, we have temporarily limited your access.\n\nTo restore your account, please log in and verify your identity within 24 hours.\n\nLog in here: https://pay-pal-resolution.com/login?token=xyz123\n\nIf you do not complete this step, your account may be permanently suspended.\n\nSincerely,\nPayPal Security Department",
+      "body_html": "<div style='font-family: Arial, sans-serif; color: #2C2E2F;'><img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg' alt='PayPal Logo' width='111' height='69'><p>Hello <b>dana.levi@gmail.com</b>,</p><p>We noticed unusual activity on your PayPal account. As a security measure, we have temporarily limited your access.</p><p>To restore your account, please log in and verify your identity within 24 hours.</p><p><a href='https://pay-pal-resolution.com/login?token=xyz123' style='display: inline-block; background-color: #0070BA; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 20px; font-weight: bold;'>Secure Your Account</a></p><p>If you do not complete this step, your account may be permanently suspended.</p><p>Sincerely,<br>PayPal Security Department</p></div>",
+      "links": [
+        {
+          "text": "Secure Your Account",
+          "href": "https://pay-pal-resolution.com/login?token=xyz123"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b2-6",
+    "label": "legit",
+    "category": "password-changed",
+    "note": "Slack confirmation of password change",
+    "email": {
+      "sender": {
+        "email": "feedback@slack.com",
+        "display_name": "Slack"
+      },
+      "reply_to": null,
+      "subject": "Your Slack password has been updated",
+      "body_text": "Hi Dana,\n\nThis is a quick confirmation that your Slack password was recently updated.\n\nIf you made this change, you don't need to do anything else. If you didn't change your password, please reset it immediately by visiting our support page.\n\nReset password: https://slack.com/help/articles/201334966-Reset-your-password\n\nBest,\nThe Slack Team",
+      "body_html": "<div style='font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif; color: #1d1c1d;'><p>Hi Dana,</p><p>This is a quick confirmation that your Slack password was recently updated.</p><p>If you made this change, you don&#8217;t need to do anything else. If you didn&#8217;t change your password, please <a href='https://slack.com/help/articles/201334966-Reset-your-password'>reset it immediately</a>.</p><p>Best,<br>The Slack Team</p></div>",
+      "links": [
+        {
+          "text": "reset it immediately",
+          "href": "https://slack.com/help/articles/201334966-Reset-your-password"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b2-7",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Fake Apple App Store receipt with a fake cancellation link",
+    "email": {
+      "sender": {
+        "email": "appstore@apple-receipt-processing-it.com",
+        "display_name": "App Store"
+      },
+      "reply_to": "no-reply@apple-receipt-processing-it.com",
+      "subject": "Receipt from Apple: Your recent purchase",
+      "body_text": "Apple \n\nReceipt\nOrder ID: MN9X2JD82P\nDocument No: 182739182391\nDate: Oct 16, 2026\n\nBilled To:\ndana.levi@gmail.com\n\nApp: Tinder Gold (1 Year Subscription)\nTotal: $49.99\n\nIf you did not authorize this purchase, please cancel it immediately to avoid being charged.\n\nCancel or Manage Subscription: https://appleid-manage-subscriptions.com/auth/login?session=dana.levi\n\nRegards,\nApple Support",
+      "body_html": "<div style='font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif; color: #333;'><div style='text-align: center;'><img src='https://www.apple.com/ac/globalnav/7/en_US/images/be15095f-5a20-57d0-ad14-cb4fc59e5a80/globalnav_apple_image__b5er5ngrzxqq_large.svg' width='20' height='20' alt='Apple'></div><h2>Receipt</h2><p><b>Order ID:</b> MN9X2JD82P<br><b>Date:</b> Oct 16, 2026</p><p><b>Billed To:</b><br>dana.levi@gmail.com</p><hr><p><b>App:</b> Tinder Gold (1 Year Subscription)<br><b>Total:</b> $49.99</p><hr><p style='font-size: 12px; color: #666;'>If you did not authorize this purchase, please cancel it immediately to avoid being charged.</p><p><a href='https://appleid-manage-subscriptions.com/auth/login?session=dana.levi' style='color: #0070c9;'>Cancel or Manage Subscription</a></p></div>",
+      "links": [
+        {
+          "text": "Cancel or Manage Subscription",
+          "href": "https://appleid-manage-subscriptions.com/auth/login?session=dana.levi"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b2-8",
+    "label": "legit",
+    "category": "password-reset",
+    "note": "Dropbox user-requested password reset",
+    "email": {
+      "sender": {
+        "email": "no-reply@dropbox.com",
+        "display_name": "Dropbox"
+      },
+      "reply_to": null,
+      "subject": "Dropbox password reset request",
+      "body_text": "Hi Dana,\n\nWe received a request to reset the password for your Dropbox account (dana.levi@gmail.com).\n\nReset your password here: https://www.dropbox.com/account/reset_password?t=XyZ123AaB456CcD\n\nIf you didn't ask to reset your password, you can ignore this email.\n\nThanks,\n- The Dropbox Team",
+      "body_html": "<div style='font-family: \"Open Sans\", \"Lucida Grande\", \"Segoe UI\", Arial, Verdana, \"Lucida Sans Unicode\", Tahoma, \"Sans Serif\";'><img src='https://cfl.dropboxstatic.com/static/images/emails/logo_blue_34_34-vflbOqJGE.png' width='34' height='34' alt='Dropbox'><p>Hi Dana,</p><p>We received a request to reset the password for your Dropbox account (dana.levi@gmail.com).</p><p><a href='https://www.dropbox.com/account/reset_password?t=XyZ123AaB456CcD' style='background-color: #0061ff; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 3px; font-weight: bold;'>Reset password</a></p><p>If you didn&#8217;t ask to reset your password, you can ignore this email.</p><p>Thanks,<br>- The Dropbox Team</p></div>",
+      "links": [
+        {
+          "text": "Reset password",
+          "href": "https://www.dropbox.com/account/reset_password?t=XyZ123AaB456CcD"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b2-9",
+    "label": "malicious",
+    "category": "bec",
+    "note": "Fake internal IT helpdesk alert (BEC-style)",
+    "email": {
+      "sender": {
+        "email": "it-support@dana-company.org",
+        "display_name": "IT Helpdesk"
+      },
+      "reply_to": null,
+      "subject": "MANDATORY: Update your Outlook credentials",
+      "body_text": "Dana,\n\nAs part of our Q4 security audit, all employees must validate their Active Directory credentials by EOD today to prevent email service interruption.\n\nPlease complete your validation via the secure portal here: https://sharepoint-auth-login-gateway.com/intranet/dana\n\nRegards,\nIT Helpdesk Administration",
+      "body_html": "<div style='font-family: Calibri, Arial, sans-serif;'><p style='color: red; font-weight: bold;'>URGENT: ACTION REQUIRED</p><p>Dana,</p><p>As part of our Q4 security audit, all employees must validate their Active Directory credentials by EOD today to prevent email service interruption.</p><p>Please complete your validation via the secure portal here:</p><p><a href='https://sharepoint-auth-login-gateway.com/intranet/dana' style='color: #0563C1; text-decoration: underline;'>Validate Credentials</a></p><p>Regards,<br>IT Helpdesk Administration</p></div>",
+      "links": [
+        {
+          "text": "Validate Credentials",
+          "href": "https://sharepoint-auth-login-gateway.com/intranet/dana"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b2-10",
+    "label": "legit",
+    "category": "new-login",
+    "note": "Spotify new login notification with review button",
+    "email": {
+      "sender": {
+        "email": "no-reply@spotify.com",
+        "display_name": "Spotify"
+      },
+      "reply_to": null,
+      "subject": "A new login to Spotify from Chrome on Windows",
+      "body_text": "Did you just log in?\n\nHi Dana,\n\nWe noticed a login to your account from a new device or location.\n\nDate & Time: 16-Oct-2026\nDevice: Chrome on Windows\nLocation: Tel Aviv\n\nIf this was you, you don't need to do anything. If you don't recognize this activity, we recommend reviewing your account.\n\nReview Account: https://www.spotify.com/us/account/overview/?utm_source=spotify&utm_medium=email&utm_campaign=new_login\n\nGet Spotify for: iOS | Android\nThis message was sent to dana.levi@gmail.com.",
+      "body_html": "<div style='font-family: Circular, \"Helvetica Neue\", Helvetica, Arial, sans-serif; background-color: #000000; color: #ffffff; padding: 30px;'><h2 style='color: #1ed760;'>Did you just log in?</h2><p>Hi Dana,</p><p>We noticed a login to your account from a new device or location.</p><ul style='list-style-type: none; padding-left: 0;'><li><b>Date &amp; Time:</b> 16-Oct-2026</li><li><b>Device:</b> Chrome on Windows</li><li><b>Location:</b> Tel Aviv</li></ul><p>If this was you, you don&#8217;t need to do anything. If you don&#8217;t recognize this activity, we recommend reviewing your account.</p><p><a href='https://www.spotify.com/us/account/overview/?utm_source=spotify&amp;utm_medium=email&amp;utm_campaign=new_login' style='background-color: #1ed760; color: #000000; padding: 14px 28px; text-decoration: none; border-radius: 500px; font-weight: bold; display: inline-block;'>Review Account</a></p><hr style='border-color: #333; margin-top: 30px;'><p style='font-size: 11px; color: #b3b3b3;'>This message was sent to dana.levi@gmail.com.</p></div>",
+      "links": [
+        {
+          "text": "Review Account",
+          "href": "https://www.spotify.com/us/account/overview/?utm_source=spotify&amp;utm_medium=email&amp;utm_campaign=new_login"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  }
+]

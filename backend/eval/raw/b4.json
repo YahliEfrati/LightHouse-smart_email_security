@@ -1,0 +1,300 @@
+[
+  {
+    "id": "b4-01",
+    "label": "legit",
+    "category": "shipping",
+    "note": "Amazon shipping confirmation with complex tracking URL, marketing HTML, and unsubscribe footer.",
+    "email": {
+      "sender": {
+        "email": "ship-confirm@amazon.com",
+        "display_name": "Amazon.com"
+      },
+      "reply_to": null,
+      "subject": "Your Amazon.com order of \"Bose QuietComfort...\" has shipped!",
+      "body_text": "Hi Dana,\n\nYour package is on the way. You can track it here: https://www.amazon.com/gp/css/shiptrack/view.html?ie=UTF8&orderID=114-1234567-8901234\n\nThis email was sent to dana.levi@gmail.com. Please note that this message was sent from a notification-only address that cannot accept incoming email.\nUnsubscribe: https://www.amazon.com/gp/gss/manage/",
+      "body_html": "<div style='font-family: Arial, sans-serif; color: #333333; max-width: 600px;'><h2>Your order is on the way.</h2><p>Hi Dana,</p><p>Your order of \"Bose QuietComfort Headphones\" has shipped.</p><p style='text-align: center;'><a href='https://www.amazon.com/gp/css/shiptrack/view.html?ie=UTF8&amp;orderID=114-1234567-8901234&amp;utm_source=ship_confirm&amp;ref_=pe_385040_121528360' style='background-color: #FF9900; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 3px;'>Track your package</a></p><p style='font-size: 12px;'><a href='https://www.amazon.com/gp/css/shiptrack/view.html?ie=UTF8&amp;orderID=114-1234567-8901234&amp;utm_source=ship_confirm&amp;ref_=pe_385040_121528360'>View in browser</a></p><hr><p style='font-size: 10px; color: #999999;'>This message was sent to dana.levi@gmail.com. &#160;To manage your email preferences, <a href='https://www.amazon.com/gp/gss/manage/'>click here to unsubscribe</a>.</p></div>",
+      "links": [
+        {
+          "text": "Track your package",
+          "href": "https://www.amazon.com/gp/css/shiptrack/view.html?ie=UTF8&orderID=114-1234567-8901234&utm_source=ship_confirm&ref_=pe_385040_121528360"
+        },
+        {
+          "text": "View in browser",
+          "href": "https://www.amazon.com/gp/css/shiptrack/view.html?ie=UTF8&orderID=114-1234567-8901234&utm_source=ship_confirm&ref_=pe_385040_121528360"
+        },
+        {
+          "text": "click here to unsubscribe",
+          "href": "https://www.amazon.com/gp/gss/manage/"
+        }
+      ],
+      "attachments": [],
+      "headers": {
+        "X-Amazon-Mail-Relay": "true"
+      }
+    }
+  },
+  {
+    "id": "b4-02",
+    "label": "legit",
+    "category": "order confirmation",
+    "note": "Zara clothing order receipt with HTML entities and brand subdomain.",
+    "email": {
+      "sender": {
+        "email": "orders@orders.zara.com",
+        "display_name": "ZARA"
+      },
+      "reply_to": "contact@zara.com",
+      "subject": "ZARA ORDER NO. 54329810",
+      "body_text": "ZARA\n\nTHANK YOU FOR YOUR ORDER\nOrder No. 54329810\n\nWe are preparing your order. You will receive an email when it is dispatched.\n\nTotal: $129.90\n\nView E-Ticket: https://www.zara.com/us/en/user/order/54329810/e-ticket\n\nSent to: dana.levi@gmail.com",
+      "body_html": "<div style='font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif; text-align: center;'><h1 style='letter-spacing: 2px;'>ZARA</h1><h2>THANK YOU FOR YOUR ORDER</h2><p>Order No. 54329810</p><p>We are preparing your order. You&#8217;ll receive an email when it&#8217;s dispatched.</p><br><a href='https://www.zara.com/us/en/user/order/54329810/e-ticket' style='color: #000; text-decoration: underline;'>VIEW E-TICKET</a><br><br><div style='font-size: 11px; color: #666; margin-top: 40px;'><p>This email was sent to dana.levi@gmail.com</p><a href='https://www.zara.com/us/en/contact'>Contact Us</a> | <a href='https://www.zara.com/us/en/unsubscribe?email=dana.levi%40gmail.com'>Unsubscribe</a></div></div>",
+      "links": [
+        {
+          "text": "VIEW E-TICKET",
+          "href": "https://www.zara.com/us/en/user/order/54329810/e-ticket"
+        },
+        {
+          "text": "Contact Us",
+          "href": "https://www.zara.com/us/en/contact"
+        },
+        {
+          "text": "Unsubscribe",
+          "href": "https://www.zara.com/us/en/unsubscribe?email=dana.levi%40gmail.com"
+        }
+      ],
+      "attachments": [],
+      "headers": {
+        "List-Unsubscribe": "<mailto:unsubscribe@orders.zara.com>"
+      }
+    }
+  },
+  {
+    "id": "b4-03",
+    "label": "malicious",
+    "category": "customs fee",
+    "note": "Fake DHL customs fee using a look-alike domain to steal credit card info.",
+    "email": {
+      "sender": {
+        "email": "notify@dhl-express-fees.com",
+        "display_name": "DHL Express Delivery"
+      },
+      "reply_to": null,
+      "subject": "Action Required: Your parcel is awaiting customs duty payment",
+      "body_text": "Dear Customer,\n\nYour package (Tracking ID: DHL-88192301) has arrived at our sorting facility but cannot be delivered due to unpaid customs duties of $2.99 USD.\n\nPlease resolve this fee to schedule your delivery:\nhttp://dhl-express-fees.com/pay?user=dana.levi@gmail.com\n\nIf unpaid within 48 hours, the package will be returned to the sender.\n\nThank you,\nDHL Express Logistics",
+      "body_html": "<div style='font-family: Arial, sans-serif; max-width: 500px; border: 1px solid #e5e5e5; padding: 20px;'><h2 style='color: #d40511;'>DHL Express</h2><p>Dear Customer,</p><p>Your package (Tracking ID: <strong>DHL-88192301</strong>) has arrived at our sorting facility but cannot be delivered due to an unpaid customs duty of <strong>$2.99 USD</strong>.</p><p>Please resolve this fee immediately to schedule your delivery to dana.levi@gmail.com:</p><a href='http://dhl-express-fees.com/pay?user=dana.levi%40gmail.com' style='display: inline-block; background-color: #d40511; color: #fff; padding: 12px 24px; text-decoration: none; font-weight: bold;'>Pay Customs Fee</a><p style='font-size: 12px; color: #666; margin-top: 20px;'>If unpaid within 48 hours, the package will be returned to the sender.</p></div>",
+      "links": [
+        {
+          "text": "Pay Customs Fee",
+          "href": "http://dhl-express-fees.com/pay?user=dana.levi%40gmail.com"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b4-04",
+    "label": "legit",
+    "category": "bank statement",
+    "note": "Legitimate Chase Bank monthly statement notification.",
+    "email": {
+      "sender": {
+        "email": "no-reply@alertsp.chase.com",
+        "display_name": "Chase"
+      },
+      "reply_to": null,
+      "subject": "Your monthly bank statement is ready",
+      "body_text": "Chase\n\nYour monthly statement is ready to view.\n\nHi Dana,\nYour monthly statement for your Chase Total Checking account ending in 4412 is now available online.\n\nSign in to view your statement: https://secure06c.chase.com/web/auth/#/logon/logon/secureMessage\n\nTo see your statement, you'll need Adobe Reader. If you don't have it, download it for free at adobe.com.\n\nJPMorgan Chase Bank, N.A. Member FDIC",
+      "body_html": "<div style='font-family: \"Open Sans\", sans-serif; color: #414042;'><div style='background-color: #117aca; padding: 15px;'><h1 style='color: #ffffff; margin: 0;'>CHASE</h1></div><div style='padding: 20px;'><p>Hi Dana,</p><p>Your monthly statement for your Chase Total Checking account ending in <strong>4412</strong> is now available online.</p><p><a href='https://secure06c.chase.com/web/auth/#/logon/logon/secureMessage' style='color: #117aca; text-decoration: none; font-weight: bold;'>Sign in to your account</a> to view, save or print your document.</p><p style='font-size: 12px; color: #717171;'>To see your statement, you&#8217;ll need Adobe Reader&#174;. <a href='https://get.adobe.com/reader/'>Download it here</a>.</p><hr style='border: 0; border-top: 1px solid #ccc; margin: 20px 0;'><p style='font-size: 10px; color: #717171;'>JPMorgan Chase Bank, N.A. Member FDIC<br>&#169; 2023 JPMorgan Chase &amp; Co.</p></div></div>",
+      "links": [
+        {
+          "text": "Sign in to your account",
+          "href": "https://secure06c.chase.com/web/auth/#/logon/logon/secureMessage"
+        },
+        {
+          "text": "Download it here",
+          "href": "https://get.adobe.com/reader/"
+        }
+      ],
+      "attachments": [],
+      "headers": {
+        "X-Priority": "3"
+      }
+    }
+  },
+  {
+    "id": "b4-05",
+    "label": "malicious",
+    "category": "failed payment",
+    "note": "Fake Netflix billing failure using a compromised or weird domain.",
+    "email": {
+      "sender": {
+        "email": "support-billing@nflx-billing-update-992.com",
+        "display_name": "Netflix Support"
+      },
+      "reply_to": "no-reply@nflx-billing-update-992.com",
+      "subject": "Update your payment information",
+      "body_text": "Hi dana.levi@gmail.com,\n\nWe're having some trouble with your current billing information. We'll try again, but in the meantime you may want to update your payment details.\n\nUPDATE ACCOUNT NOW: https://nflx-billing-update-992.com/login.php?session=992811&email=dana.levi@gmail.com\n\nNeed help? We're here if you need it. Visit the Help Center or contact us now.\n\nThe Netflix team",
+      "body_html": "<div style='font-family: Helvetica, Arial, sans-serif; background-color: #f3f3f3; padding: 40px 0;'><div style='max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 40px;'><h1 style='color: #e50914; margin-top: 0;'>NETFLIX</h1><h2 style='color: #333333;'>Update your payment information</h2><p style='color: #333333; font-size: 16px; line-height: 1.5;'>Hi dana.levi@gmail.com,</p><p style='color: #333333; font-size: 16px; line-height: 1.5;'>We&#39;re having some trouble with your current billing information. We&#39;ll try again, but in the meantime you may want to update your payment details.</p><a href='https://nflx-billing-update-992.com/login.php?session=992811&amp;email=dana.levi@gmail.com' style='display: block; width: 100%; text-align: center; background-color: #e50914; color: #ffffff; padding: 15px 0; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 4px; margin: 30px 0;'>UPDATE ACCOUNT NOW</a><p style='color: #999999; font-size: 14px;'>The Netflix team</p></div></div>",
+      "links": [
+        {
+          "text": "UPDATE ACCOUNT NOW",
+          "href": "https://nflx-billing-update-992.com/login.php?session=992811&email=dana.levi@gmail.com"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b4-06",
+    "label": "legit",
+    "category": "shipping",
+    "note": "UPS package scheduled delivery notification. Very standard.",
+    "email": {
+      "sender": {
+        "email": "mcinfo@ups.com",
+        "display_name": "UPS My Choice"
+      },
+      "reply_to": null,
+      "subject": "UPS Update: Package Scheduled for Delivery Today",
+      "body_text": "UPS My Choice\n\nHi Dana,\nYou have a package arriving today from APPLE INC.\n\nScheduled Delivery Date: Today\nTracking Number: 1Z9999999999999999\n\nTrack your package: https://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=1Z9999999999999999\n\nManage this delivery with UPS My Choice: https://www.ups.com/mychoice",
+      "body_html": "<div style='font-family: Arial, sans-serif;'><div style='background-color: #ffb500; padding: 20px;'><img src='https://www.ups.com/assets/resources/images/ups-logo.svg' alt='UPS' style='height: 40px;'></div><div style='padding: 20px;'><h2 style='color: #333;'>Delivery Alert</h2><p>Hi Dana,</p><p>You have a package arriving today from <strong>APPLE INC.</strong></p><p>Tracking Number: <a href='https://wwwapps.ups.com/WebTracking/track?track=yes&amp;trackNums=1Z9999999999999999'>1Z9999999999999999</a></p><p><a href='https://www.ups.com/mychoice' style='background-color: #008faa; color: #fff; padding: 10px 15px; text-decoration: none;'>Manage Delivery</a></p></div><div style='background-color: #f1f1f1; padding: 20px; font-size: 11px; color: #666;'><p>This email was sent to dana.levi@gmail.com.</p><p><a href='https://www.ups.com/us/en/help-center/legal-terms-conditions.page'>Terms of Use</a> | <a href='https://www.ups.com/us/en/help-center/legal-terms-conditions/privacy-notice.page'>Privacy Notice</a></p></div></div>",
+      "links": [
+        {
+          "text": "1Z9999999999999999",
+          "href": "https://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=1Z9999999999999999"
+        },
+        {
+          "text": "Manage Delivery",
+          "href": "https://www.ups.com/mychoice"
+        },
+        {
+          "text": "Terms of Use",
+          "href": "https://www.ups.com/us/en/help-center/legal-terms-conditions.page"
+        },
+        {
+          "text": "Privacy Notice",
+          "href": "https://www.ups.com/us/en/help-center/legal-terms-conditions/privacy-notice.page"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b4-07",
+    "label": "malicious",
+    "category": "refund scam",
+    "note": "Geek Squad auto-renewal BEC scam. Uses a freemail sender and fake invoice attachment to drive inbound calls.",
+    "email": {
+      "sender": {
+        "email": "billing.dept8812@gmail.com",
+        "display_name": "Geek Squad Billing"
+      },
+      "reply_to": "billing.dept8812@gmail.com",
+      "subject": "Invoice #88921-12: Your Geek Squad Protection has been renewed",
+      "body_text": "Dear Customer,\n\nThank you for choosing Geek Squad.\nYour annual subscription for PC Shield Protection has been successfully renewed today.\n\nA charge of $399.99 has been deducted from your account and will reflect on your statement within 24 hours.\n\nInvoice Details:\nInvoice No: #GS-88921-12\nAmount: $399.99\nStatus: Paid\n\nIf you did not authorize this charge or wish to cancel your subscription, please contact our support team immediately at: +1-888-555-0199.\n\nYou can also submit a cancellation request here: https://bit.ly/cancel-geek-squad-8812\n\nBest Regards,\nGeek Squad Support Team",
+      "body_html": "<div style='font-family: \"Courier New\", Courier, monospace; font-size: 14px;'><p>Dear Customer,</p><p>Thank you for choosing Geek Squad.<br>Your annual subscription for PC Shield Protection has been successfully renewed today.</p><p>A charge of <strong>$399.99</strong> has been deducted from your account and will reflect on your statement within 24 hours.</p><p><strong>Invoice Details:</strong><br>Invoice No: #GS-88921-12<br>Amount: $399.99<br>Status: Paid</p><p>If you did not authorize this charge or wish to cancel your subscription, please contact our support team immediately at: <strong>+1-888-555-0199</strong>.</p><p>You can also submit a cancellation request here: <a href='https://bit.ly/cancel-geek-squad-8812'>Cancel Subscription</a></p><p>Best Regards,<br>Geek Squad Support Team</p></div>",
+      "links": [
+        {
+          "text": "Cancel Subscription",
+          "href": "https://bit.ly/cancel-geek-squad-8812"
+        }
+      ],
+      "attachments": [
+        {
+          "filename": "Invoice_GS88921.pdf",
+          "content_type": "application/pdf",
+          "size_bytes": 45102
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b4-08",
+    "label": "legit",
+    "category": "order confirmation",
+    "note": "Airbnb booking confirmation receipt.",
+    "email": {
+      "sender": {
+        "email": "express@airbnb.com",
+        "display_name": "Airbnb"
+      },
+      "reply_to": null,
+      "subject": "Your receipt for London",
+      "body_text": "Airbnb\n\nReceipt for your stay in London\nReservation: HMW9XY2Z\n\n3 nights\nTotal Paid: $540.00\n\nView itinerary: https://www.airbnb.com/reservation/itinerary?code=HMW9XY2Z\n\nGet help with this reservation: https://www.airbnb.com/help\n\nAirbnb, Inc., 888 Brannan St, San Francisco, CA 94103",
+      "body_html": "<div style='font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, sans-serif; color: #484848;'><h1 style='color: #FF5A5F;'>Airbnb</h1><h2>Receipt for your stay in London</h2><p>Reservation code: <strong>HMW9XY2Z</strong></p><p>3 nights in London<br>Total Paid: $540.00</p><p><a href='https://www.airbnb.com/reservation/itinerary?code=HMW9XY2Z' style='display: inline-block; padding: 12px 24px; border: 1px solid #FF5A5F; color: #FF5A5F; text-decoration: none; border-radius: 4px;'>View itinerary</a></p><hr style='border: 0; border-bottom: 1px solid #EBEBEB; margin: 30px 0;'><p style='font-size: 12px; color: #767676;'>Need help? <a href='https://www.airbnb.com/help' style='color: #008489; text-decoration: none;'>Visit the Help Center</a>.</p><p style='font-size: 10px; color: #767676;'>Airbnb, Inc., 888 Brannan St, San Francisco, CA 94103</p></div>",
+      "links": [
+        {
+          "text": "View itinerary",
+          "href": "https://www.airbnb.com/reservation/itinerary?code=HMW9XY2Z"
+        },
+        {
+          "text": "Visit the Help Center",
+          "href": "https://www.airbnb.com/help"
+        }
+      ],
+      "attachments": [
+        {
+          "filename": "Receipt_HMW9XY2Z.pdf",
+          "content_type": "application/pdf",
+          "size_bytes": 105433
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b4-09",
+    "label": "malicious",
+    "category": "delivery fee",
+    "note": "Generic postal service scam pretending a package is stuck.",
+    "email": {
+      "sender": {
+        "email": "delivery-update@israel-post-tracking.net",
+        "display_name": "Postal Delivery Service"
+      },
+      "reply_to": null,
+      "subject": "Failed Delivery: Package IL8819223 requires ₪9.00 fee",
+      "body_text": "Hello dana.levi@gmail.com,\n\nWe attempted to deliver your parcel IL8819223 today, but the address was incomplete or the delivery fee was not fully paid.\n\nAmount due: ₪9.00\n\nPlease verify your address and pay the missing amount here:\nhttps://il-post-redirecting.com/tracking/IL8819223\n\nIf the fee is not paid by tomorrow, the package will be disposed of.\n\nRegards,\nPostal Dispatch Center",
+      "body_html": "<div style='font-family: Arial, sans-serif; color: #333;'><p>Hello dana.levi@gmail.com,</p><p>We attempted to deliver your parcel <strong>IL8819223</strong> today, but the address was incomplete or the delivery fee was not fully paid.</p><p>Amount due: <span style='color: red; font-weight: bold;'>&#8362;9.00</span></p><p>Please verify your address and pay the missing amount here:</p><p><a href='https://il-post-redirecting.com/tracking/IL8819223' style='display: inline-block; padding: 10px 15px; background-color: #004b87; color: white; text-decoration: none;'>Update Delivery Information</a></p><p style='font-size: 12px; color: #999;'>If the fee is not paid by tomorrow, the package will be disposed of.</p><p>Regards,<br>Postal Dispatch Center</p></div>",
+      "links": [
+        {
+          "text": "Update Delivery Information",
+          "href": "https://il-post-redirecting.com/tracking/IL8819223"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b4-10",
+    "label": "legit",
+    "category": "bank statement",
+    "note": "PayPal receipt for a digital purchase.",
+    "email": {
+      "sender": {
+        "email": "service@paypal.com",
+        "display_name": "PayPal"
+      },
+      "reply_to": null,
+      "subject": "You paid Spotify AB",
+      "body_text": "PayPal\n\nHello Dana,\n\nYou paid $10.99 USD to Spotify AB (receipts@spotify.com)\n\nTransaction ID: 9V83921838\nDate: October 14, 2023\n\nView Transaction Details: https://www.paypal.com/myaccount/transactions/details/9V83921838\n\nNeed help? Contact us: https://www.paypal.com/us/smarthelp/contact-us\n\nPlease do not reply to this email.",
+      "body_html": "<div style='font-family: Helvetica, Arial, sans-serif; color: #2c2e2f;'><div style='padding: 20px; text-align: center;'><img src='https://www.paypalobjects.com/digitalassets/c/website/logo/full-text/pp_fc_hl.svg' alt='PayPal' style='width: 120px;'></div><div style='padding: 20px; border: 1px solid #cbd2d6; max-width: 600px; margin: 0 auto;'><p style='font-size: 18px;'>Hello Dana,</p><p style='font-size: 24px; color: #0070ba; font-weight: 300;'>You paid $10.99 USD to Spotify AB</p><p style='color: #666;'>Transaction ID: 9V83921838<br>Date: October 14, 2023</p><p><a href='https://www.paypal.com/myaccount/transactions/details/9V83921838' style='display: inline-block; background-color: #0070ba; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 20px;'>View Transaction Details</a></p><hr style='border: none; border-top: 1px solid #cbd2d6; margin: 30px 0;'><p style='font-size: 12px; color: #666;'>Need help? <a href='https://www.paypal.com/us/smarthelp/contact-us' style='color: #0070ba; text-decoration: none;'>Contact us</a>.</p><p style='font-size: 11px; color: #999;'>Please do not reply to this email. This mailbox is not monitored.</p></div></div>",
+      "links": [
+        {
+          "text": "View Transaction Details",
+          "href": "https://www.paypal.com/myaccount/transactions/details/9V83921838"
+        },
+        {
+          "text": "Contact us",
+          "href": "https://www.paypal.com/us/smarthelp/contact-us"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  }
+]

@@ -1,0 +1,282 @@
+[
+  {
+    "id": "b1-01",
+    "label": "legit",
+    "category": "newsletter",
+    "note": "Standard retail marketing email with tracking links, URL encoding, and HTML entities.",
+    "email": {
+      "sender": {
+        "email": "hello@beauty.sephora.com",
+        "display_name": "Sephora"
+      },
+      "reply_to": "noreply@beauty.sephora.com",
+      "subject": "Just dropped: Your new beauty obsessions ✨",
+      "body_text": "Hi Dana,\n\nWe&#8217;ve got exactly what your routine is missing. Discover the latest drops from your favorite brands.\n\nShop Now: https://click.e.sephora.com/u/?qs=892374982&uid=dana.levi%40gmail.com\n\n--\nTo unsubscribe from these emails, view in browser or manage preferences, visit our site.",
+      "body_html": "<div style='font-family: Arial, sans-serif; color: #333;'><h2>The Latest &amp; Greatest</h2><p>Hi Dana,</p><p>We&#8217;ve got exactly what your routine is missing. Discover the latest drops from your favorite brands.</p><p><a href='https://click.e.sephora.com/u/?qs=892374982&uid=dana.levi%40gmail.com' style='background-color: #000; color: #fff; padding: 10px 20px; text-decoration: none;'>Shop Now</a></p><hr style='border: 0; border-top: 1px solid #ccc; margin-top: 30px;'><p style='font-size: 11px; color: #666;'>To stop receiving these emails, <a href='https://click.e.sephora.com/unsub/?id=98765&u=dana.levi%40gmail.com' style='color: #666;'>unsubscribe here</a>. You can also <a href='https://click.e.sephora.com/view/?id=98765' style='color: #666;'>View in browser</a>.</p></div>",
+      "links": [
+        {
+          "text": "Shop Now",
+          "href": "https://click.e.sephora.com/u/?qs=892374982&uid=dana.levi%40gmail.com"
+        },
+        {
+          "text": "unsubscribe here",
+          "href": "https://click.e.sephora.com/unsub/?id=98765&u=dana.levi%40gmail.com"
+        },
+        {
+          "text": "View in browser",
+          "href": "https://click.e.sephora.com/view/?id=98765"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b1-02",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Netflix impersonation with a look-alike domain and a fake payment decline trick.",
+    "email": {
+      "sender": {
+        "email": "support@secure-billing-nflx.com",
+        "display_name": "Netflix Support"
+      },
+      "reply_to": null,
+      "subject": "Action Required: Update your payment method",
+      "body_text": "Hi Dana,\n\nWe tried to charge your card for your next billing cycle, but it was declined.\n\nPlease update your payment details to avoid service interruption.\n\nUpdate Payment: https://secure-billing-nflx.com/update?user=dana.levi\n\nThanks,\nThe Netflix Team",
+      "body_html": "<div style='font-family: Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto;'><img src='https://assets.nflxext.com/us/email/logo.png' alt='Netflix' width='100' style='display: block; margin-bottom: 20px;'/><p style='font-size: 16px;'>Hi Dana,</p><p style='font-size: 16px;'>We tried to charge your card for your next billing cycle, but it was declined.</p><p style='font-size: 16px;'>Please update your payment details to avoid service interruption.</p><p style='text-align: center; margin-top: 30px;'><a href='https://secure-billing-nflx.com/update?user=dana.levi' style='background-color: #e50914; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 4px;'>Update Payment</a></p><p style='font-size: 14px; color: #888; margin-top: 40px;'>Questions? Visit the Help Center or contact us.</p></div>",
+      "links": [
+        {
+          "text": "Update Payment",
+          "href": "https://secure-billing-nflx.com/update?user=dana.levi"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b1-03",
+    "label": "legit",
+    "category": "marketing",
+    "note": "Airline promotional email from a subdomain, featuring HTML entities and standard formatting.",
+    "email": {
+      "sender": {
+        "email": "mileageplus@news.united.com",
+        "display_name": "United Airlines"
+      },
+      "reply_to": "noreply@news.united.com",
+      "subject": "Ready for your next getaway, Dana?",
+      "body_text": "Explore new destinations with your MileagePlus miles.\n\nBook your award travel today and experience the joy of the journey.\n\nFind Flights: https://www.united.com/en/us/fly/mileageplus.html?int_source=em&int_medium=em&int_campaign=mp_promo",
+      "body_html": "<table width='100%' cellpadding='0' cellspacing='0' border='0' style='font-family: Arial, sans-serif;'><tr><td align='center'><h1 style='color: #005DAA;'>It&#8217;s time to fly!</h1><p style='font-size: 18px; color: #333;'>Explore new destinations with your MileagePlus&#174; miles.</p><p style='margin: 30px 0;'><a href='https://www.united.com/en/us/fly/mileageplus.html?int_source=em&int_medium=em&int_campaign=mp_promo' style='background-color: #005DAA; color: #ffffff; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 5px;'>Find Flights</a></p><p style='font-size: 12px; color: #777;'>This email was sent to dana.levi@gmail.com. <br><a href='https://news.united.com/profile/update?id=xj983k' style='color: #005DAA;'>Update your preferences</a> or <a href='https://news.united.com/unsubscribe?id=xj983k' style='color: #005DAA;'>unsubscribe</a>.</p></td></tr></table>",
+      "links": [
+        {
+          "text": "Find Flights",
+          "href": "https://www.united.com/en/us/fly/mileageplus.html?int_source=em&int_medium=em&int_campaign=mp_promo"
+        },
+        {
+          "text": "Update your preferences",
+          "href": "https://news.united.com/profile/update?id=xj983k"
+        },
+        {
+          "text": "unsubscribe",
+          "href": "https://news.united.com/unsubscribe?id=xj983k"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b1-04",
+    "label": "malicious",
+    "category": "bec",
+    "note": "PayPal impersonation using an unrelated compromised domain to bypass filters.",
+    "email": {
+      "sender": {
+        "email": "security-alert@mail-service-9812.net",
+        "display_name": "PayPal Service"
+      },
+      "reply_to": null,
+      "subject": "Important: Unusual activity detected on your account",
+      "body_text": "Dear Customer,\n\nWe detected a login attempt from an unrecognized device on your PayPal account.\nDate: Oct 16, 2026\nIP Address: 185.199.110.153\n\nIf this was not you, please secure your account immediately.\n\nSecure My Account: https://resolution-center.secure-login-pp.com/auth/verify\n\nSincerely,\nPayPal Security Team",
+      "body_html": "<div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'><h2 style='color: #003087;'>Security Alert</h2><p>Dear Customer,</p><p>We detected a login attempt from an unrecognized device on your PayPal account.</p><ul><li><strong>Date:</strong> Oct 16, 2026</li><li><strong>IP Address:</strong> 185.199.110.153</li></ul><p>If this was not you, please secure your account immediately by clicking the link below:</p><p><a href='https://resolution-center.secure-login-pp.com/auth/verify' style='color: #0070ba; font-weight: bold;'>Secure My Account</a></p><p>Sincerely,<br>PayPal Security Team</p></div>",
+      "links": [
+        {
+          "text": "Secure My Account",
+          "href": "https://resolution-center.secure-login-pp.com/auth/verify"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b1-05",
+    "label": "legit",
+    "category": "newsletter",
+    "note": "Streaming service marketing email with tracking tokens.",
+    "email": {
+      "sender": {
+        "email": "no-reply@spotify.com",
+        "display_name": "Spotify"
+      },
+      "reply_to": "no-reply@spotify.com",
+      "subject": "Discover your new favorite artist",
+      "body_text": "Hey Dana,\n\nWe put together a new playlist just for you, based on what you've been listening to lately.\n\nListen Now: https://open.spotify.com/playlist/37i9dQZF1E37jO8SiMT0yN?si=abcdef123456\n\nGet the app: https://www.spotify.com/download\n\nSpotify AB, Regeringsgatan 19, 111 53 Stockholm, Sweden",
+      "body_html": "<div style='background-color: #121212; color: #ffffff; font-family: Helvetica, Arial, sans-serif; padding: 40px; text-align: center;'><h1 style='font-size: 36px; margin-bottom: 10px;'>New Music Friday</h1><p style='font-size: 16px; color: #b3b3b3;'>Hey Dana, we put together a new playlist just for you, based on what you&#8217;ve been listening to lately.</p><a href='https://open.spotify.com/playlist/37i9dQZF1E37jO8SiMT0yN?si=abcdef123456' style='display: inline-block; background-color: #1DB954; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px;'>Listen Now</a><div style='margin-top: 50px; font-size: 11px; color: #535353;'><p>Spotify AB, Regeringsgatan 19, 111 53 Stockholm, Sweden</p><a href='https://www.spotify.com/download' style='color: #b3b3b3; text-decoration: none;'>Get the app</a></div></div>",
+      "links": [
+        {
+          "text": "Listen Now",
+          "href": "https://open.spotify.com/playlist/37i9dQZF1E37jO8SiMT0yN?si=abcdef123456"
+        },
+        {
+          "text": "Get the app",
+          "href": "https://www.spotify.com/download"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b1-06",
+    "label": "legit",
+    "category": "marketing",
+    "note": "B2B SaaS tips email with plain-looking but rich HTML.",
+    "email": {
+      "sender": {
+        "email": "tips@slack.com",
+        "display_name": "Slack Team"
+      },
+      "reply_to": "feedback@slack.com",
+      "subject": "3 tips to organize your channels better",
+      "body_text": "Hi Dana,\n\nFeeling overwhelmed by too many channels? Here are 3 ways to tidy up your Slack workspace and stay focused.\n\n1. Star your most important channels.\n2. Mute channels you only need to read occasionally.\n3. Group channels into custom sections.\n\nRead the full guide on our blog: https://slack.com/blog/productivity/organize-channels-tips\n\nBest,\nThe Slack Team",
+      "body_html": "<div style='font-family: Lato, Helvetica, sans-serif; max-width: 550px; margin: 0 auto; color: #1d1c1d;'><img src='https://a.slack-edge.com/80588/marketing/img/meta/slack_hash_256.png' width='40' alt='Slack Logo' style='margin-bottom: 20px;'><h2 style='font-size: 24px; font-weight: bold;'>Tidy up your workspace</h2><p>Hi Dana,</p><p>Feeling overwhelmed by too many channels? Here are 3 ways to tidy up your Slack workspace and stay focused.</p><ul><li style='margin-bottom: 10px;'>Star your most important channels.</li><li style='margin-bottom: 10px;'>Mute channels you only need to read occasionally.</li><li style='margin-bottom: 10px;'>Group channels into custom sections.</li></ul><p><a href='https://slack.com/blog/productivity/organize-channels-tips' style='color: #1264a3; font-weight: bold;'>Read the full guide on our blog &rarr;</a></p><p style='margin-top: 40px; font-size: 12px; color: #616061;'>&copy;2026 Slack Technologies, LLC, a Salesforce company.</p></div>",
+      "links": [
+        {
+          "text": "Read the full guide on our blog &rarr;",
+          "href": "https://slack.com/blog/productivity/organize-channels-tips"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b1-07",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Subtle iCloud impersonation targeting storage limits.",
+    "email": {
+      "sender": {
+        "email": "no-reply@icloud-storage-update.com",
+        "display_name": "Apple"
+      },
+      "reply_to": null,
+      "subject": "Your iCloud storage is almost full",
+      "body_text": "Your iCloud storage is almost full.\n\nYou have used 4.9 GB of your 5 GB total storage. Upgrade your storage plan to continue backing up your photos and documents.\n\nUpgrade Storage: https://icloud.com-upgrade-storage.net/auth\n\nApple ID | Support | Privacy Policy",
+      "body_html": "<div style='font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;'><h2 style='font-weight: 300; font-size: 28px;'>Your iCloud storage is almost full.</h2><p style='font-size: 15px; line-height: 1.4;'>You have used 4.9 GB of your 5 GB total storage. Upgrade your storage plan to continue backing up your photos and documents.</p><div style='text-align: center; margin: 30px 0;'><a href='https://icloud.com-upgrade-storage.net/auth' style='background-color: #0070c9; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 20px; font-size: 15px;'>Upgrade Storage</a></div><hr style='border: none; border-bottom: 1px solid #ccc;'><p style='font-size: 11px; color: #888; text-align: center;'><a href='https://icloud.com-upgrade-storage.net/auth' style='color: #888; text-decoration: none;'>Apple ID</a> | <a href='https://icloud.com-upgrade-storage.net/auth' style='color: #888; text-decoration: none;'>Support</a> | <a href='https://icloud.com-upgrade-storage.net/auth' style='color: #888; text-decoration: none;'>Privacy Policy</a></p></div>",
+      "links": [
+        {
+          "text": "Upgrade Storage",
+          "href": "https://icloud.com-upgrade-storage.net/auth"
+        },
+        {
+          "text": "Apple ID",
+          "href": "https://icloud.com-upgrade-storage.net/auth"
+        },
+        {
+          "text": "Support",
+          "href": "https://icloud.com-upgrade-storage.net/auth"
+        },
+        {
+          "text": "Privacy Policy",
+          "href": "https://icloud.com-upgrade-storage.net/auth"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b1-08",
+    "label": "legit",
+    "category": "marketing",
+    "note": "Amazon e-commerce recommendation email.",
+    "email": {
+      "sender": {
+        "email": "store-news@amazon.com",
+        "display_name": "Amazon.com"
+      },
+      "reply_to": "store-news@amazon.com",
+      "subject": "Recommendations for you in Electronics",
+      "body_text": "Amazon.com\n\nHi Dana,\nBased on your recent visits, we thought you might be interested in these items.\n\nShop Electronics: https://www.amazon.com/b/?node=172282&ref_=pe_123456_7890\n\nSee all departments: https://www.amazon.com/departments\n\nPlease note that this message was sent to the following email address: dana.levi@gmail.com",
+      "body_html": "<div style='font-family: Arial, sans-serif;'><table width='100%' border='0' cellspacing='0' cellpadding='10'><tr><td bgcolor='#232f3e'><a href='https://www.amazon.com/?ref_=pe_123456_7890' style='color: #ffffff; font-size: 24px; text-decoration: none; font-weight: bold;'>amazon</a></td></tr></table><p style='font-size: 16px; margin-top: 20px;'>Hi Dana,</p><p style='font-size: 14px;'>Based on your recent visits, we thought you might be interested in these items.</p><p><a href='https://www.amazon.com/b/?node=172282&ref_=pe_123456_7890' style='background-color: #f0c14b; border: 1px solid #a88734; color: #111; padding: 10px 15px; text-decoration: none; border-radius: 3px; display: inline-block;'>Shop Electronics</a></p><p style='font-size: 12px; margin-top: 30px;'><a href='https://www.amazon.com/departments' style='color: #0066c0;'>See all departments</a></p><hr><p style='font-size: 10px; color: #555;'>Please note that this message was sent to the following email address: dana.levi@gmail.com</p></div>",
+      "links": [
+        {
+          "text": "amazon",
+          "href": "https://www.amazon.com/?ref_=pe_123456_7890"
+        },
+        {
+          "text": "Shop Electronics",
+          "href": "https://www.amazon.com/b/?node=172282&ref_=pe_123456_7890"
+        },
+        {
+          "text": "See all departments",
+          "href": "https://www.amazon.com/departments"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b1-09",
+    "label": "malicious",
+    "category": "credential-phish",
+    "note": "Blatant O365 phish sent from a free-mail address to bypass simple domain checks.",
+    "email": {
+      "sender": {
+        "email": "admin-office365-helpdesk@gmail.com",
+        "display_name": "IT Desk"
+      },
+      "reply_to": null,
+      "subject": "Password Expiry Notice",
+      "body_text": "Your Office 365 password for dana.levi@gmail.com will expire in 24 hours.\n\nYou must retain your current password to continue using your mail.\n\nKeep Password: https://office365-update-portal.firebaseapp.com/login\n\nThank you,\nIT Helpdesk",
+      "body_html": "<div style='font-family: Arial, sans-serif; max-width: 500px;'><h3 style='color: #d83b01;'>Password Expiry Notice</h3><p>Your Office 365 password for <strong>dana.levi@gmail.com</strong> will expire in 24 hours.</p><p>You must retain your current password to continue using your mail securely.</p><p style='margin: 20px 0;'><a href='https://office365-update-portal.firebaseapp.com/login' style='background-color: #0078d4; color: #fff; padding: 8px 16px; text-decoration: none;'>Keep Password</a></p><p style='font-size: 12px; color: #666;'>Thank you,<br>IT Helpdesk</p></div>",
+      "links": [
+        {
+          "text": "Keep Password",
+          "href": "https://office365-update-portal.firebaseapp.com/login"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b1-10",
+    "label": "legit",
+    "category": "marketing",
+    "note": "Food delivery promotional email with emoji and long query string.",
+    "email": {
+      "sender": {
+        "email": "info@wolt.com",
+        "display_name": "Wolt"
+      },
+      "reply_to": "info@wolt.com",
+      "subject": "Hungry? Here is free delivery on your next order! 🍔",
+      "body_text": "Hey Dana!\n\nCraving something good? We've got you covered. Enjoy free delivery on your next order.\n\nOrder Now: https://wolt.com/en/discovery?utm_campaign=retention&utm_medium=email&utm_source=braze&token=abc123xyz\n\nHappy eating,\nThe Wolt Team",
+      "body_html": "<div style='font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 40px;'><div style='background-color: #ffffff; padding: 30px; border-radius: 8px; display: inline-block; max-width: 500px;'><h1 style='color: #009de0; margin-top: 0;'>Free Delivery! &#127828;</h1><p style='font-size: 16px; color: #333;'>Hey Dana!</p><p style='font-size: 16px; color: #333;'>Craving something good? We&#8217;ve got you covered. Enjoy free delivery on your next order.</p><a href='https://wolt.com/en/discovery?utm_campaign=retention&utm_medium=email&utm_source=braze&token=abc123xyz' style='display: inline-block; background-color: #009de0; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 30px; font-weight: bold; margin-top: 20px;'>Order Now</a><p style='font-size: 14px; color: #888; margin-top: 30px;'>Happy eating,<br>The Wolt Team</p></div></div>",
+      "links": [
+        {
+          "text": "Order Now",
+          "href": "https://wolt.com/en/discovery?utm_campaign=retention&utm_medium=email&utm_source=braze&token=abc123xyz"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  }
+]

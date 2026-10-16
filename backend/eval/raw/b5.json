@@ -1,0 +1,227 @@
+[
+  {
+    "id": "b5-1",
+    "label": "legit",
+    "category": "team-notes",
+    "note": "Legitimate short meeting notes with a link to a Google Doc",
+    "email": {
+      "sender": {
+        "email": "sarah.jenkins@acmecorp.com",
+        "display_name": "Sarah Jenkins"
+      },
+      "reply_to": null,
+      "subject": "Notes from today's sync",
+      "body_text": "Hey Dana,\n\nHere are the notes from our sync earlier. Let me know if I missed anything.\n\nLink: https://docs.google.com/document/d/1a2b3c4d/edit\n\nThanks,\nSarah",
+      "body_html": "<div dir='ltr'>Hey Dana,<br><br>Here are the notes from our sync earlier. Let me know if I missed anything.<br><br>Link: <a href='https://docs.google.com/document/d/1a2b3c4d/edit'>https://docs.google.com/document/d/1a2b3c4d/edit</a><br><br>Thanks,<br>Sarah</div>",
+      "links": [
+        {
+          "text": "https://docs.google.com/document/d/1a2b3c4d/edit",
+          "href": "https://docs.google.com/document/d/1a2b3c4d/edit"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b5-2",
+    "label": "malicious",
+    "category": "bec-wire",
+    "note": "CEO fraud / wire transfer request from a look-alike domain",
+    "email": {
+      "sender": {
+        "email": "michael.boss@acme-corp-management.com",
+        "display_name": "Michael Boss"
+      },
+      "reply_to": "michael.boss.exec@gmail.com",
+      "subject": "Confidential Wire Transfer",
+      "body_text": "Dana,\n\nAre you at your desk? I need an urgent wire transfer processed for a new vendor before end of day. It is strictly confidential right now, so do not discuss it with anyone else in the office.\n\nLet me know when you are ready for the wire instructions.\n\nRegards,\nMichael",
+      "body_html": "<div dir='ltr'><p style='font-family: sans-serif; font-size: 14px;'>Dana,</p><p style='font-family: sans-serif; font-size: 14px;'>Are you at your desk? I need an urgent wire transfer processed for a new vendor before end of day. It is strictly confidential right now, so do not discuss it with anyone else in the office.</p><p style='font-family: sans-serif; font-size: 14px;'>Let me know when you are ready for the wire instructions.</p><p style='font-family: sans-serif; font-size: 14px;'>Regards,<br>Michael</p></div>",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b5-3",
+    "label": "legit",
+    "category": "personal",
+    "note": "Short personal email from a friend",
+    "email": {
+      "sender": {
+        "email": "jessica.weaver99@gmail.com",
+        "display_name": "Jessica Weaver"
+      },
+      "reply_to": null,
+      "subject": "Dinner this Friday?",
+      "body_text": "Hey Dana!\n\nAre we still on for dinner this Friday? Thinking about that Italian place downtown, but I'm flexible.\n\nLet me know what time works for you.\n\nBest,\nJess",
+      "body_html": "<div dir='ltr'>Hey Dana!<br><br>Are we still on for dinner this Friday? Thinking about that Italian place downtown, but I'm flexible.<br><br>Let me know what time works for you.<br><br>Best,<br>Jess</div>",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b5-4",
+    "label": "malicious",
+    "category": "bec-giftcards",
+    "note": "CEO fraud asking for Apple gift cards via freemail address",
+    "email": {
+      "sender": {
+        "email": "ceo.office.direct11@gmail.com",
+        "display_name": "Michael Boss"
+      },
+      "reply_to": null,
+      "subject": "Quick request",
+      "body_text": "Hi Dana,\n\nI'm in a meeting right now and cannot take calls. I need you to purchase some Apple gift cards for a client presentation today. Can you head to the store right now? I will reimburse you by EOD.\n\nPlease reply as soon as you get this so I know you are handling it.\n\n- Michael",
+      "body_html": "<div dir='ltr'>Hi Dana,<br><br>I'm in a meeting right now and cannot take calls. I need you to purchase some Apple gift cards for a client presentation today. Can you head to the store right now? I will reimburse you by EOD.<br><br>Please reply as soon as you get this so I know you are handling it.<br><br>- Michael</div>",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b5-5",
+    "label": "legit",
+    "category": "team-thread",
+    "note": "Internal team thread with quoted reply text",
+    "email": {
+      "sender": {
+        "email": "david.chen@acmecorp.com",
+        "display_name": "David Chen"
+      },
+      "reply_to": null,
+      "subject": "Re: Q3 Marketing Budget",
+      "body_text": "Looks good to me, Dana. Go ahead and approve.\n\nOn Thu, Oct 15, Dana Levi wrote:\n> Hi David,\n> Attached is the revised budget for Q3. Please review before I submit to Finance.",
+      "body_html": "<div dir='ltr'>Looks good to me, Dana. Go ahead and approve.<br><br><div class='gmail_quote'>On Thu, Oct 15, Dana Levi wrote:<br><blockquote class='gmail_quote' style='margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex'>Hi David,<br>Attached is the revised budget for Q3. Please review before I submit to Finance.</blockquote></div></div>",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b5-6",
+    "label": "malicious",
+    "category": "bec-payroll",
+    "note": "Employee payroll diversion fraud from a freemail account",
+    "email": {
+      "sender": {
+        "email": "robert.smith.personal22@yahoo.com",
+        "display_name": "Robert Smith"
+      },
+      "reply_to": null,
+      "subject": "Direct Deposit Update",
+      "body_text": "Hi Dana,\n\nI recently changed my bank and need to update my direct deposit information for the upcoming payroll. Can you please update my account on file with the new routing and account number below?\n\nBank: Chase\nRouting: 122000248\nAccount: 8899223311\n\nThanks,\nRobert",
+      "body_html": "<div dir='ltr'>Hi Dana,<br><br>I recently changed my bank and need to update my direct deposit information for the upcoming payroll. Can you please update my account on file with the new routing and account number below?<br><br>Bank: Chase<br>Routing: 122000248<br>Account: 8899223311<br><br>Thanks,<br>Robert</div>",
+      "links": [],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b5-7",
+    "label": "legit",
+    "category": "newsletter",
+    "note": "Legitimate rich marketing HTML newsletter with tracking links and HTML entities",
+    "email": {
+      "sender": {
+        "email": "news@mail.coffeebeans.com",
+        "display_name": "Coffee Beans Roasters"
+      },
+      "reply_to": "support@coffeebeans.com",
+      "subject": "Your weekly coffee digest &#9728;&#65039;",
+      "body_text": "Hi Dana,\n\nReady for your morning brew? Check out our latest single-origin beans from Ethiopia.\n\nView in browser: https://mail.coffeebeans.com/view?id=8a7b6c5d&trk=9988\n\nShop Now: https://coffeebeans.com/shop?utm_source=nl&utm_medium=email\n\n&#169; 2026 Coffee Beans Roasters.\nTo unsubscribe, click here: https://mail.coffeebeans.com/unsub?user=dana.levi@gmail.com",
+      "body_html": "<div style='background-color:#f9f9f9; padding:20px;'><p style='font-size:12px; color:#888;'><a href='https://mail.coffeebeans.com/view?id=8a7b6c5d&trk=9988'>View in browser</a></p><h2>Ready for your morning brew?</h2><p>Check out our latest single-origin beans from Ethiopia.</p><a href='https://coffeebeans.com/shop?utm_source=nl&utm_medium=email' style='background-color:#d2691e; color:white; padding:10px 20px; text-decoration:none;'>Shop Now</a><br><br><hr><p style='font-size:10px; color:#999;'>&#169; 2026 Coffee Beans Roasters.<br>To unsubscribe, <a href='https://mail.coffeebeans.com/unsub?user=dana.levi@gmail.com'>click here</a>.</p></div>",
+      "links": [
+        {
+          "text": "View in browser",
+          "href": "https://mail.coffeebeans.com/view?id=8a7b6c5d&trk=9988"
+        },
+        {
+          "text": "Shop Now",
+          "href": "https://coffeebeans.com/shop?utm_source=nl&utm_medium=email"
+        },
+        {
+          "text": "click here",
+          "href": "https://mail.coffeebeans.com/unsub?user=dana.levi@gmail.com"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b5-8",
+    "label": "malicious",
+    "category": "bec-vendor",
+    "note": "Vendor impersonation claiming changed bank details, utilizing a look-alike domain",
+    "email": {
+      "sender": {
+        "email": "billing@tech-solutions-ltd.com",
+        "display_name": "Tech Solutions Accounts Receivable"
+      },
+      "reply_to": null,
+      "subject": "OVERDUE: Invoice #99482 - UPDATED BANK DETAILS",
+      "body_text": "Dear Dana,\n\nPlease note that our bank details have changed following an internal audit. The attached invoice #99482 is currently overdue. Please remit payment immediately to the new account listed on the invoice to avoid service suspension.\n\nConfirm receipt of this message and let us know when payment has been initiated.\n\nThank you,\nAccounts Receivable\nTech Solutions",
+      "body_html": "<div dir='ltr'><p>Dear Dana,</p><p>Please note that our bank details have changed following an internal audit. The attached invoice #99482 is currently overdue. Please remit payment immediately to the new account listed on the invoice to avoid service suspension.</p><p>Confirm receipt of this message and let us know when payment has been initiated.</p><p>Thank you,<br>Accounts Receivable<br>Tech Solutions</p></div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Invoice_99482.pdf",
+          "content_type": "application/pdf",
+          "size_bytes": 45210
+        }
+      ],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b5-9",
+    "label": "legit",
+    "category": "meeting-invite",
+    "note": "Legitimate meeting invite with a video conferencing link",
+    "email": {
+      "sender": {
+        "email": "calendar-invites@zoom.us",
+        "display_name": "Alex Smith via Zoom"
+      },
+      "reply_to": null,
+      "subject": "Alex Smith invited you to a Zoom meeting",
+      "body_text": "Alex Smith is inviting you to a scheduled Zoom meeting.\n\nTopic: Project Kickoff Sync\nTime: Oct 20, 2026 10:00 AM\n\nJoin Zoom Meeting\nhttps://zoom.us/j/12345678901\n\nMeeting ID: 123 4567 8901",
+      "body_html": "<div style='font-family: Arial, sans-serif;'>Alex Smith is inviting you to a scheduled Zoom meeting.<br><br><b>Topic:</b> Project Kickoff Sync<br><b>Time:</b> Oct 20, 2026 10:00 AM<br><br><a href='https://zoom.us/j/12345678901'>Join Zoom Meeting</a><br><br>Meeting ID: 123 4567 8901</div>",
+      "links": [
+        {
+          "text": "Join Zoom Meeting",
+          "href": "https://zoom.us/j/12345678901"
+        }
+      ],
+      "attachments": [],
+      "headers": {}
+    }
+  },
+  {
+    "id": "b5-10",
+    "label": "legit",
+    "category": "team-followup",
+    "note": "Short team follow up mentioning an attachment",
+    "email": {
+      "sender": {
+        "email": "emily.r@acmecorp.com",
+        "display_name": "Emily Rogers"
+      },
+      "reply_to": null,
+      "subject": "Action items from yesterday",
+      "body_text": "Hey Dana,\n\nJust sending over the action items we discussed.\n1. Finalize the slides for Monday.\n2. Send the updated vendor list to procurement.\n\nI've attached the draft presentation. Let's chat tomorrow if you need help.\n\nEmily",
+      "body_html": "<div dir='ltr'>Hey Dana,<br><br>Just sending over the action items we discussed.<br>1. Finalize the slides for Monday.<br>2. Send the updated vendor list to procurement.<br><br>I've attached the draft presentation. Let's chat tomorrow if you need help.<br><br>Emily</div>",
+      "links": [],
+      "attachments": [
+        {
+          "filename": "Q4_Draft_Presentation.pptx",
+          "content_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          "size_bytes": 2048500
+        }
+      ],
+      "headers": {}
+    }
+  }
+]
