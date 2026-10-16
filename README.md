@@ -300,7 +300,7 @@ python -m unittest discover -s tools/tests
 │   └── eval/              Independent 50-email test set, runner and results
 ├── assets/                Generated card images (animated score GIFs, icons), served from GitHub
 ├── tools/                 generate_assets.py (regenerates assets/) and its tests
-└── docs/                  System design diagram, evaluation report, demo script
+└── docs/                  System design diagram, evaluation report
 ```
 
 ## Known limitations
