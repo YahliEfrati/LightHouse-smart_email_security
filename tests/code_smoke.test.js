@@ -94,12 +94,13 @@ function services({ trusted = [], backend, scriptProps = {}, onFetch }) {
 const open = (ctx) => ctx.buildAddOn({ gmail: { accessToken: 't', messageId: 'm' } });
 const urlsOf = (calls) => calls.filter(([p]) => p === 'setImageUrl').map(([, a]) => a[0]);
 
-test('trusted sender + non-malicious scan -> calm trusted card (score 0)', () => {
+test('trusted sender + non-malicious scan -> calm trusted card (no score)', () => {
   const s = services({ trusted: ['corp.example'], backend: { body: { score: 50, verdict: 'Suspicious', reasoning: [] } } });
   const { ctx, calls } = load(s.globals);
   open(ctx);
   assert.ok(urlsOf(calls).some((u) => u.endsWith('hero_trusted.png')));
   assert.ok(strings(calls).includes('Remove from trusted'));
+  assert.ok(!strings(calls).some((t) => /RISK SCORE|\/ 100/.test(t)), 'the trusted card shows no score');
 });
 
 test('trusted sender + malicious scan -> warning result card, no trust button', () => {

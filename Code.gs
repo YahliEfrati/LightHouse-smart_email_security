@@ -160,7 +160,7 @@ function buildAddOn(e) {
       1800
     );
 
-    // Trusted sender: calm "0" card, unless the scan says the email is dangerous.
+    // Trusted sender: calm green card (no score shown), unless the scan says the email is dangerous.
     if (trusted && stateForResult(result) !== 'malicious') {
       return [buildTrustedSenderCard(email)];
     }
@@ -764,12 +764,6 @@ function buildTrustedSenderCard(email) {
   const view = presentationFor('trusted');
   const section = CardService.newCardSection()
     .addWidget(CardService.newImage().setImageUrl(assetUrl(HERO_TRUSTED_FILE)).setAltText('Trusted sender \u2014 risk 0'))
-    .addWidget(
-      CardService.newDecoratedText()
-        .setTopLabel('RISK SCORE')
-        .setText('<font color="' + STATE_COLORS.safe + '"><b>0</b></font> / 100')
-        .setBottomLabel('Trusted sender')
-    )
     .addWidget(
       CardService.newTextParagraph().setText(
         '<b>' + safeText(email.senderDisplayName || email.senderEmail, 80) + '</b> (' +
