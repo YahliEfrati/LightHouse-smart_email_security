@@ -211,7 +211,7 @@ Each of these came from a real false positive or a test case, and each has a reg
 | Scope | Why |
 |---|---|
 | `gmail.addons.execute` | Required for any Gmail add-on to run. |
-| `gmail.addons.current.message.readonly` | Read **only the message the user has open**: never the inbox, never other threads. |
+| `gmail.addons.current.message.readonly` | Read **only the message the user has open** (content and headers, including Gmail's SPF/DKIM/DMARC result): never the inbox, never other threads. |
 | `script.external_request` | Call our backend. |
 
 No `gmail.readonly`, no `gmail.modify`. If the add-on misbehaves, the blast radius is one open email.

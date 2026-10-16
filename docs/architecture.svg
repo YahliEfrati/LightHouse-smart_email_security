@@ -26,7 +26,7 @@
   <text x="62" y="267" font-size="12.5" fill="#2F3A41">• Presentation.gs — pure helpers (unit-tested in Node)</text>
   <text x="62" y="291" font-size="12.5" fill="#2F3A41">• Reads only the open message (current.message.readonly)</text>
   <text x="62" y="312" font-size="12.5" fill="#2F3A41">• Extracts sender, Reply-To, subject, bodies, links,</text>
-  <text x="73" y="330" font-size="12.5" fill="#2F3A41">attachment metadata (never file bytes)</text>
+  <text x="73" y="330" font-size="12.5" fill="#2F3A41">attachment metadata (never bytes), SPF/DKIM/DMARC result</text>
   <text x="62" y="354" font-size="12.5" fill="#2F3A41">• Trusted-contact impersonation check (local)</text>
   <text x="62" y="375" font-size="12.5" fill="#2F3A41">• "Check the links": shows real hosts, never visits them</text>
   <text x="62" y="396" font-size="12.5" fill="#2F3A41">• Escapes every string it renders (attacker text)</text>
@@ -71,7 +71,7 @@
 
   <rect x="750" y="262" width="405" height="150" rx="8" fill="#FFFFFF" stroke="#0B3D59" stroke-width="1.4"/>
   <text x="767" y="285" font-size="15" font-weight="700" fill="#0B3D59">Analyze — 5 analyzers, each one vector</text>
-  <text x="767" y="309" font-size="12.5" fill="#2F3A41">• Header — brand impersonation, typosquats, Reply-To</text>
+  <text x="767" y="309" font-size="12.5" fill="#2F3A41">• Header — look-alikes, typosquats, Reply-To, SPF/DKIM/DMARC</text>
   <text x="767" y="330" font-size="12.5" fill="#2F3A41">• Content — credential requests, pressure, obfuscation</text>
   <text x="767" y="351" font-size="12.5" fill="#2F3A41">• Payment request — BEC: money + pressure / personal mailbox</text>
   <text x="767" y="372" font-size="12.5" fill="#2F3A41">• Links — text vs. real site, IPs, shorteners, look-alikes</text>
