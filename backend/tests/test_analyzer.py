@@ -457,3 +457,29 @@ def test_mailchimp_newsletter_from_screenshot_is_not_malicious():
     )
     score, verdict, findings = EmailRiskAnalyzer().analyze(email)
     assert verdict == "Safe", (score, [f.rule for f in findings])
+
+
+# --------------------------------------------------------------------------- #
+# punycode_lookalike_domain (link)
+# --------------------------------------------------------------------------- #
+
+
+def _lookalike_findings(*hrefs: str):
+    links = [LinkInfo(text="Click here", href=h) for h in hrefs]
+    return [f for f in LinkAnalyzer().analyze(make_email(links=links)) if f.rule == "punycode_lookalike_domain"]
+
+
+@pytest.mark.parametrize("href", ["https://xn--pypal-4ve.com/login", "https://www.xn--80ak6aa92e.com/", "https://раypal.com/"])
+def test_punycode_lookalike_detected(href):
+    found = _lookalike_findings(href)
+    assert len(found) == 1
+    assert (found[0].category, found[0].weight) == ("link", 20)
+
+
+@pytest.mark.parametrize("href", ["https://paypal.com/", "https://max-xn--a.example.com/", "https://example.com/xn--path"])
+def test_punycode_lookalike_not_fired_on_ascii_hosts(href):
+    assert _lookalike_findings(href) == []
+
+
+def test_punycode_lookalike_fires_once_per_message():
+    assert len(_lookalike_findings("https://xn--pypal-4ve.com/", "https://xn--80ak6aa92e.com/")) == 1

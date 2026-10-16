@@ -285,3 +285,15 @@ test('Reply-To is sent to the backend as a bare address, without the display nam
   open(ctx);
   assert.strictEqual(sent.reply_to, 'info@tlvsalon.com');
 });
+
+test('an untrusted sender posing as a trusted contact gets a raised score and a clear finding', () => {
+  const s = services({ trusted: ['ceo@acmecorp.example'], backend: { body: { score: 10, verdict: 'Safe', reasoning: [] } } });
+  const base = s.globals.GmailApp.getMessageById();
+  s.globals.GmailApp.getMessageById = () => ({ ...base, getFrom: () => 'CEO <ceo@acmec0rp.example>' });
+  const { ctx, calls } = load(s.globals);
+  open(ctx);
+  const texts = strings(calls);
+  assert.ok(texts.includes('Poses as someone you trust'));
+  assert.ok(texts.some((t) => /<b>50<\/b><\/font> \/ 100/.test(t)), 'score raised from 10 to 50');
+  assert.ok(urlsOf(calls).some((u) => u.endsWith('hero_50.gif')));
+});

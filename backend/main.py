@@ -29,7 +29,8 @@ Run instructions
 
        uvicorn main:app --reload --port 8000
 
-4. Interactive docs are then available at http://127.0.0.1:8000/docs
+4. Interactive docs (off by default, the API sits behind a public tunnel):
+       set LIGHTHOUSE_DOCS=1 before starting, then open http://127.0.0.1:8000/docs
 
 5. Example request:
 
@@ -52,6 +53,7 @@ Run tests with:  pytest
 from __future__ import annotations
 
 import logging
+import os
 import secrets
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -94,11 +96,18 @@ def require_api_key(x_lighthouse_key: str = Header(default="")) -> None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
 
+# The API is reachable through a public tunnel: don't publish its schema to strangers by default.
+# Set LIGHTHOUSE_DOCS=1 to get /docs and /openapi.json while developing locally.
+_docs_enabled = os.getenv("LIGHTHOUSE_DOCS") == "1"
+
 app = FastAPI(
     lifespan=lifespan,
     title="Malicious Email Scorer API",
     description="Local, explainable heuristic scoring of email maliciousness for the Gmail Security Add-on.",
     version="1.0.0",
+    docs_url="/docs" if _docs_enabled else None,
+    redoc_url="/redoc" if _docs_enabled else None,
+    openapi_url="/openapi.json" if _docs_enabled else None,
 )
 
 # A single, stateless, reusable instance of the analysis pipeline.

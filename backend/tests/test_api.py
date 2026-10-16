@@ -109,3 +109,8 @@ def test_health_stays_open_and_minimal():
     resp = anonymous_client.get("/health")
     assert resp.status_code == 200
     assert resp.json() == {"status": "ok"}
+
+
+def test_api_docs_are_not_public_by_default():
+    for path in ("/docs", "/redoc", "/openapi.json"):
+        assert client.get(path).status_code == 404, path

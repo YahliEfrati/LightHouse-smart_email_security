@@ -135,10 +135,12 @@ function buildAddOn(e) {
     const trusted = isTrustedSender(email.senderEmail);
 
     // Trusted senders are still scanned silently: a forged "trusted" address must not bypass the checks.
-    const result = callBackend(email);
-    if (result.error) {
+    const scanned = callBackend(email);
+    if (scanned.error) {
       return [buildNotScannedCard()];
     }
+    // Checked here, not in the backend, so the user's contact list never leaves Google.
+    const result = applyTrustedLookalike(scanned, email.senderEmail, email.senderDisplayName, getTrustedSenders());
 
     // Cache the full result (including reasoning) so the "details" card can
     // be rebuilt on a separate navigation round-trip without re-sending data.
@@ -444,6 +446,7 @@ function materialIconImage(iconName) {
 const RULE_WISDOM = {
   typosquat_domain: "The sender's address looks very similar to a known brand. Let's be careful here.",
   display_name_domain_mismatch: "This sender's name doesn't quite match where the email actually came from.",
+  trusted_contact_impersonation: "This sender is dressed up as someone on your trusted list, but it isn't them. Don't act on it before checking with them another way.",
   reply_to_mismatch: 'A reply to this email would quietly travel somewhere different than where it came from.',
   spf_fail: "This email couldn't be verified as coming from where it claims. Worth a second look.",
   dkim_fail: "This email's digital signature didn't check out. Worth a second look.",
@@ -457,6 +460,7 @@ const RULE_WISDOM = {
   ip_literal_host: 'One of the links points to a bare numeric address instead of a normal website name — unusual for legitimate mail.',
   url_shortener: "A link here hides behind a shortener, so its true destination isn't visible at a glance.",
   high_entropy_domain: 'One of the links uses a domain name that looks randomly generated, which is unusual for a trustworthy site.',
+  punycode_lookalike_domain: 'A link uses letters from another alphabet that can look exactly like a familiar website name.',
   suspicious_tld: 'One of the links ends in a web address ending (like .top or .xyz) that scammers favor because it is cheap and rarely checked.',
   double_extension: "This attachment wears two file extensions like a disguise — a classic trick to sneak a program past a quick glance.",
   dangerous_extension: 'This attachment is a program or script file, which can run code on your device if opened.',

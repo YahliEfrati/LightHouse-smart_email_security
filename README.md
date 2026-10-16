@@ -25,6 +25,36 @@ and shows the user a maliciousness score, verdict, and reasoning.
 The lighthouse icon changes beam color with the verdict, and the gauge fades green → amber →
 red along the backend's thresholds (35 suspicious, 70 malicious).
 
+## Architecture
+
+```mermaid
+flowchart LR
+  subgraph Gmail["Gmail (Google's cloud)"]
+    U([User opens an email]) --> A["Apps Script add-on<br/>Code.gs + Presentation.gs"]
+    A <--> P[("UserProperties<br/>trusted list")]
+    A <--> C[("CacheService<br/>last result, 30 min")]
+  end
+  A -- "HTTPS POST /api/v1/analyze<br/>X-Lighthouse-Key header<br/>parsed fields only" --> N["ngrok tunnel"]
+  N --> B
+  subgraph Laptop["Backend (local, no outbound calls)"]
+    B["FastAPI main.py<br/>auth + Pydantic limits"] --> E["EmailRiskAnalyzer<br/>4 analyzers → capped score"]
+  end
+  B -- "score, verdict, reasoning[]" --> A
+  G[("GitHub raw<br/>card images / GIFs")] -.-> A
+```
+
+**Who does what, and why**
+
+| Add-on (Apps Script) | Backend (FastAPI) |
+|---|---|
+| Reads **only the open message** (`current.message.readonly`) and extracts sender, Reply-To, subject, bodies, links (text + href) and attachment **metadata** — never file bytes. | Treats every field as attacker-controlled: Pydantic caps every string and list, so oversized payloads get `422`. |
+| Trusted senders, caching, the "Check the links" inspector and all UI. These need Gmail context or user data, which never leave Google. | All scoring: four single-vector analyzers plus a per-category-capped aggregator. Pure Python, unit-tested, easy to extend. |
+| Escapes everything it renders (`safeText`), because finding descriptions quote attacker text. | Never fetches, executes or renders input. No third-party lookups, no LLM, no persistence. |
+| Any failure (backend down, `401`, timeout, malformed JSON) shows a grey **Not scanned** card, which never looks safe. | Shared-secret auth in constant time; a rejection never says why. |
+
+The split follows the data: Gmail access stays in Google's sandbox with the narrowest scope, and the
+part that needs real code (rules, tests, iteration) lives in a normal Python service.
+
 ## Security posture: principle of least privilege
 
 `appsscript.json` requests only the three scopes strictly required:
@@ -49,6 +79,7 @@ blast radius is a single opened email, not the user's whole mailbox.
 ├── assets/                 Generated: 4 icons + one color-band image per score 0-100, animated GIF (served via GitHub raw)
 ├── tools/generate_assets.py  Regenerates /assets  (python tools/generate_assets.py)
 ├── tests/                  Node tests for Presentation.gs and a CardService smoke test
+├── backend/                FastAPI service: main.py (API + auth), models.py (input limits), analyzer.py (rules) — see backend/README.md
 └── docs/                   Design spec, implementation plan, demo script
 ```
 
@@ -109,6 +140,7 @@ Category caps: `header` 50 · `content` 35 · `link` 40 · `attachment` 50.
 |---|---|---|---|
 | `typosquat_domain` | header | 40 | Sender claims a known brand from a look-alike domain (`paypa1.com`) |
 | `display_name_domain_mismatch` | header | 35 | Display name/address names a brand, but the domain isn't one of its domains |
+| `trusted_contact_impersonation` | header | 40 | **New, runs in the add-on.** An untrusted sender poses as someone on *your* trusted list: the display name shows a trusted address, or the domain is a near-copy of a trusted contact's (`acmec0rp.com`, `acme-corp.com`). Free-mail domains are never compared |
 | `reply_to_mismatch` | header | 15 | Reply-To domain differs from the From domain |
 | `spf_fail` / `dkim_fail` / `dmarc_fail` | header | 20 each | `Authentication-Results` reports a failure (see Known limitations) |
 | `urgency_financial_proximity` | content | 20 (max 2) | Urgency phrase within ~120 chars of a money/credential term |
@@ -120,6 +152,7 @@ Category caps: `header` 50 · `content` 35 · `link` 40 · `attachment` 50.
 | `ip_literal_host` | link | 20 | Link to a bare IP address |
 | `url_shortener` | link | 10 | Known shortener hides the destination |
 | `high_entropy_domain` | link | 15 | Random-looking (DGA-style) domain label |
+| `punycode_lookalike_domain` | link | 20 | **New.** A link host with punycode (`xn--`) or raw non-Latin letters, the homograph trick (`раураl.com` in Cyrillic). Alone it stays below Suspicious, since real non-Latin domains exist. Once per message |
 | `suspicious_tld` | link | 10 | **New.** A link's host ends in a TLD commonly abused for phishing (`LinkAnalyzer.SUSPICIOUS_TLDS`: `.top .xyz .click .gq .tk .ml .cf .ga .zip .mov .work .rest .support`). Normal TLDs (`.com`, `.org`, `.io`, `.co.il`, …) never fire. Once per message |
 | `double_extension` | attachment | 45 | `invoice.pdf.exe` |
 | `dangerous_extension` | attachment | 35 | Executable/script attachment (`.exe`, `.js`, …) |
@@ -128,6 +161,27 @@ Category caps: `header` 50 · `content` 35 · `link` 40 · `attachment` 50.
 
 Every rule also has a one-line card label (`RULE_SHORT_LABELS` in `Presentation.gs`) and a longer
 details-card sentence (`RULE_WISDOM` in `Code.gs`).
+
+## Key decisions & trade-offs
+
+| Decision | Why | What it costs |
+|---|---|---|
+| **Explainable heuristics, not ML or an LLM** | Every point on the score maps to a named rule with a reason the user can read. Runs offline, deterministic, testable. | Misses novel phrasing a model might catch. Weights are hand-tuned, not learned. |
+| **Nothing leaves the backend** (no URL reputation, no sandboxing, no LLM API) | Email content is sensitive; sending it to third parties is a privacy and compliance risk. | No knowledge of known-bad URLs or domain age. |
+| **Narrowest Gmail scope** (`current.message.readonly`) | Blast radius of a bug or compromise is one open email. | The add-on cannot read raw headers, so the SPF/DKIM/DMARC rules exist but cannot fire today. |
+| **Per-category caps** (header 50, content 35, link 40, attachment 50) | Many weak signals in *one* vector should not alone mean "Malicious"; independent vectors should add up. | A truly single-vector attack (e.g. only a credential lure) can stay below 70. |
+| **Impersonation check runs in the add-on** | Comparing senders against the user's trusted list needs that list; keeping the check client-side means the contact list never leaves Google. | A small piece of scoring lives in JS (adds 40, recomputes the verdict). A test keeps its thresholds equal to the backend's. |
+| **Trusted senders are still scanned** | A forged "trusted" From must not be a free pass; a Malicious verdict overrides trust. | One backend call even for known senders. |
+| **"Check the links" never visits a link** | Visiting fires tracking pixels and can trigger exploits. | Shows where a link points, not whether the site is safe; says so on the card. |
+| **Pre-rendered images and GIFs** | `CardService` cannot draw custom graphics or run code; images are the only way to show a gauge or animation. | 101 GIFs (~17 MB) in the repo; changing thresholds means regenerating them. |
+| **Shared secret + ngrok for the demo** | Simple, keeps strangers off a public tunnel. | Static key, no rate limiting; production would use a Google OIDC identity token. |
+
+**Iterating on real mail.** Testing on a real inbox surfaced a false positive: a Mailchimp newsletter
+scored 70 (Malicious). Two causes. Reply-To arrived as `Name <info@tlvsalon.com>`, so the domain parsed
+as `tlvsalon.com>`. And every newsletter link goes through a click tracker (`us.list-manage.com`), so it
+looked like a text/href mismatch. Both are fixed and covered by a regression test that rebuilds that
+email (now Safe). The lesson is in the Roadmap: build a labelled set of real mail to measure the
+false-positive rate before tuning weights further.
 
 ## Setup & local testing
 
@@ -190,6 +244,8 @@ lets users add and remove addresses they know. The list lives in `PropertiesServ
 - The button adds the **full address** only. A bare domain can be added by hand, but **free-mail
   providers (gmail.com, outlook.com, …) are refused**, and are ignored even if stored.
 - The point of the feature is reducing false-positive fatigue, not skipping analysis.
+- The list also powers a protection: an *untrusted* sender that poses as a trusted contact (display name
+  showing their address, or a look-alike of their domain) gets `trusted_contact_impersonation` (+40).
 - The list lives on its own card (homepage button or ⋮ menu): newest first under a count, long addresses
   wrap, and past 5 entries it collapses behind Gmail's "Show more". It is capped at 100 entries, which keeps
   the card scannable and the stored JSON well under `PropertiesService`'s ~9 KB per-value limit.
@@ -226,3 +282,5 @@ lets users add and remove addresses they know. The list lives in `PropertiesServ
 - **SPF/DKIM/DMARC:** evaluate authentication results from the message headers. This needs a broader
   scope than the add-on requests today, so it is off by design for now.
 - **Backend hardening:** rate limiting, and key rotation for the shared secret.
+- **Measure, then tune:** a small labelled corpus (own inbox + public phishing samples) and a script
+  that reports precision and false-positive rate per rule, so weight changes are evidence-based.

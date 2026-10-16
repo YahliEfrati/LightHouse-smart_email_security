@@ -376,12 +376,13 @@ class LinkAnalyzer(Analyzer):
 
     SHORTENERS: Set[str] = {
         "bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly", "is.gd", "buff.ly",
-        "rebrand.ly", "cutt.ly", "shorturl.at",
+        "rebrand.ly", "cutt.ly", "shorturl.at", "tiny.cc", "rb.gy",
     }
+    # SHORTENERS above: keep in sync with SHORTENER_DOMAINS in Presentation.gs (tests/test_shared_lists.py).
     #: Click-tracking domains of mainstream email/newsletter services. Legitimate newsletters wrap
     #: *every* link in these, so "text says eventbrite.com, link goes to list-manage.com" is normal
     #: and must not count as a text/href mismatch. Matched on the host or any of its subdomains.
-    #: Keep in sync with EMAIL_TRACKER_DOMAINS in Presentation.gs (the "Check the links" card).
+    #: Keep in sync with EMAIL_TRACKER_DOMAINS in Presentation.gs (tests/test_shared_lists.py).
     ESP_CLICK_TRACKERS: Set[str] = {
         "list-manage.com",  # Mailchimp
         "mailchi.mp",  # Mailchimp
@@ -417,6 +418,7 @@ class LinkAnalyzer(Analyzer):
         findings: List[Finding] = []
         mismatches_reported = 0
         suspicious_tld_reported = False
+        lookalike_reported = False
         for link in email.links:
             href_domain = self._domain(link.href)
             if not href_domain:
@@ -459,6 +461,19 @@ class LinkAnalyzer(Analyzer):
                     )
                 )
 
+            if not lookalike_reported and self._is_lookalike_host(href_domain):
+                findings.append(
+                    self._finding(
+                        rule="punycode_lookalike_domain",
+                        weight=20,
+                        description=(
+                            f"Link host '{href_domain}' uses non-Latin or punycode (xn--) characters, which can "
+                            "make a fake domain look identical to a real one (homograph attack)."
+                        ),
+                    )
+                )
+                lookalike_reported = True
+
             tld = href_domain.rsplit(".", 1)[-1]
             if not suspicious_tld_reported and "." in href_domain and tld in self.SUSPICIOUS_TLDS:
                 findings.append(
@@ -478,6 +493,11 @@ class LinkAnalyzer(Analyzer):
                 findings.append(entropy_finding)
 
         return findings
+
+    @staticmethod
+    def _is_lookalike_host(host: str) -> bool:
+        """Punycode label (xn--) or raw non-ASCII characters in the host."""
+        return any(label.startswith("xn--") for label in host.split(".")) or not host.isascii()
 
     def _is_click_tracker(self, host: str) -> bool:
         return any(host == d or host.endswith("." + d) for d in self.ESP_CLICK_TRACKERS)

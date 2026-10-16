@@ -106,7 +106,7 @@ test('every backend rule has a short one-line label; unknown rules get a fallbac
     'urgency_financial_proximity', 'base64_obfuscation', 'excessive_url_encoding', 'html_entity_obfuscation',
     'link_text_href_mismatch', 'ip_literal_host', 'url_shortener', 'high_entropy_domain', 'double_extension',
     'dangerous_extension', 'macro_enabled_with_pressure_context', 'macro_enabled_attachment',
-    'credential_request_language', 'suspicious_tld'];
+    'credential_request_language', 'suspicious_tld', 'punycode_lookalike_domain', 'trusted_contact_impersonation'];
   rules.forEach((r) => {
     const label = p.shortLabelForRule(r);
     assert.notStrictEqual(label, 'Something unusual', r);
@@ -272,4 +272,46 @@ test('findingsByRule merges one rule into one entry, keeps every description and
   ]);
   assert.deepStrictEqual(m.map((x) => [x.rule, x.descriptions]), [['link_text_href_mismatch', ['a', 'c']], ['url_shortener', ['b']]]);
   assert.deepStrictEqual(p.findingsByRule(undefined), []);
+});
+
+// ---- trusted-contact impersonation ----
+test('trustedLookalike: display name showing a trusted address from another sender', () => {
+  const hit = p.trustedLookalike('x@evil.example', 'alice@corp.example', ['alice@corp.example']);
+  assert.deepStrictEqual(hit, { entry: 'alice@corp.example', how: 'name' });
+});
+
+test('trustedLookalike: near-copy of a trusted contact domain', () => {
+  const t = ['alice@acmecorp.example'];
+  for (const s of ['alice@acmec0rp.example', 'bill@acme-corp.example', 'bill@acmecorp.examp1e', 'a@acmecorq.example']) {
+    assert.strictEqual(p.trustedLookalike(s, 'Alice', t) && p.trustedLookalike(s, 'Alice', t).how, 'domain', s);
+  }
+});
+
+test('trustedLookalike: no false alarms for the contact itself, colleagues, strangers and free mail', () => {
+  const t = ['alice@acmecorp.example', 'friend@gmail.com', 'partner.example'];
+  assert.strictEqual(p.trustedLookalike('alice@acmecorp.example', 'Alice', t), null, 'the trusted sender itself');
+  assert.strictEqual(p.trustedLookalike('bob@acmecorp.example', 'Bob', t), null, 'same company, not on the list: no lookalike');
+  assert.strictEqual(p.trustedLookalike('bob@news.acmecorp.example', 'Bob', t), null, 'subdomain of the same site');
+  assert.strictEqual(p.trustedLookalike('someone@totally-different.example', 'Someone', t), null);
+  assert.strictEqual(p.trustedLookalike('x@mail.com', 'X', t), null, 'mail.com vs gmail.com is not an attack');
+  assert.strictEqual(p.trustedLookalike('x@abc.example', 'X', ['y@abd.example']), null, 'short domains need an exact look-alike');
+  assert.strictEqual(p.trustedLookalike('', 'X', t), null);
+  assert.strictEqual(p.trustedLookalike('x@y.example', 'X', null), null);
+});
+
+test('applyTrustedLookalike adds a header finding, raises the score by 40 and recomputes the verdict', () => {
+  const base = { score: 10, verdict: 'Safe', reasoning: [{ category: 'link', rule: 'url_shortener', weight: 10 }] };
+  const copy = JSON.stringify(base);
+  const r = p.applyTrustedLookalike(base, 'ceo@acmec0rp.example', 'CEO', ['ceo@acmecorp.example']);
+  assert.strictEqual(r.score, 50);
+  assert.strictEqual(r.verdict, 'Suspicious');
+  assert.strictEqual(r.reasoning.length, 2);
+  assert.deepStrictEqual([r.reasoning[1].rule, r.reasoning[1].category, r.reasoning[1].weight], ['trusted_contact_impersonation', 'header', 40]);
+  assert.strictEqual(JSON.stringify(base), copy, 'input not mutated');
+  assert.strictEqual(p.applyTrustedLookalike({ score: 90, verdict: 'Malicious', reasoning: [] }, 'x@evil.example', 'alice@corp.example', ['alice@corp.example']).score, 100);
+  assert.strictEqual(p.applyTrustedLookalike(base, 'x@other.example', 'X', ['ceo@acmecorp.example']), base, 'no hit: same object');
+});
+
+test('verdictForScore mirrors the backend thresholds', () => {
+  assert.deepStrictEqual([0, 34, 35, 69, 70, 100].map(p.verdictForScore), ['Safe', 'Safe', 'Suspicious', 'Suspicious', 'Malicious', 'Malicious']);
 });

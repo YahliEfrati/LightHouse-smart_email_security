@@ -96,7 +96,8 @@ pip install -r requirements.txt
 # 3. Start the API
 uvicorn main:app --reload --port 8000
 
-# 4. Interactive docs at http://127.0.0.1:8000/docs
+# 4. Interactive docs: off by default (the API sits behind a public tunnel).
+#    $env:LIGHTHOUSE_DOCS = "1" before step 3, then open http://127.0.0.1:8000/docs
 ```
 
 ### Authentication
@@ -148,10 +149,10 @@ pip install -r requirements-dev.txt
 pytest -v
 ```
 
-73 tests cover every heuristic rule in isolation (including that
+95 tests cover every heuristic rule in isolation (including that
 legitimate/benign emails are *not* flagged), the full scoring/verdict
 aggregation, and the HTTP layer end-to-end (including malformed and
-oversized-payload rejection with `422`). All 73 currently pass; the
+oversized-payload rejection with `422`). All 95 currently pass; the
 real server was also manually smoke-tested end-to-end via a standalone
 `uvicorn` process hitting `/health` and `/api/v1/analyze` over HTTP.
 

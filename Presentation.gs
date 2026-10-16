@@ -165,6 +165,89 @@ function isTrustedBy(senderEmail, trustedList) {
   });
 }
 
+// --------------------------------------------------------------------------
+// Trusted-contact impersonation (runs in the add-on so the contact list never leaves Google)
+// --------------------------------------------------------------------------
+
+/** Mirrors EmailRiskAnalyzer.VERDICT_THRESHOLDS (backend/tests/test_shared_lists.py checks it). */
+const VERDICT_THRESHOLDS = { malicious: 70, suspicious: 35 };
+/** Same weight as the backend's typosquat_domain: a look-alike of someone you trust is as strong a signal. */
+const IMPERSONATION_WEIGHT = 40;
+
+function verdictForScore(score) {
+  const n = normalizeScore(score);
+  return n >= VERDICT_THRESHOLDS.malicious ? 'Malicious' : n >= VERDICT_THRESHOLDS.suspicious ? 'Suspicious' : 'Safe';
+}
+
+/** Levenshtein distance, stopping early once it exceeds `max`. */
+function editDistance(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    let best = i;
+    for (let j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      best = Math.min(best, cur[j]);
+    }
+    if (best > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+
+/** Collapses common look-alike swaps (c0rp -> corp, rn -> m, hyphens) before comparing domains. */
+function lookalikeKey(domain) {
+  return domain.replace(/rn/g, 'm').replace(/vv/g, 'w').replace(/0/g, 'o').replace(/[1|]/g, 'l')
+    .replace(/3/g, 'e').replace(/5/g, 's').replace(/-/g, '');
+}
+
+/**
+ * Does this (untrusted) sender pose as someone on the trusted list? Returns { entry, how } or null.
+ * how: 'name'   - the display name shows a trusted address but the mail comes from another one;
+ *      'domain' - the sending domain is a near-copy of a trusted contact's domain (c0rp.example).
+ * Free-mail domains are never compared (mail.com vs gmail.com is not an attack).
+ */
+function trustedLookalike(senderEmail, displayName, trustedList) {
+  const sender = String(senderEmail || '').toLowerCase().trim();
+  if (!sender || !Array.isArray(trustedList) || isTrustedBy(sender, trustedList)) return null;
+  const name = String(displayName || '').toLowerCase();
+  const senderSite = registrableDomain(sender.split('@')[1] || '');
+  for (let i = 0; i < trustedList.length; i++) {
+    const entry = String(trustedList[i]).toLowerCase().trim();
+    if (entry.indexOf('@') !== -1 && name.indexOf(entry) !== -1) return { entry: entry, how: 'name' };
+    const site = registrableDomain(entry.indexOf('@') !== -1 ? entry.split('@')[1] : entry);
+    if (!site || !senderSite || site === senderSite || isPublicMailDomain(site) || isPublicMailDomain(senderSite)) continue;
+    // Measure the name ("acmecorp"), not the whole domain: short names (abc vs abd) are different companies.
+    const nameLength = site.split('.')[0].length;
+    const limit = nameLength >= 10 ? 2 : 1;
+    if (lookalikeKey(site) === lookalikeKey(senderSite) || (nameLength >= 5 && editDistance(site, senderSite, limit) <= limit)) {
+      return { entry: entry, how: 'domain' };
+    }
+  }
+  return null;
+}
+
+/**
+ * Adds a trusted_contact_impersonation finding (and its weight) to a backend result when the sender poses
+ * as a trusted contact. Returns a new result; never mutates the input.
+ */
+function applyTrustedLookalike(result, senderEmail, displayName, trustedList) {
+  const hit = trustedLookalike(senderEmail, displayName, trustedList);
+  if (!hit) return result;
+  const description = hit.how === 'name'
+    ? 'The sender name shows your trusted contact ' + hit.entry + ', but the email really comes from ' + senderEmail + '.'
+    : 'The sender ' + senderEmail + ' looks like your trusted contact ' + hit.entry + ' but is a different address.';
+  const score = Math.min(100, normalizeScore(result.score) + IMPERSONATION_WEIGHT);
+  return Object.assign({}, result, {
+    score: score,
+    verdict: verdictForScore(score),
+    reasoning: (Array.isArray(result.reasoning) ? result.reasoning : []).concat([
+      { category: 'header', rule: 'trusted_contact_impersonation', weight: IMPERSONATION_WEIGHT, description: description },
+    ]),
+  });
+}
+
 /**
  * Upper bound on the trusted list. Keeps the card short enough to scan and the stored JSON far below
  * the ~9 KB per-value limit of PropertiesService.
@@ -190,6 +273,7 @@ const RULE_SHORT_LABELS = {
   typosquat_domain: 'Look-alike sender address',
   display_name_domain_mismatch: 'Sender name doesn\u2019t match address',
   reply_to_mismatch: 'Replies go somewhere else',
+  trusted_contact_impersonation: 'Poses as someone you trust',
   spf_fail: 'Sender not verified',
   dkim_fail: 'Signature check failed',
   dmarc_fail: 'Authenticity check failed',
@@ -203,6 +287,7 @@ const RULE_SHORT_LABELS = {
   url_shortener: 'Shortened link',
   high_entropy_domain: 'Random-looking link domain',
   suspicious_tld: 'Link to a risky web ending',
+  punycode_lookalike_domain: 'Look-alike letters in a link',
   double_extension: 'Disguised file extension',
   dangerous_extension: 'Program or script attached',
   macro_enabled_with_pressure_context: 'Macro file plus pressure',
@@ -313,7 +398,7 @@ function inspectLink(link) {
   if (isEmailTrackerHost(host)) status = 'tracker';
   else if (shownDomain && registrableDomain(shownDomain) !== real) status = 'mismatch';
   else if (isIpHost(host)) status = 'ip';
-  else if (host.split('.').some((label) => label.indexOf('xn--') === 0)) status = 'lookalike';
+  else if (host.split('.').some((label) => label.indexOf('xn--') === 0) || /[^\x00-\x7f]/.test(host)) status = 'lookalike';
   else if (SHORTENER_DOMAINS.indexOf(real) !== -1) status = 'shortener';
   return { status: status, host: host, shownDomain: shownDomain, shown: safeText(String(text == null ? '' : text).trim(), 60) };
 }
@@ -401,5 +486,6 @@ if (typeof module !== 'undefined') {
     topFinding, topFindings, sortFindings, checkStatuses, checkStripText, shortLabelForRule, RULE_SHORT_LABELS, safeText, checksPassed, CHECKS_PERFORMED, SCORE_LEGEND,
     hostOf, registrableDomain, domainInText, inspectLink, inspectLinks, linkSummaryText, linkRowText, linkHeadline, groupedFindings,
     trustedListView, MAX_TRUSTED_SENDERS, TRUSTED_VISIBLE_ROWS, findingsByRule, isEmailTrackerHost,
+    verdictForScore, editDistance, trustedLookalike, applyTrustedLookalike, VERDICT_THRESHOLDS,
   };
 }
