@@ -2,7 +2,8 @@
 
 Lighthouse is a Gmail add-on that scores the email you have open from 0 to 100, gives a clear verdict
 (**Safe**, **Suspicious** or **Malicious**) and explains *why* in plain language. A small FastAPI backend
-does the analysis with explainable, local heuristics: no email content is ever sent to a third party.
+does the analysis with explainable, local heuristics: no email content is sent to any analysis service,
+reputation lookup or LLM (the demo's tunnel is the one third party in the path; see [Security](#security)).
 
 <p align="center"><img src="assets/hero_85.gif" width="420" alt="Malicious result band: red, score gauge near the top"></p>
 
@@ -193,9 +194,17 @@ public, so it must not answer strangers (flooding, or using it as a free oracle 
 - The key is compared in constant time; a wrong or missing key gets `401` with a body that never says why.
 - API docs (`/docs`, `/openapi.json`) are off by default so the schema isn't published to strangers.
 
-**Privacy.** No email content goes to third parties: no URL reputation services, no LLM APIs. The
-trusted-contact list never leaves Google. Results are cached for 30 minutes in the user's own
-`CacheService` so the details card doesn't need a second scan.
+**Privacy.** No email content goes to analysis services: no URL reputation, no LLM APIs, and the backend
+makes no outbound calls. The trusted-contact list never leaves Google.
+
+**The one third party in the path (demo setup).** The add-on reaches the backend through an ngrok tunnel,
+and ngrok terminates TLS on its own servers, so it can technically see the fields being scanned. That is
+acceptable for a demo on test mail, and it is stated here rather than hidden. In production the backend would
+run on infrastructure we control (for example Cloud Run, in the same cloud as the add-on), reached over TLS
+end to end and authenticated with a Google-signed identity token instead of a static key.
+
+Results are cached for 30 minutes in the user's own `CacheService` so the details card doesn't need a
+second scan.
 
 ## Key decisions and trade-offs
 
@@ -210,7 +219,7 @@ trusted-contact list never leaves Google. Results are cached for 30 minutes in t
 | **"Check the links" never visits a link** | Visiting fires tracking pixels and can trigger exploits. | Shows where a link goes, not whether the site is safe; the card says so. |
 | **High precision on the red alarm** | Users ignore a tool that cries wolf; in a real inbox most mail is legitimate. | Some attacks get amber instead of red, or are missed (see Evaluation). |
 | **Pre-rendered images and GIFs** | Gmail cards can't draw graphics or run code; images are the only way to show a gauge or animation. | 101 GIFs (~17 MB) in the repo; changing thresholds means regenerating them. |
-| **Shared secret + ngrok** | Simple, and keeps strangers off a public tunnel. | Static key, no rate limiting; production would use a Google-signed identity token. |
+| **Shared secret + ngrok** | Simple, and keeps strangers off a public tunnel. | Static key, no rate limiting, and ngrok terminates TLS so it sits in the data path; production would self-host and use a Google-signed identity token. |
 
 ## Evaluation
 
@@ -347,6 +356,8 @@ python -m unittest discover -s tools/tests
 - **"Same site" uses a small built-in suffix list**, not the full Public Suffix List.
 - **QR codes (quishing) are not decoded.** Images are never sent to the backend, by design.
 - **No mailbox actions** (label, move to spam): they need `gmail.modify`.
+- **The tunnel is a third party in the data path.** ngrok terminates TLS, so it could see scanned fields.
+  Fine for a demo; production would self-host the backend (see [Security](#security)).
 - **One static API key**, no rate limiting or rotation yet.
 - **The tunnel URL is set by hand** in `Code.gs`.
 - **Changing the verdict thresholds** means regenerating the card images (`python tools/generate_assets.py`).

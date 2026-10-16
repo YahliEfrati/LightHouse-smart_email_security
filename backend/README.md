@@ -1,7 +1,8 @@
-# Malicious Email Scorer — Backend
+# Lighthouse — Backend (scoring API)
 
+The backend half of Lighthouse; the [main README](../README.md) covers the whole system.
 A local, explainable FastAPI service that scores the maliciousness of an
-email. It is the backend half of the Gmail Security Add-on: the add-on
+email: the add-on
 extracts the relevant fields from the currently open email (sender,
 subject, body, links, attachment metadata, a few headers), POSTs them
 here, and renders the returned `score`, `verdict`, and `reasoning` to
@@ -12,8 +13,9 @@ the user.
 * **Entirely local, no external calls.** Every signal is computed
   in-process from the fields the client sends. There are no outbound
   HTTP calls, no third-party threat-intel/reputation APIs, and no LLM
-  calls. This keeps email content from ever leaving the machine running
-  the backend and makes the service runnable fully offline/air-gapped.
+  calls. The service itself sends email content nowhere and can run fully
+  offline. (In the demo it is reached through an ngrok tunnel, which
+  terminates TLS and is therefore in the data path; see the main README.)
 * **Cross-vector heuristics, not keyword matching.** A single urgent
   word or a single link proves very little. The engine looks for
   *combinations* that are hard to produce by accident: an urgency
@@ -46,10 +48,12 @@ backend/
 ├── models.py      Pydantic request/response schemas (the untrusted-input boundary)
 ├── analyzer.py    OOP heuristic pipeline + scoring engine
 ├── config.py      API key creation/loading (backend/.env, git-ignored)
-├── eval/          independent 50-email test set + run_eval.py
+├── eval/          two independent 50-email sets (raw/ = development, holdout/) + run_eval.py
 ├── tests/
-│   ├── test_analyzer.py   unit tests per analyzer/rule
-│   └── test_api.py        HTTP-level tests via FastAPI's TestClient
+│   ├── test_analyzer.py       unit tests per analyzer/rule, incl. regressions from real mail
+│   ├── test_api.py            HTTP-level tests via FastAPI's TestClient (auth, limits, docs off)
+│   ├── test_config.py         API key creation and loading
+│   └── test_shared_lists.py   lists shared with the add-on stay identical
 ├── requirements.txt       runtime deps
 ├── requirements-dev.txt   + pytest/httpx for testing
 └── pytest.ini
@@ -129,16 +133,21 @@ Content-Type: application/json
 
 ### Example response
 
+The engine's actual output for the request above (descriptions shortened). The raw total is far above 100;
+each category is capped and the sum is clamped to 100.
+
 ```json
 {
   "score": 100,
   "verdict": "Malicious",
   "reasoning": [
-    {"category": "header", "rule": "typosquat_domain", "weight": 40, "description": "..."},
+    {"category": "header", "rule": "display_name_domain_mismatch", "weight": 35, "description": "..."},
     {"category": "header", "rule": "reply_to_mismatch", "weight": 15, "description": "..."},
     {"category": "header", "rule": "spf_fail", "weight": 20, "description": "..."},
     {"category": "header", "rule": "dkim_fail", "weight": 20, "description": "..."},
     {"category": "content", "rule": "urgency_financial_proximity", "weight": 20, "description": "..."},
+    {"category": "content", "rule": "urgency_financial_proximity", "weight": 20, "description": "..."},
+    {"category": "content", "rule": "credential_request_language", "weight": 15, "description": "..."},
     {"category": "link", "rule": "link_text_href_mismatch", "weight": 25, "description": "..."},
     {"category": "attachment", "rule": "double_extension", "weight": 45, "description": "..."}
   ]
@@ -169,5 +178,6 @@ real server was also manually smoke-tested end-to-end via a standalone
 * Attachment analysis is metadata-only; it cannot detect malicious
   macro *content* inside a `.docm`, only the presence of the risky file
   type in a risky context.
-* Entropy/typosquat thresholds were tuned by hand against a handful of
-  examples (see `tests/test_analyzer.py`) rather than a labeled corpus.
+* Weights and thresholds were tuned by hand. They have been measured on
+  two LLM-written labelled sets (see Evaluation in the main README), not
+  yet on a large real-world corpus.
