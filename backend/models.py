@@ -1,4 +1,4 @@
-"""Pydantic schemas for the Malicious Email Scorer API.
+"""Pydantic schemas for the Lighthouse scoring API.
 
 These models define the contract between the Gmail Add-on client and this
 backend. Every field originates from an email (sender, subject, body,

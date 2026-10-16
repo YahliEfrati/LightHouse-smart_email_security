@@ -1,4 +1,4 @@
-"""Malicious Email Scorer API.
+"""Lighthouse scoring API.
 
 A local-only FastAPI service used by the Gmail Add-on to score the
 maliciousness of the currently open email. The add-on (or any other
@@ -102,7 +102,7 @@ _docs_enabled = os.getenv("LIGHTHOUSE_DOCS") == "1"
 
 app = FastAPI(
     lifespan=lifespan,
-    title="Malicious Email Scorer API",
+    title="Lighthouse scoring API",
     description="Local, explainable heuristic scoring of email maliciousness for the Gmail Security Add-on.",
     version="1.0.0",
     docs_url="/docs" if _docs_enabled else None,
