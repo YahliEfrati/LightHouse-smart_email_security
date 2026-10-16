@@ -98,7 +98,11 @@ The card's loudness matches the risk: safe email stays quiet so a dangerous one 
 | **Trusted sender** | Calm green card with no score, even if the scan came out Suspicious: the sender gets the benefit of the doubt. If the scan says Malicious, the red card appears anyway, with a line saying the sender is trusted. |
 | **Not scanned** | Grey card: "use your usual caution". Never looks like a safe result. |
 
-The band at the top is an animated lighthouse beam that sweeps twice and stops. Below it:
+The band at the top is an animated lighthouse beam that sweeps twice and stops:
+
+<p align="center"><img src="assets/hero_85.gif" width="420" alt="Malicious result band: red, the beam sweeps across, score gauge near the top"></p>
+
+Below the band:
 
 - **View details** groups every finding by category, each with a plain-language explanation and the
   technical evidence (the actual domains, file names, phrases), followed by "What we checked" so a clean
