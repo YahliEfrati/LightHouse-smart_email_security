@@ -12,8 +12,9 @@ does the analysis with explainable, local heuristics: no email content is ever s
 - **24 detection rules** across sender identity, wording, payment requests (CEO / vendor fraud), links and
   attachments, plus a personal check against *your* trusted contacts.
 - **Least privilege.** The add-on can read only the message that is open, never the mailbox.
-- **Measured.** On an independent 50-email test set: 15 of 20 malicious emails caught, 0 of 30 legitimate
-  emails flagged ([details and caveats](#evaluation)).
+- **Measured blind.** On 50 emails written by a separate model that knew nothing about the rules: 10 of 20
+  malicious emails caught, 0 of 30 legitimate emails flagged. The misses drove the next rules
+  ([details](#evaluation)).
 - **Tested.** 153 backend tests, 59 add-on tests, 7 asset-generator tests.
 
 ## Contents
@@ -217,19 +218,22 @@ that was told nothing about the rules**, so the set isn't shaped by them. Data i
 run `python eval/run_eval.py` from `backend/`. Full write-up (Hebrew):
 [docs/Lighthouse_Evaluation_Report_HE.docx](docs/Lighthouse_Evaluation_Report_HE.docx).
 
-| Run | Malicious caught (of 20) | Legitimate flagged (of 30) | Reached Malicious |
-|---|---|---|---|
-| First run | 10 (50%) | 0 | 3 |
-| After adding payment-fraud rules and file types | 15 (75%) | 0 | 5 |
+**The measurement (blind run):**
 
-What we learned:
+| Malicious caught (of 20) | Legitimate flagged (of 30) | Reached Malicious |
+|---|---|---|
+| 10 (50%) | 0 (0%) | 3 |
 
-- **The misses were a coverage gap, not a threshold problem.** 6 of the 10 first-run misses scored 0: no
-  rule fired at all. Lowering the threshold to 15 would have caught 4 more at the cost of 7 false alarms.
-  The fix was new signals (payment fraud with no links; HTML and disk-image attachments).
-- **Read the second row with care.** Those rules were written after seeing the misses, so a gain on the same
-  set is expected. What it does show is that no legitimate email's score changed. A fresh set with hard
-  legitimate cases (real vendor invoices, a manager asking for a transfer) is the next step.
+What we learned, and what we did about it:
+
+- **The misses were a coverage gap, not a threshold problem.** 6 of the 10 misses scored 0: no rule fired
+  at all. Lowering the threshold to 15 would have caught 4 more at the cost of 7 false alarms. The fix was
+  new signals: payment fraud with no links, and HTML / disk-image attachments.
+- **After that, this set became a development set, not a test set.** The new rules were written after
+  seeing these misses, so re-running them here proves little and is *not* reported as a detection rate.
+  It was used only as a regression check: the re-run changed no legitimate email's score.
+  (`results_v1_before_bec.json` is the blind run, `results.json` the re-run.) Measuring the new rules
+  needs a fresh set they were not designed on.
 - **Still missed:** phishing that imitates no known brand (a fake IT desk, a fake postal service) and
   borderline cases.
 - **Zero false alarms is optimistic.** LLM-written mail is cleaner than real mail. One day of use on a real
