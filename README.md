@@ -80,6 +80,23 @@ that can't explain itself.
 scope, and the part that needs real engineering (rules, tests, fast iteration) lives in an ordinary Python
 service. The contact list never leaves Google, so the check that needs it runs in the add-on.
 
+**The contract.** `POST /api/v1/analyze` with an `X-Lighthouse-Key` header. A real request and the engine's
+response (descriptions shortened):
+
+```json
+{"sender": {"email": "security@paypa1-support.com", "display_name": "PayPal Security"},
+ "subject": "Your account is on hold", "body_text": "Please verify your account.",
+ "links": [{"text": "paypal.com/login", "href": "https://paypa1-support.com/login"}],
+ "attachments": [{"filename": "invoice.pdf.exe"}]}
+```
+```json
+{"score": 100, "verdict": "Malicious", "reasoning": [
+  {"category": "header", "rule": "display_name_domain_mismatch", "weight": 35, "description": "..."},
+  {"category": "content", "rule": "credential_request_language", "weight": 15, "description": "..."},
+  {"category": "link", "rule": "link_text_href_mismatch", "weight": 25, "description": "..."},
+  {"category": "attachment", "rule": "double_extension", "weight": 45, "description": "..."}]}
+```
+
 ## What the user sees
 
 The card's loudness matches the risk: safe email stays quiet so a dangerous one can stand out.
