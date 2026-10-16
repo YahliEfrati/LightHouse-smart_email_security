@@ -21,7 +21,8 @@ const STATE_PRESENTATION = {
   malicious: {
     icon: 'icon_malicious.png',
     headline: 'DANGER — LIKELY MALICIOUS', subtitle: 'Steer clear of this one',
-    todo: 'Do not click links or open attachments. Report this email.',
+    // The add-on cannot report for the user (that needs gmail.modify), so it says exactly where Gmail's own button is.
+    todo: 'Do not click links or open attachments.<br>To report it: ⋮ next to Reply → Report phishing.',
   },
   trusted: {
     icon: 'icon_safe.png',
@@ -269,7 +270,7 @@ const RULE_SHORT_LABELS = {
   urgency_financial_proximity: 'Pressure plus money talk',
   credential_request_language: 'Asks for your login details',
   payment_request_pressure: 'Money request under pressure',
-  payment_request_unverified_sender: 'Money request from a personal address',
+  payment_request_unverified_sender: 'Money request, personal email',
   base64_obfuscation: 'Hidden encoded text',
   excessive_url_encoding: 'Scrambled link encoding',
   html_entity_obfuscation: 'Disguised characters',

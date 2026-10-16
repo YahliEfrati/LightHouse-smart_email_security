@@ -565,8 +565,8 @@ function buildResultCard(email, result, messageId, isTrusted) {
   if (isDanger) {
     actionsSection.addWidget(
       CardService.newTextButton()
-        .setText('Report this email')
-        .setOnClickAction(CardService.newAction().setFunctionName('onReportEmail'))
+        .setText('Learn about phishing')
+        .setOnClickAction(CardService.newAction().setFunctionName('onPhishingHelp'))
     );
   }
 
@@ -602,11 +602,11 @@ function withMenu(cardBuilder) {
 }
 
 /**
- * Action handler for "Report this email". Reporting from inside the add-on would need
- * the gmail.modify scope, which we deliberately do not request (least privilege), so we
- * open Google's own instructions instead.
+ * Action handler for "Learn about phishing": opens Google's phishing guide. Reporting from inside
+ * the add-on would need the gmail.modify scope, which we deliberately do not request (least
+ * privilege); the card's red line tells the user where Gmail's own "Report phishing" item is.
  */
-function onReportEmail(e) {
+function onPhishingHelp(e) {
   return CardService.newActionResponseBuilder()
     .setOpenLink(CardService.newOpenLink().setUrl('https://support.google.com/mail/answer/8253'))
     .build();

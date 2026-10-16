@@ -87,7 +87,7 @@ The card's loudness matches the risk: safe email stays quiet so a dangerous one 
 |---|---|
 | **Safe** (0–34) | Green band with the score and a check strip (✓ Sender · ✓ Message · ✓ Links · ✓ Files). No findings listed. |
 | **Suspicious** (35–69) | Amber band, the check strip, and up to three one-line findings ("Link goes somewhere else"). |
-| **Malicious** (70+) | Red band, bold red "Do not click links or open attachments", a red **View why this is dangerous** button and **Report this email**. |
+| **Malicious** (70+) | Red band, bold red "Do not click links or open attachments" with where Gmail's own **Report phishing** item is (⋮ next to Reply), a red **View why this is dangerous** button and **Learn about phishing**. |
 | **Trusted sender** | Calm green card with risk 0, unless the scan says Malicious: then the red card appears anyway. |
 | **Not scanned** | Grey card: "use your usual caution". Never looks like a safe result. |
 
@@ -103,8 +103,10 @@ The band at the top is an animated lighthouse beam that sweeps twice and stops. 
 - **Trust sender** (non-malicious cards) adds the full address to a private list. A trusted sender is
   **still scanned**, because sender addresses can be forged. Free-mail domains (gmail.com, …) can never be
   trusted as a whole. The list (⋮ → Trusted senders, max 100) also powers the impersonation check below.
-- **Report this email** opens Google's reporting instructions. Reporting in place would need
-  `gmail.modify`, which we deliberately do not request.
+- **Reporting.** The add-on can't report for the user: that would need `gmail.modify` (permission to change
+  the whole mailbox), which we deliberately do not request, and Gmail exposes no "report phishing" link or
+  API. So the red card says exactly where Gmail's own button is (⋮ next to Reply → Report phishing), and
+  **Learn about phishing** opens Google's guide.
 
 There is deliberately no "this is a mistake" button: an earlier version had one that showed "thanks,
 this helps calibrate" and recorded nothing, which is an empty promise. A real feedback loop is in the

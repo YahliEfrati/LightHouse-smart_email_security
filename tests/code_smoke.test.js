@@ -46,9 +46,11 @@ test('result card builds for edge-case results', () => {
 
 test('malicious card has the report button and no banner/gauge images; safe card has no report button', () => {
   const a = load(); a.ctx.buildResultCard(email, { verdict: 'Malicious', score: 95, reasoning: [] }, 'id', false);
-  assert.ok(strings(a.calls).includes('Report this email'));
+  assert.ok(strings(a.calls).includes('Learn about phishing'));
+  assert.ok(strings(a.calls).some((t) => t.includes('Report phishing')), "red line says where Gmail's report button is");
   const b = load(); b.ctx.buildResultCard(email, { verdict: 'Safe', score: 3, reasoning: [] }, 'id', false);
-  assert.ok(!strings(b.calls).includes('Report this email'));
+  assert.ok(!strings(b.calls).includes('Learn about phishing'));
+  assert.ok(!strings(b.calls).some((t) => t.includes('Report phishing')));
 });
 
 test('first screen: score is native text, check strip and at most 3 findings shown', () => {
@@ -308,4 +310,10 @@ test('homepage header carries the full product name; the tagline moves into the 
   const texts = strings(calls);
   assert.ok(calls.some(([m, a]) => m === 'setSubtitle' && a[0] === 'Smart Email Security'));
   assert.ok(texts.some((t) => t.startsWith('<i>A steady light in a sea of suspicious email.</i>')));
+});
+
+test('"Learn about phishing" opens Google\'s phishing guide and never claims to report', () => {
+  const { ctx, calls } = load();
+  assert.doesNotThrow(() => ctx.onPhishingHelp({}));
+  assert.ok(calls.some(([m, a]) => m === 'setUrl' && a[0] === 'https://support.google.com/mail/answer/8253'));
 });
