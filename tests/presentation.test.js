@@ -4,11 +4,11 @@ const assert = require('node:assert');
 globalThis.ASSET_BASE_URL = 'https://example.test/assets/';
 const p = require('../Presentation.gs');
 
-test('gaugeFile rounds to steps of 5 and uses alert above 90', () => {
-  const cases = [[0, 'gauge_0.png'], [2, 'gauge_0.png'], [3, 'gauge_5.png'], [72, 'gauge_70.png'],
-    [90, 'gauge_90.png'], [91, 'gauge_alert.png'], [100, 'gauge_alert.png'], [150, 'gauge_alert.png'],
-    [-3, 'gauge_0.png'], [72.6, 'gauge_75.png'], [NaN, 'gauge_0.png']];
-  cases.forEach(([score, file]) => assert.strictEqual(p.gaugeFile(score), file, 'score ' + score));
+test('heroFile is one image per integer score, clamped to 0-100', () => {
+  const cases = [[0, 'hero_0.png'], [34, 'hero_34.png'], [72, 'hero_72.png'], [91, 'hero_91.png'],
+    [100, 'hero_100.png'], [150, 'hero_100.png'], [-3, 'hero_0.png'], [72.6, 'hero_73.png'], [NaN, 'hero_0.png']];
+  cases.forEach(([score, file]) => assert.strictEqual(p.heroFile(score), file, 'score ' + score));
+  assert.strictEqual(p.HERO_UNSCANNED_FILE, 'hero_unscanned.png');
 });
 
 test('stateForResult maps verdicts and falls back to suspicious', () => {

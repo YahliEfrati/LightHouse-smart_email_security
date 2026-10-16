@@ -12,9 +12,9 @@ and shows the user a maliciousness score, verdict, and reasoning.
 
    | State | What the user sees |
    |---|---|
-   | Safe | Short, quiet card, green banner |
-   | Suspicious | Amber banner, the single most important finding, "verify before you act" |
-   | Malicious | Full-width red banner first, bold red "What to do", filled red buttons, solid-red gauge above 90 |
+   | Safe | Green hero block with the score, nothing else |
+   | Suspicious | Amber hero block with the score and one plain-language finding |
+   | Malicious | Red hero block with the score, bold red "What to do", filled red button, solid-red gauge above 90 |
    | Not scanned | Grey card — "This email wasn't scanned, use your usual caution" (never implies safety) |
 
 3. **Privacy first** — all analysis is local heuristics; no email content goes to third-party services.
@@ -22,7 +22,7 @@ and shows the user a maliciousness score, verdict, and reasoning.
 5. **Plain headlines, warm voice** — headlines and findings are direct; the Lighthouse personality
    lives in subtitles and explanatory copy.
 
-The lighthouse icon changes beam color with the verdict, and the risk gauge fades green → amber →
+The lighthouse icon changes beam color with the verdict, and the gauge fades green → amber →
 red along the backend's thresholds (35 suspicious, 70 malicious).
 
 ## Security posture: principle of least privilege
@@ -45,14 +45,11 @@ blast radius is a single opened email, not the user's whole mailbox.
 .
 ├── appsscript.json         Manifest: oauth scopes, contextual trigger, homepage trigger
 ├── Code.gs                 Add-on logic (CardService UI + backend client)
-├── Presentation.gs         Pure helpers: state -> banner/gauge/copy, top finding, escaping (unit-tested in Node)
-├── assets/                 Generated PNGs: icons, state banners, risk gauges (served via GitHub raw)
+├── Presentation.gs         Pure helpers: state -> hero image/copy, top finding, escaping (unit-tested in Node)
+├── assets/                 Generated PNGs: 4 icons + one hero image per score 0-100 (served via GitHub raw)
 ├── tools/generate_assets.py  Regenerates /assets  (python tools/generate_assets.py)
 ├── tests/                  Node tests for Presentation.gs and a CardService smoke test
-├── docs/                   Design spec, implementation plan, demo script
-├── backend/                FastAPI scoring service (see backend/README.md)
-├── .claspignore            Keeps clasp from pushing anything except Code.gs, Presentation.gs, appsscript.json
-└── .gitignore
+└── docs/                   Design spec, implementation plan, demo script
 ```
 
 Images in Gmail cards must come from a public HTTPS URL, so the PNGs are committed and loaded from
@@ -72,12 +69,14 @@ Run the tests with `node --test tests/presentation.test.js tests/code_smoke.test
    stack trace. Trusted senders (user whitelist in `PropertiesService`) are
    **still scanned**: a spoofed "trusted" address must not bypass the checks. They
    get the calm "A familiar face" card only when the verdict is Safe.
-3. **Result card** — header icon and a full-width banner in the state color, the
-   top finding with its evidence, a gradient risk-gauge image plus the exact score
-   (labelled an estimate), a "What to do" line, and actions: **View details**,
-   **Trust this sender**, **I think this is a mistake**, and for malicious email a
-   red **Report this email** (opens Google's reporting instructions — reporting
-   in place would need `gmail.modify`, which we deliberately do not request).
+3. **Result card** — deliberately quiet. A single full-width **hero image** (one pre-rendered
+   PNG per score, 0-100) carries what matters most: the verdict color, a big score and the
+   green-to-red gauge. Below it: one plain-language finding, a "What to do" line for malicious
+   email only, and one button (**View details**; red when malicious, plus **Report this email**,
+   which opens Google's reporting instructions — reporting in place would need `gmail.modify`,
+   which we deliberately do not request). **Trust this sender** and **I think this is a mistake**
+   live in the card's overflow menu (⋮). The hero's colors mirror the backend thresholds (35, 70);
+   if those change, re-run `tools/generate_assets.py`.
 4. **Details card** — "View details" uses
    `CardService.newNavigation().pushCard()`, which triggers Gmail's native
    slide-in card animation, to reveal the full per-rule reasoning (grouped
@@ -137,7 +136,8 @@ individually from the "Manage Trusted Senders" section.
   authentication headers needs access the add-on does not request today.
 - No URL-reputation lookups — a deliberate privacy choice (nothing leaves the backend).
 - No mailbox-level actions (label, move to spam): they require `gmail.modify`.
-- The gauge image uses the score rounded to the nearest 5; the exact score is shown as text.
+- The hero image is pre-rendered per score, so changing the backend's verdict thresholds means
+  regenerating the assets (`python tools/generate_assets.py`).
 - `BACKEND_URL` must be manually updated whenever the ngrok tunnel
   restarts — there's no service discovery for a purely local demo setup.
 - The trusted-sender list is stored per Google account via

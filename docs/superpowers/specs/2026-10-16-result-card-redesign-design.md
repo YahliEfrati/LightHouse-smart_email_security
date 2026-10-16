@@ -56,3 +56,11 @@ Details card: findings grouped by category, human wording first, technical evide
 ## Testing
 - Unit tests for score -> gauge image selection (boundaries 0, 4/5, 90, 91, 100) and verdict -> banner/icon mapping.
 - Manual demo script with 4 emails: safe, suspicious, malicious, backend-down.
+
+## Revision 2 (after first live test in Gmail)
+Findings from the live screenshots, and what changed:
+- The sidebar title was clipped ("Lighthouse - Smar…"): `gmail.name` in the manifest is now just **"Lighthouse"**.
+- The lighthouse appeared twice (card header + banner) and the headline twice: the result card now has **no card header**.
+- The card was noisy. The first screen now holds only: **hero image**, one plain-language finding, a "What to do" line (malicious only) and one button. "Trust this sender" and "I think this is a mistake" moved to the card's overflow menu; the sender name and technical details were removed from the first screen (details stay in the details card).
+- **Hero image replaces banner + gauge images**: one pre-rendered 600x230 PNG per integer score 0-100 (`hero_<score>.png`) with the verdict color, big score and gradient gauge, plus `hero_unscanned.png`. Above 90 the gauge turns solid red. Colors follow the backend thresholds (35/70); the generator mirrors them in `state_for_score`.
+- Malicious copy changed from "LIKELY PHISHING" to **"LIKELY MALICIOUS"** (the checks cover attachments and obfuscation, not just phishing); the button is "Report this email".

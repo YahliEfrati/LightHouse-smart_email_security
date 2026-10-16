@@ -37,12 +37,14 @@ test('result card builds for edge-case results', () => {
   assert.doesNotThrow(() => ctx.buildTrustedSenderCard(email));
   assert.ok(!strings(calls).some((s) => s.includes('<script>')), 'attacker HTML must be escaped');
   const urls = calls.filter(([p]) => p === 'setImageUrl').map(([, a]) => a[0]);
-  assert.ok(urls.includes(vm.runInContext('ASSET_BASE_URL', ctx) + 'gauge_alert.png'));
-  assert.ok(urls.includes(vm.runInContext('ASSET_BASE_URL', ctx) + 'gauge_0.png'));
-  assert.ok(urls.includes(vm.runInContext('ASSET_BASE_URL', ctx) + 'banner_malicious.png'));
+  const base = vm.runInContext('ASSET_BASE_URL', ctx);
+  assert.ok(urls.includes(base + 'hero_100.png'), 'score 150 is clamped to 100');
+  assert.ok(urls.includes(base + 'hero_0.png'), 'score -3 is clamped to 0');
+  assert.ok(urls.includes(base + 'hero_73.png'));
+  assert.ok(urls.includes(base + 'hero_unscanned.png'));
 });
 
-test('malicious card has the report button; safe card does not', () => {
+test('malicious card has the report button and no banner/gauge images; safe card has no report button', () => {
   const a = load(); a.ctx.buildResultCard(email, { verdict: 'Malicious', score: 95, reasoning: [] }, 'id', false);
   assert.ok(strings(a.calls).includes('Report this email'));
   const b = load(); b.ctx.buildResultCard(email, { verdict: 'Safe', score: 3, reasoning: [] }, 'id', false);

@@ -10,7 +10,7 @@
     "https://www.googleapis.com/auth/script.external_request"
   ],
   "gmail": {
-    "name": "Lighthouse - Smart Email Security",
+    "name": "Lighthouse",
     "logoUrl": "https://raw.githubusercontent.com/YahliEfrati/LightHouse-smart_email_security/main/assets/icon_safe.png",
     "primaryColor": "#0B3D59",
     "secondaryColor": "#FDB813",

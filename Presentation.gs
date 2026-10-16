@@ -9,22 +9,22 @@ const RESULT_STATES = ['safe', 'suspicious', 'malicious', 'unscanned'];
 
 const STATE_PRESENTATION = {
   safe: {
-    icon: 'icon_safe.png', banner: 'banner_safe.png',
+    icon: 'icon_safe.png',
     headline: 'Looks safe', subtitle: 'Calm waters ahead',
     todo: 'No action needed.',
   },
   suspicious: {
-    icon: 'icon_suspicious.png', banner: 'banner_suspicious.png',
+    icon: 'icon_suspicious.png',
     headline: 'Check before you act', subtitle: 'Worth a closer look',
     todo: 'Verify the sender before clicking or replying.',
   },
   malicious: {
-    icon: 'icon_malicious.png', banner: 'banner_malicious.png',
+    icon: 'icon_malicious.png',
     headline: 'DANGER — LIKELY MALICIOUS', subtitle: 'Steer clear of this one',
     todo: 'Do not click links or open attachments. Report this email.',
   },
   unscanned: {
-    icon: 'icon_unscanned.png', banner: 'banner_unscanned.png',
+    icon: 'icon_unscanned.png',
     headline: 'Not scanned', subtitle: 'The beacon is resting',
     todo: "This email wasn't scanned — use your usual caution.",
   },
@@ -45,12 +45,16 @@ function normalizeScore(score) {
   return Math.max(0, Math.min(100, Math.round(n)));
 }
 
-/** Gauge image for a score: steps of 5 up to 90, and a solid-red alert image above 90. */
-function gaugeFile(score) {
-  const s = normalizeScore(score);
-  if (s > 90) return 'gauge_alert.png';
-  return 'gauge_' + Math.min(90, Math.round(s / 5) * 5) + '.png';
+/**
+ * Hero image for a score: one pre-rendered image per integer score 0-100 (verdict color,
+ * big score and gradient gauge in a single full-width block). Colors follow the backend
+ * thresholds (35 suspicious, 70 malicious) - see tools/generate_assets.py.
+ */
+function heroFile(score) {
+  return 'hero_' + normalizeScore(score) + '.png';
 }
+
+const HERO_UNSCANNED_FILE = 'hero_unscanned.png';
 
 function assetUrl(file) {
   return ASSET_BASE_URL + file;
@@ -94,7 +98,7 @@ function checksPassed(reasoning) {
 
 if (typeof module !== 'undefined') {
   module.exports = {
-    normalizeScore, gaugeFile, assetUrl, stateForResult, presentationFor,
+    normalizeScore, heroFile, HERO_UNSCANNED_FILE, assetUrl, stateForResult, presentationFor,
     topFinding, safeText, checksPassed, CHECKS_PERFORMED,
   };
 }

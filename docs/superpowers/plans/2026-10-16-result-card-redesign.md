@@ -1,5 +1,7 @@
 # Result Card Redesign Implementation Plan
 
+> **Note:** superseded in part by "Revision 2" of the spec (hero image per score, no card header, overflow-menu actions). Tasks 1-3 below describe the first implementation.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make the verdict unmistakable (loud red, quiet green) with lighthouse icons, full-width state banners and a green→amber→red risk gauge image.

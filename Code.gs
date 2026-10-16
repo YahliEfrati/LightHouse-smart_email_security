@@ -32,7 +32,7 @@ const APP_NAME = 'Lighthouse - Smart Email Security';
 const APP_SHORT_NAME = '🗼 Lighthouse';
 
 /**
- * Public base URL of the static image assets (icons, banners, risk gauges).
+ * Public base URL of the static image assets (icons and per-score hero images).
  * Gmail card images must be loaded from a public HTTPS URL, so the PNGs generated
  * by tools/generate_assets.py are committed to the repo's /assets folder and served
  * from raw.githubusercontent.com (the repository must be public).
@@ -376,7 +376,7 @@ function onTrustThisSender(e) {
 }
 
 // --------------------------------------------------------------------------
-// UI: risk gauge helper
+// UI: shared helpers
 // --------------------------------------------------------------------------
 
 /** Builds an IconImage from a Material Icon name, used next to verdict text. */
@@ -434,52 +434,34 @@ function buildResultCard(email, result, messageId, isTrusted) {
   const view = presentationFor(state);
   const isDanger = state === 'malicious';
   const score = normalizeScore(result.score);
-  const color = STATE_COLORS[state];
 
-  const header = CardService.newCardHeader()
-    .setTitle(view.headline)
-    .setSubtitle(view.subtitle)
-    .setImageUrl(assetUrl(view.icon))
-    .setImageStyle(CardService.ImageStyle.SQUARE);
-
-  // The banner is the loudest element: a full-width block of the state color.
-  const verdictSection = CardService.newCardSection().addWidget(
-    CardService.newImage().setImageUrl(assetUrl(view.banner)).setAltText(view.headline)
+  // One hero image carries the verdict color, the big score and the gradient gauge:
+  // the two things that matter most. Everything else is deliberately secondary.
+  const section = CardService.newCardSection().addWidget(
+    CardService.newImage()
+      .setImageUrl(assetUrl(heroFile(score)))
+      .setAltText(view.headline + ' \u2014 risk ' + score + ' out of 100')
   );
-
-  if (isTrusted && state !== 'safe') {
-    verdictSection.addWidget(
-      CardService.newTextParagraph().setText('<i>This sender is on your trusted list, but something looks off.</i>')
-    );
-  }
 
   const finding = state === 'safe' ? null : topFinding(result.reasoning);
   if (finding) {
-    verdictSection.addWidget(
-      CardService.newDecoratedText()
-        .setStartIcon(materialIconImage('flag'))
-        .setText('<b>' + safeText(finding.description, 160) + '</b>')
-        .setBottomLabel(safeText(wisdomForRule(finding.rule), 200))
-        .setWrapText(true)
+    section.addWidget(CardService.newTextParagraph().setText(safeText(wisdomForRule(finding.rule), 200)));
+  }
+  if (isTrusted && state !== 'safe') {
+    section.addWidget(
+      CardService.newTextParagraph().setText('<i>This sender is on your trusted list, but something looks off.</i>')
+    );
+  }
+  if (isDanger) {
+    section.addWidget(
+      CardService.newTextParagraph().setText(
+        '<font color="' + STATE_COLORS.malicious + '"><b>' + view.todo + '</b></font>'
+      )
     );
   }
 
-  verdictSection
-    .addWidget(CardService.newImage().setImageUrl(assetUrl(gaugeFile(score))).setAltText('Risk ' + score + ' out of 100'))
-    .addWidget(
-      CardService.newTextParagraph().setText(
-        '<font color="' + color + '"><b>' + score + ' / 100</b></font> <i>risk estimate</i> &nbsp;·&nbsp; ' +
-          safeText(email.senderDisplayName || email.senderEmail, 80)
-      )
-    )
-    .addWidget(
-      CardService.newTextParagraph().setText(
-        '<b>What to do:</b> ' + (isDanger ? '<font color="' + color + '"><b>' + view.todo + '</b></font>' : view.todo)
-      )
-    );
-
   const detailsButton = CardService.newTextButton()
-    .setText(isDanger ? '\u26A0 VIEW WHY THIS IS DANGEROUS' : 'View details')
+    .setText(isDanger ? 'View why this is dangerous' : 'View details')
     .setOnClickAction(
       CardService.newAction().setFunctionName('onViewDetails').setParameters({ messageId: messageId })
     );
@@ -488,22 +470,21 @@ function buildResultCard(email, result, messageId, isTrusted) {
   } else {
     detailsButton.setTextButtonStyle(CardService.TextButtonStyle.OUTLINED);
   }
-
-  const actionsSection = CardService.newCardSection();
+  section.addWidget(detailsButton);
   if (isDanger) {
-    actionsSection.addWidget(
+    section.addWidget(
       CardService.newTextButton()
         .setText('Report this email')
-        .setTextButtonStyle(CardService.TextButtonStyle.FILLED)
-        .setBackgroundColor(STATE_COLORS.malicious)
         .setOnClickAction(CardService.newAction().setFunctionName('onReportEmail'))
     );
   }
-  actionsSection
-    .addWidget(detailsButton)
-    .addWidget(
-      CardService.newTextButton()
-        .setText('\u2713 Trust this sender')
+
+  // Secondary actions live in the card's overflow menu (the three dots) to keep the card quiet.
+  return CardService.newCardBuilder()
+    .addSection(section)
+    .addCardAction(
+      CardService.newCardAction()
+        .setText('Trust this sender')
         .setOnClickAction(
           CardService.newAction().setFunctionName('onTrustThisSender').setParameters({
             senderEmail: email.senderEmail,
@@ -511,13 +492,12 @@ function buildResultCard(email, result, messageId, isTrusted) {
           })
         )
     )
-    .addWidget(
-      CardService.newTextButton()
-        .setText('\u2691 I think this is a mistake')
+    .addCardAction(
+      CardService.newCardAction()
+        .setText('I think this is a mistake')
         .setOnClickAction(CardService.newAction().setFunctionName('onSubmitFeedback'))
-    );
-
-  return CardService.newCardBuilder().setHeader(header).addSection(verdictSection).addSection(actionsSection).build();
+    )
+    .build();
 }
 
 /**
@@ -654,21 +634,16 @@ function buildTrustedSenderCard(email) {
 }
 
 function buildNotScannedCard() {
-  const view = presentationFor('unscanned');
-  const header = CardService.newCardHeader()
-    .setTitle(view.headline)
-    .setSubtitle(view.subtitle)
-    .setImageUrl(assetUrl(view.icon))
-    .setImageStyle(CardService.ImageStyle.SQUARE);
   const section = CardService.newCardSection()
-    .addWidget(CardService.newImage().setImageUrl(assetUrl(view.banner)).setAltText(view.headline))
-    .addWidget(CardService.newTextParagraph().setText('<b>' + view.todo + '</b>'))
+    .addWidget(
+      CardService.newImage().setImageUrl(assetUrl(HERO_UNSCANNED_FILE)).setAltText('Not scanned \u2014 use your usual caution')
+    )
     .addWidget(
       CardService.newTextParagraph().setText(
         '<i>Tip: closing and re-opening this email will relight the beacon for a fresh scan.</i>'
       )
     );
-  return CardService.newCardBuilder().setHeader(header).addSection(section).build();
+  return CardService.newCardBuilder().addSection(section).build();
 }
 
 /** Generic single-message card used for minor fallback states. */
