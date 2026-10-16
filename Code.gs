@@ -112,8 +112,7 @@ function buildHomepageCard() {
         )
       )
     )
-    // Only a button here, no text input: a form on the homepage makes Gmail ask "Cancel / View" before
-    // switching to an opened email (it guards unsaved input), and a long list would bury the intro.
+    // Only a button here: the list lives on its own card, so a long list never buries the intro.
     .addSection(
       CardService.newCardSection().addWidget(
         CardService.newTextButton()

@@ -222,7 +222,7 @@ test('credential_request_language and suspicious_tld render with labels on both 
 });
 
 // ---- trusted list ----
-test('homepage has no form (avoids Gmail "Cancel / View") and opens the trusted list via a button', () => {
+test('homepage keeps just the intro and opens the trusted list via a button', () => {
   const s = services({ trusted: ['a@x.example'], backend: { body: {} } });
   const { ctx, calls } = load(s.globals);
   assert.doesNotThrow(() => ctx.onHomepage({}));
