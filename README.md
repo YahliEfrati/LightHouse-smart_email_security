@@ -91,7 +91,7 @@ The card's loudness matches the risk: safe email stays quiet so a dangerous one 
 | **Safe** (0–34) | Green band with the score and a check strip (✓ Sender · ✓ Message · ✓ Links · ✓ Files). No findings listed. |
 | **Suspicious** (35–69) | Amber band, the check strip, and up to three one-line findings ("Link goes somewhere else"). |
 | **Malicious** (70+) | Red band, bold red "Do not click links or open attachments" with where Gmail's own **Report phishing** item is (⋮ next to Reply), a red **View why this is dangerous** button and **Learn about phishing**. |
-| **Trusted sender** | Calm green card with no score, unless the scan says Malicious: then the red card appears anyway. |
+| **Trusted sender** | Calm green card with no score, even if the scan came out Suspicious: the sender gets the benefit of the doubt. If the scan says Malicious, the red card appears anyway, with a line saying the sender is trusted. |
 | **Not scanned** | Grey card: "use your usual caution". Never looks like a safe result. |
 
 The band at the top is an animated lighthouse beam that sweeps twice and stops. Below it:
@@ -255,7 +255,7 @@ second scan.
 | **Narrowest Gmail scope** | Blast radius of a bug or compromise is one open email. | The add-on can't read raw headers, so the SPF/DKIM/DMARC rules can't fire today. |
 | **Per-category caps** | Many weak signals in one category shouldn't alone mean Malicious; independent ones should add up. | A truly single-category attack can stay below 70. |
 | **Impersonation check in the add-on** | It needs the trusted list, which should never leave Google. | A small piece of scoring lives in JS; a test keeps its thresholds equal to the backend's. |
-| **Trusted senders are still scanned** | A forged "trusted" address must not be a free pass. | One backend call even for known senders. |
+| **Trusted senders: amber is hidden, red is not** | Trusting someone should stop the false alarms on their normal mail, but a forged address or a hacked account ("urgent, transfer me ₪3,500") must not be a free pass. | One backend call even for known senders, and a *Suspicious* email from a trusted sender (for example a hacked account) passes without a warning. |
 | **"Check the links" never visits a link** | Visiting fires tracking pixels and can trigger exploits. | Shows where a link goes, not whether the site is safe; the card says so. |
 | **High precision on the red alarm** | Users ignore a tool that cries wolf; in a real inbox most mail is legitimate. | Some attacks get amber instead of red, or are missed (see Evaluation). |
 | **Pre-rendered images and GIFs** | Gmail cards can't draw graphics or run code; images are the only way to show a gauge or animation. | 101 GIFs (~17 MB) in the repo; changing thresholds means regenerating them. |
