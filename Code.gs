@@ -567,25 +567,22 @@ function buildResultCard(email, result, messageId, isTrusted) {
   }
 
   // Quiet secondary actions side by side. A likely-malicious sender is never offered as "trust".
-  const secondary = CardService.newButtonSet();
+  // A false alarm is answered by "Trust sender" (never offered on a likely-malicious email). There is no
+  // "this is a mistake" button on purpose: one that recorded nothing would be an empty promise. See Roadmap.
   if (!isDanger) {
-    secondary.addButton(
-      CardService.newTextButton()
-        .setText('Trust sender')
-        .setOnClickAction(
-          CardService.newAction().setFunctionName('onTrustThisSender').setParameters({
-            senderEmail: email.senderEmail,
-            senderDisplayName: email.senderDisplayName || '',
-          })
-        )
+    actionsSection.addWidget(
+      CardService.newButtonSet().addButton(
+        CardService.newTextButton()
+          .setText('Trust sender')
+          .setOnClickAction(
+            CardService.newAction().setFunctionName('onTrustThisSender').setParameters({
+              senderEmail: email.senderEmail,
+              senderDisplayName: email.senderDisplayName || '',
+            })
+          )
+      )
     );
   }
-  secondary.addButton(
-    CardService.newTextButton()
-      .setText('This is a mistake')
-      .setOnClickAction(CardService.newAction().setFunctionName('onSubmitFeedback'))
-  );
-  actionsSection.addWidget(secondary);
   card.addSection(actionsSection);
 
   return withMenu(card).build();
@@ -875,23 +872,6 @@ function buildManageTrustedSendersCard() {
 function onOpenManageTrustedSenders(e) {
   return CardService.newActionResponseBuilder()
     .setNavigation(CardService.newNavigation().pushCard(buildManageTrustedSendersCard()))
-    .build();
-}
-
-// --------------------------------------------------------------------------
-// User feedback loop
-// --------------------------------------------------------------------------
-
-/**
- * Action handler for the "I think this is a mistake" button. Records
- * nothing sensitive server-side (this is a local demo); simply acknowledges
- * the feedback with a toast, per the UX requirement.
- */
-function onSubmitFeedback(e) {
-  return CardService.newActionResponseBuilder()
-    .setNotification(
-      CardService.newNotification().setText('Thank you! Your feedback helps calibrate the Lighthouse.')
-    )
     .build();
 }
 

@@ -105,8 +105,8 @@ Run the tests with `node --test tests/presentation.test.js tests/code_smoke.test
    native text, a compact check strip (✓ Sender · ⚠ Message · ✓ Links · ✓ Files) and up to three
    plain-language findings. A "What to do" line (malicious only) and one button (**View details**; red when malicious, plus **Report this email**,
    which opens Google's reporting instructions — reporting in place would need `gmail.modify`,
-   which we deliberately do not request). **Trust this sender** and **I think this is a mistake**
-   live in the card's overflow menu (⋮). The hero's colors mirror the backend thresholds (35, 70);
+   which we deliberately do not request). **Trust sender** is a button on non-malicious cards; the
+   **Trusted senders** list lives in the card's overflow menu (⋮). The hero's colors mirror the backend thresholds (35, 70);
    if those change, re-run `tools/generate_assets.py`.
 4. **Details card** — "View details" uses
    `CardService.newNavigation().pushCard()`, which triggers Gmail's native
@@ -122,10 +122,9 @@ Run the tests with `node --test tests/presentation.test.js tests/code_smoke.test
    SendGrid, …) get a neutral ℹ row instead of a red one, and are not counted as suspicious. It runs entirely from the links already in the open message: **the
    Lighthouse never visits them** (no privacy leak, no tracking pixels fired), and the card says so.
    It shows where a link points, never "this link is safe".
-6. **Feedback** — "I think this is a mistake" returns an
-   `ActionResponseBuilder` with `setNotification(...)`, showing a toast
-   ("Thank you! Your feedback helps calibrate the Lighthouse.") without
-   navigating away.
+6. **No "this is a mistake" button, on purpose.** An earlier version had one that only showed a
+   "thanks, this helps calibrate" toast and recorded nothing: an empty promise. It was removed. A false
+   alarm from a known sender is answered by **Trust sender**; a real feedback loop is in the Roadmap.
 
 ## How scoring works
 
@@ -282,5 +281,10 @@ lets users add and remove addresses they know. The list lives in `PropertiesServ
 - **SPF/DKIM/DMARC:** evaluate authentication results from the message headers. This needs a broader
   scope than the add-on requests today, so it is off by design for now.
 - **Backend hardening:** rate limiting, and key rotation for the shared secret.
+- **Real feedback loop:** "Which of these is wrong?" lets the user tick the findings that were wrong
+  and mute only those, only for that sender (identity checks can never be muted, since senders can be
+  spoofed; a Malicious verdict from other checks still shows). The backend keeps counts only (rule fired
+  / rule disputed, no content or addresses). Users see just their own mutes, with Undo; per-rule
+  false-positive rates are an operator view (terminal, backend key), not shown to every user.
 - **Measure, then tune:** a small labelled corpus (own inbox + public phishing samples) and a script
   that reports precision and false-positive rate per rule, so weight changes are evidence-based.

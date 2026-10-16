@@ -110,10 +110,14 @@ test('trusted sender + malicious scan -> warning result card, no trust button', 
   assert.ok(!texts.includes('Trust sender'));
 });
 
-test('untrusted suspicious card offers Trust sender and This is a mistake; backend down -> not scanned', () => {
+test('untrusted suspicious card offers Trust sender (no empty feedback button); backend down -> not scanned', () => {
   const s = services({ backend: { body: { score: 40, verdict: 'Suspicious', reasoning: [] } } });
   const a = load(s.globals); open(a.ctx);
-  assert.ok(strings(a.calls).includes('Trust sender') && strings(a.calls).includes('This is a mistake'));
+  assert.ok(strings(a.calls).includes('Trust sender'));
+  assert.ok(!strings(a.calls).includes('This is a mistake'), 'button removed on purpose'); 
+  const bad = load(services({ backend: { body: { score: 90, verdict: 'Malicious', reasoning: [] } } }).globals);
+  open(bad.ctx);
+  assert.ok(!bad.calls.some(([m]) => m === 'newButtonSet'), 'no empty button row on a malicious card');
   assert.ok(strings(a.calls).includes('Trusted senders'), 'overflow menu entry');
   const down = services({ backend: { status: 500, body: {} } });
   const b = load(down.globals); open(b.ctx);
